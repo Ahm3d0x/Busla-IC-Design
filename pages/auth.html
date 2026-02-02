@@ -183,14 +183,14 @@
                 <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-b-hl-light to-transparent opacity-50"></div>
 
-                    <div class="flex bg-black/40 p-1 rounded-xl mb-6">
-                        <button id="login-tab" onclick="switchTab('login')" class="flex-1 py-3 rounded-lg font-bold text-sm transition-all bg-gradient-to-r from-b-primary to-b-hl-light text-white shadow-lg">
-                            تسجيل الدخول
-                        </button>
-                        <button id="signup-tab" onclick="switchTab('signup')" class="flex-1 py-3 rounded-lg font-bold text-sm transition-all text-gray-400 hover:text-white">
-                            حساب جديد
-                        </button>
-                    </div>
+<div class="flex bg-black/40 p-1 rounded-xl mb-6">
+    <button id="login-tab" class="flex-1 py-3 rounded-lg font-bold text-sm transition-all bg-gradient-to-r from-b-primary to-b-hl-light text-white shadow-lg">
+        تسجيل الدخول
+    </button>
+    <button id="signup-tab" class="flex-1 py-3 rounded-lg font-bold text-sm transition-all text-gray-400 hover:text-white">
+        حساب جديد
+    </button>
+</div>
 
                     <form id="login-form" class="space-y-6">
                         <div class="text-center mb-4">
@@ -371,120 +371,142 @@
         </div>
     </div>
 
-    <script type="module">
-        import { auth, signInWithEmailAndPassword } from '../js/firebase-config.js';
-        import { registerUser } from '../js/auth-handler.js';
+<script type="module">
+    import { loginUser, registerUser } from '../js/auth-handler.js';
 
-        // دالة التبديل بين التبويبات
-        window.switchTab = function(tab) {
-            const loginForm = document.getElementById('login-form');
-            const signupForm = document.getElementById('signup-form');
-            const loginTab = document.getElementById('login-tab');
-            const signupTab = document.getElementById('signup-tab');
-            
-            const activeClass = "flex-1 py-3 rounded-lg font-bold text-sm transition-all bg-gradient-to-r from-b-primary to-b-hl-light text-white shadow-lg";
-            const inactiveClass = "flex-1 py-3 rounded-lg font-bold text-sm transition-all text-gray-400 hover:text-white";
+    document.addEventListener('DOMContentLoaded', () => {
+        // التعريفات
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loginTab = document.getElementById('login-tab');
+        const signupTab = document.getElementById('signup-tab');
+        const toggleBtns = document.querySelectorAll('.toggle-auth');
 
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-                loginForm.classList.add('animate-fade-in-up');
-                loginTab.className = activeClass;
-                signupTab.className = inactiveClass;
+        // كلاسات التصميم (للتفعيل والتعطيل)
+        const activeClasses = ['bg-gradient-to-r', 'from-b-primary', 'to-b-hl-light', 'text-white', 'shadow-lg'];
+        const inactiveClasses = ['text-gray-400', 'hover:text-white'];
+
+        // --- دوال العرض والتبديل ---
+        
+        function showLogin() {
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            updateTabsUI('login');
+        }
+
+        function showSignup() {
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+            updateTabsUI('signup');
+        }
+
+        // دالة لتغيير شكل التابات
+        function updateTabsUI(mode) {
+            // إزالة ستايل النشط من الاثنين أولاً
+            loginTab.classList.remove(...activeClasses);
+            signupTab.classList.remove(...activeClasses);
+            loginTab.classList.add(...inactiveClasses);
+            signupTab.classList.add(...inactiveClasses);
+
+            if (mode === 'login') {
+                loginTab.classList.add(...activeClasses);
+                loginTab.classList.remove(...inactiveClasses);
             } else {
-                loginForm.classList.add('hidden');
-                signupForm.classList.remove('hidden');
-                signupForm.classList.add('animate-fade-in-up');
-                signupTab.className = activeClass;
-                loginTab.className = inactiveClass;
+                signupTab.classList.add(...activeClasses);
+                signupTab.classList.remove(...inactiveClasses);
             }
-        };
+        }
 
-        // منطق تسجيل الدخول
+        // --- تفعيل الأزرار والتابات ---
+
+        if(loginTab) loginTab.addEventListener('click', showLogin);
+        if(signupTab) signupTab.addEventListener('click', showSignup);
+
+        // التعامل مع الرابط (URL Mode)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('mode') === 'signup') {
+            showSignup();
+        } else {
+            showLogin();
+        }
+
+        // أزرار التبديل الجانبية (مثل: ليس لديك حساب؟)
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (loginForm.classList.contains('hidden')) {
+                    showLogin();
+                } else {
+                    showSignup();
+                }
+            });
+        });
+
+        // ==========================================
+        // نفس منطق تسجيل الدخول والتسجيل السابق...
+        // ==========================================
+        
+        // 1. Login Logic
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-login');
-            const errorMsg = document.getElementById('login-error');
-            const originalContent = btn.innerHTML;
-
+            const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
             btn.disabled = true;
-            errorMsg.classList.add('hidden');
 
             try {
-                await signInWithEmailAndPassword(auth, 
-                    document.getElementById('login-email').value, 
+                const { user, role } = await loginUser(
+                    document.getElementById('login-email').value,
                     document.getElementById('login-password').value
                 );
-                window.location.href = "/index.html";
+                
+                // التوجيه
+                setTimeout(() => {
+                    if (role === 'Admin') window.location.href = "admin-dash.html";
+                    else if (role === 'Leader') window.location.href = "leader-dash.html";
+                    else window.location.href = "student-dash.html";
+                }, 1000);
+
             } catch (error) {
-                console.error(error);
-                btn.innerHTML = originalContent;
+                btn.innerHTML = originalText;
                 btn.disabled = false;
-                errorMsg.textContent = "بيانات الدخول غير صحيحة، حاول مرة أخرى.";
-                errorMsg.classList.remove('hidden');
+                const err = document.getElementById('login-error');
+                err.textContent = "بيانات الدخول غير صحيحة";
+                err.classList.remove('hidden');
             }
         });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-
-    if (mode === 'signup') {
-        // لو الرابط فيه كلمة signup، شغل دالة التبديل فوراً
-        switchTab('signup');
-    }
-});
-        // منطق إنشاء حساب جديد (بالبيانات الكاملة)
+        // 2. Signup Logic
         document.getElementById('signup-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-signup');
-            const errorMsg = document.getElementById('signup-error');
-            const originalContent = btn.innerHTML;
-
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> جاري تسجيل البيانات...';
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإنشاء...';
             btn.disabled = true;
-            errorMsg.classList.add('hidden');
-
-            // تجميع البيانات الكاملة
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            
-            const personalInfo = {
-                fullName: document.getElementById('signup-name').value,
-                governorate: document.getElementById('signup-gov').value,
-                phone: "" // يمكن إضافته لاحقاً
-            };
-            
-            const academicInfo = {
-                university: document.getElementById('signup-uni').value,
-                faculty: document.getElementById('signup-faculty').value,
-                department: document.getElementById('signup-dept').value,
-                year: document.getElementById('signup-year').value
-            };
 
             try {
-                await registerUser(email, password, personalInfo, academicInfo);
-                btn.innerHTML = '<i class="fas fa-check"></i> تم إنشاء الحساب!';
-                btn.classList.replace('from-b-hl-light', 'from-green-600');
+                await registerUser(
+                    document.getElementById('signup-email').value,
+                    document.getElementById('signup-password').value,
+                    { fullName: document.getElementById('signup-name').value },
+                    { 
+                        university: document.getElementById('signup-uni').value,
+                        year: document.getElementById('signup-year').value 
+                    }
+                );
                 
-                // توجيه بعد ثانية ونصف
-                setTimeout(() => window.location.href = "pages/index.html", 1500);
-                
+                setTimeout(() => window.location.href = "student-dash.html", 1500);
+
             } catch (error) {
-                console.error(error);
-                btn.innerHTML = originalContent;
+                btn.innerHTML = originalText;
                 btn.disabled = false;
-                
-                let msg = "حدث خطأ غير متوقع";
-                if (error.code === 'auth/email-already-in-use') msg = "هذا البريد مستخدم بالفعل";
-                if (error.code === 'auth/weak-password') msg = "كلمة المرور ضعيفة (6 أحرف على الأقل)";
-                
-                errorMsg.textContent = msg;
-                errorMsg.classList.remove('hidden');
+                const err = document.getElementById('signup-error');
+                err.textContent = "حدث خطأ أثناء التسجيل";
+                err.classList.remove('hidden');
             }
-            
         });
-    </script>
+
+    });
+</script>
 </body>
 </html>

@@ -170,45 +170,16 @@
                 </div>
             </div>
 
-            <div class="swiper mySwiper roadmap-swiper pb-12">
+            <div class="swiper roadmap-swiper">
                 <div class="swiper-wrapper" id="roadmap-container">
-                    <div class="swiper-slide">
-                        <div class="feature-card p-8 rounded-3xl h-full flex flex-col justify-between">
-                            <div>
-                                <div class="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-6 text-2xl"><i class="fas fa-microchip"></i></div>
-                                <h3 class="text-2xl font-bold mb-3 text-white">Digital Logic</h3>
-                                <p class="text-gray-400 text-sm leading-relaxed mb-6">أساسيات البوابات المنطقية وتصميم الدوائر.</p>
-                            </div>
-                            <span class="text-xs bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full border border-blue-500/20 w-fit">Level 1</span>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="feature-card p-8 rounded-3xl h-full flex flex-col justify-between">
-                            <div>
-                                <div class="w-14 h-14 bg-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center mb-6 text-2xl"><i class="fas fa-code"></i></div>
-                                <h3 class="text-2xl font-bold mb-3 text-white">Verilog HDL</h3>
-                                <p class="text-gray-400 text-sm leading-relaxed mb-6">وصف الهاردوير بالكود والمحاكاة.</p>
-                            </div>
-                            <span class="text-xs bg-purple-500/10 text-purple-400 px-3 py-1 rounded-full border border-purple-500/20 w-fit">Level 2</span>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="feature-card p-8 rounded-3xl h-full flex flex-col justify-between">
-                            <div>
-                                <div class="w-14 h-14 bg-green-500/20 text-green-400 rounded-2xl flex items-center justify-center mb-6 text-2xl"><i class="fas fa-layer-group"></i></div>
-                                <h3 class="text-2xl font-bold mb-3 text-white">ASIC Flow</h3>
-                                <p class="text-gray-400 text-sm leading-relaxed mb-6">خطوات التصنيع والـ Tape-out.</p>
-                            </div>
-                            <span class="text-xs bg-green-500/10 text-green-400 px-3 py-1 rounded-full border border-green-500/20 w-fit">Level 3</span>
-                        </div>
-                    </div>
+                    <!-- Roadmap items will be loaded here -->
                 </div>
                 <div class="swiper-pagination"></div>
             </div>
         </div>
     </section>
 
-<section id="experts" class="py-20 bg-white/5 relative">
+    <section id="experts" class="py-20 bg-white/5 relative">
         <div class="container mx-auto px-6">
             <div class="flex justify-between items-end mb-10">
                 <div>
@@ -217,41 +188,8 @@
                 </div>
                 <a href="pages/experts.html" class="text-b-hl-light hover:underline text-sm font-bold">عرض الكل</a>
             </div>
-
-            <div class="swiper mySwiper experts-swiper pb-10">
-                <div class="swiper-wrapper" id="experts-container">
-                    <div class="swiper-slide">
-                        <div class="feature-card p-6 rounded-2xl w-full text-center">
-                            <div class="w-20 h-20 mx-auto bg-gray-700 rounded-full mb-4 overflow-hidden border-2 border-b-primary">
-                                <img src="https://ui-avatars.com/api/?name=Hassan+Seif&background=0D8ABC&color=fff" alt="Expert" class="w-full h-full object-cover">
-                            </div>
-                            <h3 class="font-bold text-lg">م. حسن سيف</h3>
-                            <p class="text-xs text-b-primary font-bold mb-2">Senior Digital Design Engineer</p>
-                            <p class="text-gray-400 text-sm line-clamp-2">"أهم نصيحة لأي طالب هي التركيز على الأساسيات قبل تعلم الأدوات..."</p>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="feature-card p-6 rounded-2xl w-full text-center">
-                            <div class="w-20 h-20 mx-auto bg-gray-700 rounded-full mb-4 overflow-hidden border-2 border-b-primary">
-                                <img src="https://ui-avatars.com/api/?name=Kareem+Waseem&background=random&color=fff" alt="Expert" class="w-full h-full object-cover">
-                            </div>
-                            <h3 class="font-bold text-lg">م. كريم وسيم</h3>
-                            <p class="text-xs text-b-primary font-bold mb-2">ASIC Verification Engineer</p>
-                            <p class="text-gray-400 text-sm line-clamp-2">"مجال الـ Verification يحتاج عقلية تحليلية قوية وصبراً طويلاً..."</p>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <div class="feature-card p-6 rounded-2xl w-full text-center">
-                            <div class="w-20 h-20 mx-auto bg-gray-700 rounded-full mb-4 overflow-hidden border-2 border-b-primary">
-                                <img src="https://ui-avatars.com/api/?name=Mohamed+Tarek&background=22C45D&color=fff" alt="Expert" class="w-full h-full object-cover">
-                            </div>
-                            <h3 class="font-bold text-lg">م. محمد طارق</h3>
-                            <p class="text-xs text-b-primary font-bold mb-2">Analog/Mixed Signal</p>
-                            <p class="text-gray-400 text-sm line-clamp-2">"الربط بين الديجيتال والأنالوج هو المستقبل في الـ IoT chips..."</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-pagination"></div>
+            <div id="experts-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                <!-- Experts will be loaded here -->
             </div>
         </div>
     </section>
@@ -262,24 +200,8 @@
                 <h2 class="text-3xl font-bold text-white mb-2">🛠️ صندوق الأدوات</h2>
                 <p class="text-gray-400">كل البرامج التي ستحتاجها في رحلتك</p>
             </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6" id="tools-container">
-                <a href="pages/tools.html" class="feature-card p-4 rounded-xl flex flex-col items-center justify-center gap-3 group cursor-pointer">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Vimlogo.svg" class="w-12 h-12 group-hover:scale-110 transition-transform" alt="Vim">
-                    <span class="font-bold text-sm">Vim Editor</span>
-                </a>
-                <a href="pages/tools.html" class="feature-card p-4 rounded-xl flex flex-col items-center justify-center gap-3 group cursor-pointer">
-                    <i class="fas fa-terminal text-4xl text-gray-400 group-hover:text-white transition-colors"></i>
-                    <span class="font-bold text-sm">Linux Terminal</span>
-                </a>
-                <a href="pages/tools.html" class="feature-card p-4 rounded-xl flex flex-col items-center justify-center gap-3 group cursor-pointer">
-                    <i class="fas fa-wave-square text-4xl text-green-500 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-bold text-sm">GTKWave</span>
-                </a>
-                <a href="pages/tools.html" class="feature-card p-4 rounded-xl flex flex-col items-center justify-center gap-3 group cursor-pointer">
-                    <i class="fab fa-git-alt text-4xl text-orange-500 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-bold text-sm">Git & GitHub</span>
-                </a>
+            <div id="tools-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Tools will be loaded here -->
             </div>
         </div>
     </section>
@@ -326,37 +248,167 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-         document.getElementById('current-year').textContent = new Date().getFullYear();
-        // إعدادات السلايدر (للخريطة فقط)
-        const swiper = new Swiper(".roadmap-swiper", {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            loop: true,
-            autoplay: { delay: 4000, disableOnInteraction: false },
-            pagination: { el: ".swiper-pagination", clickable: true },
-            breakpoints: {
-                768: { slidesPerView: 2, spaceBetween: 30 },
-                1024: { slidesPerView: 3, spaceBetween: 30 },
-            },
-        });
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+   // رابط الـ API الخاص بك
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkeSHHhx-9RyXGRSXiKRql_GLHmHm5EAZBU1zXZLibAVF1R4uQ5biNG_qBLRuRUJlw/exec';
+const CACHE_KEY = 'busla_home_data_v1'; // مفتاح التخزين في المتصفح
 
-        // سكريبت النافبار
-        window.addEventListener('scroll', () => {
-            let current = '';
-            document.querySelectorAll('section, header').forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (pageYOffset >= sectionTop - 150) {
-                    current = section.getAttribute('id');
-                }
-            });
+// متغير عالمي لتخزين نسخة السلايدر (عشان نقدر نعمله تحديث لو البيانات تغيرت)
+let roadmapSwiperInstance = null;
 
-            document.querySelectorAll('.nav-link').forEach(li => {
-                li.classList.remove('active');
-                if (li.getAttribute('href').includes(current)) {
-                    li.classList.add('active');
-                }
-            });
-        });
+document.addEventListener('DOMContentLoaded', () => {
+    loadDataSmartly();
+});
+
+async function loadDataSmartly() {
+    // 1️⃣ الخطوة الأولى: محاولة العرض الفوري من الكاش
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    let hasCache = false;
+
+    if (cachedData) {
+        try {
+            console.log("🚀 عرض البيانات من الكاش (بسرعة البرق)");
+            const data = JSON.parse(cachedData);
+            renderAllSections(data);
+            hasCache = true;
+        } catch (e) {
+            console.error("خطأ في قراءة الكاش", e);
+        }
+    }
+
+    // 2️⃣ الخطوة الثانية: جلب البيانات الحديثة من السيرفر (في الخلفية)
+    try {
+        console.log("🔄 جاري طلب البيانات الحديثة من السيرفر...");
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=getAllContent`);
+        const newData = await response.json();
+
+        // 3️⃣ الخطوة الثالثة: المقارنة والتحديث
+        // لو مفيش كاش أصلاً، أو لو البيانات الجديدة مختلفة عن المخزنة -> نحدث الموقع
+        const newDataString = JSON.stringify(newData);
+        
+        if (!hasCache || cachedData !== newDataString) {
+            console.log("✅ تم اكتشاف تحديثات جديدة، جاري تحديث الموقع والكاش.");
+            
+            // تحديث الكاش
+            localStorage.setItem(CACHE_KEY, newDataString);
+            
+            // إعادة رسم الموقع بالبيانات الجديدة
+            renderAllSections(newData);
+        } else {
+            console.log("👌 البيانات مطابقة للكاش، لا داعي لإعادة الرسم.");
+        }
+
+    } catch (error) {
+        console.error('⚠️ تعذر الاتصال بالسيرفر:', error);
+        // لو مفيش كاش ومفيش نت، ممكن نعرض رسالة خطأ هنا
+    }
+}
+
+// --- دالة مجمعة لتوزيع البيانات ---
+function renderAllSections(data) {
+    // تجهيز البيانات (دعم الأسماء القديمة والجديدة)
+    const roadmap = data.board_Roadmap || data['board_Roadmap'] || data.Roadmap;
+    const experts = data.board_Experts || data['board_Experts'] || data.Experts;
+    const tools = data.board_Tools || data['board_Tools'] || data.Tools;
+
+    if (roadmap) renderRoadmap(roadmap);
+    if (experts) renderExperts(experts);
+    if (tools) renderTools(tools);
+
+    // تشغيل السلايدر بعد الرسم
+    initSwiper();
+}
+
+// --- دوال العرض (Rendering Functions) ---
+
+function renderRoadmap(items) {
+    const container = document.getElementById('roadmap-container');
+    if (!container) return;
+
+    const cleanItems = items.filter(item => item.title && item.title !== '');
+
+    container.innerHTML = cleanItems.map(item => `
+        <div class="swiper-slide p-6 bg-b-surface rounded-xl border border-white/10 hover:border-b-primary transition-all group h-auto">
+            <div class="w-12 h-12 rounded-full bg-b-primary/20 flex items-center justify-center mb-4 group-hover:bg-b-primary transition-colors">
+                <i class="${item.icon_class || 'fa-solid fa-code'} text-b-primary group-hover:text-white text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">${item.title}</h3>
+            <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                ${item.description}
+            </p>
+            <span class="text-xs py-1 px-3 rounded-full bg-white/5 text-b-hl-medium border border-white/10">
+                ${item.status || 'متاح'}
+            </span>
+        </div>
+    `).join('');
+}
+
+function renderExperts(experts) {
+    const container = document.getElementById('experts-container');
+    if (!container) return;
+
+    const cleanExperts = experts.filter(ex => ex.name && ex.name !== '');
+
+    container.innerHTML = cleanExperts.map(expert => `
+        <div class="bg-b-surface rounded-xl p-6 border border-white/5 text-center hover:-translate-y-2 transition-transform duration-300">
+            <div class="w-24 h-24 mx-auto rounded-full overflow-hidden border-2 border-b-primary mb-4">
+                <img src="${expert.image_url}" alt="${expert.name}" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-lg font-bold text-white">${expert.name}</h3>
+            <p class="text-b-primary text-sm mb-4">${expert.role}</p>
+            <div class="flex justify-center space-x-3 space-x-reverse">
+                <a href="${expert.linkedin_url}" target="_blank" class="text-gray-400 hover:text-b-primary transition-colors">
+                    <i class="fa-brands fa-linkedin text-xl"></i>
+                </a>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderTools(tools) {
+    const container = document.getElementById('tools-container');
+    if (!container) return;
+
+    const cleanTools = tools.filter(t => t.name && t.name !== '');
+
+    container.innerHTML = cleanTools.map(tool => `
+        <a href="${tool.link}" target="_blank" class="block bg-b-surface p-6 rounded-xl border border-white/5 hover:border-b-primary transition-all group">
+            <div class="flex items-start justify-between mb-4">
+                <div class="w-10 h-10 rounded bg-white/5 flex items-center justify-center text-2xl overflow-hidden">
+                    <img src="${tool.icon_url}" alt="${tool.name}" class="w-full h-full object-contain p-1">
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square text-gray-500 group-hover:text-b-primary transition-colors"></i>
+            </div>
+            <h4 class="text-white font-bold mb-1">${tool.name}</h4>
+            <p class="text-gray-400 text-xs">${tool.description}</p>
+        </a>
+    `).join('');
+}
+
+// دالة تشغيل السلايدر (محسنة لتدعم التحديث)
+function initSwiper() {
+    const container = document.querySelector(".roadmap-swiper");
+    if (!container) return;
+
+    // لو السلايدر شغال من قبل، لازم ندمره عشان نعمل واحد جديد بالبيانات الجديدة
+    if (roadmapSwiperInstance) {
+        roadmapSwiperInstance.destroy(true, true);
+    }
+
+    roadmapSwiperInstance = new Swiper(".roadmap-swiper", {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: true,
+        observer: true, 
+        observeParents: true,
+        autoplay: { delay: 4000, disableOnInteraction: false },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        breakpoints: {
+            768: { slidesPerView: 2, spaceBetween: 30 },
+            1024: { slidesPerView: 3, spaceBetween: 30 },
+        },
+    });
+}
     </script>
 
 </body>
