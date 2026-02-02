@@ -25,144 +25,120 @@
         .content-card { background: rgba(25, 25, 25, 0.6); border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
-<body class="text-white flex min-h-screen">
+<body class="bg-b-bg text-white min-h-screen flex">
 
-    <aside class="sidebar-glass w-64 fixed h-full right-0 z-40 flex flex-col hidden lg:flex">
-        <div class="p-6 border-b border-gray-800 flex items-center gap-3">
-            <div class="w-8 h-8 bg-b-primary rounded flex items-center justify-center"><i class="fas fa-compass"></i></div>
-            <h2 class="text-xl font-bold">بوصلة <span class="text-xs bg-gray-800 px-2 py-0.5 rounded text-gray-400" id="role-badge">تحميل..</span></h2>
+    <aside class="sidebar-glass w-64 h-screen fixed right-0 top-0 z-50 flex flex-col hidden md:flex">
+        <div class="p-6 flex items-center gap-3 border-b border-white/10">
+            <div class="w-10 h-10 bg-b-primary rounded-xl flex items-center justify-center">
+                <i class="fas fa-microchip text-white text-xl"></i>
+            </div>
+            <h1 class="font-bold text-xl tracking-wide">بوصلة</h1>
         </div>
 
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-b-primary/20 text-b-hl-light rounded-lg font-bold border border-b-primary/50">
-                <i class="fas fa-home"></i> الرئيسية
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl bg-b-primary/10 text-b-primary font-bold border border-b-primary/20">
+                <i class="fas fa-th-large"></i> <span>لوحة القيادة</span>
             </a>
-            
-            <div id="leader-links" class="hidden space-y-2 pt-4 border-t border-gray-800 mt-2">
-                <p class="text-xs text-gray-500 px-4 mb-2">أدوات القائد</p>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                    <i class="fas fa-users-cog"></i> إدارة الفريق
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                    <i class="fas fa-clipboard-check"></i> مراجعة المهام
-                </a>
-            </div>
-
-            <div id="student-links" class="hidden space-y-2">
-                <a href="roadmap.html" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                    <i class="fas fa-map"></i> المسار الحالي
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
-                    <i class="fas fa-trophy"></i> إنجازاتي
-                </a>
-            </div>
+            <a href="roadmap.html" class="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+                <i class="fas fa-map-signs"></i> <span>المسارات</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+                <i class="fas fa-users"></i> <span>فريقي</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all">
+                <i class="fas fa-trophy"></i> <span>الإنجازات</span>
+            </a>
         </nav>
 
-        <div class="p-4 border-t border-gray-800">
-            <button id="logout-btn" class="w-full py-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors flex items-center justify-center gap-2">
-                <i class="fas fa-sign-out-alt"></i> تسجيل خروج
+        <div class="p-4 border-t border-white/10">
+            <button id="logout-btn" class="w-full flex items-center gap-3 p-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all">
+                <i class="fas fa-sign-out-alt"></i> <span>تسجيل خروج</span>
             </button>
         </div>
     </aside>
 
-    <main class="flex-1 lg:mr-64 p-8 relative">
-        <header class="flex justify-between items-end mb-8">
-            <div>
-                <h1 class="text-3xl font-bold mb-1">أهلاً، <span id="user-name" class="text-b-hl-light">...</span> 👋</h1>
-                <p class="text-gray-400 text-sm">إليك ملخص نشاطك اليوم</p>
+    <main class="flex-1 md:mr-64 p-4 md:p-8">
+        
+        <header class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-b-primary to-b-hl-light p-[2px]">
+                    <img src="../assets/images/1.jpg" alt="Profile" class="w-full h-full rounded-full object-cover bg-gray-800">
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold">أهلاً، <span id="user-name" class="text-b-hl-light">...</span> 👋</h2>
+                    <p id="user-rank" class="text-gray-400 text-sm">جاري التحميل...</p>
+                </div>
             </div>
-            <div class="hidden md:block">
-                <div class="bg-gray-900 px-4 py-2 rounded-lg border border-gray-800 flex gap-4">
-                    <div class="text-center">
-                        <span class="block text-xs text-gray-500">النقاط</span>
-                        <span id="user-points" class="font-bold text-b-primary">0</span>
-                    </div>
-                    <div class="w-px bg-gray-700"></div>
-                    <div class="text-center">
-                        <span class="block text-xs text-gray-500">الرتبة</span>
-                        <span id="user-rank" class="font-bold text-yellow-500">...</span>
-                    </div>
+
+            <div class="bg-white/5 px-4 py-2 rounded-xl border border-white/10 flex items-center gap-3">
+                <div class="text-right">
+                    <p class="text-xs text-gray-400">مجموع النقاط</p>
+                    <p id="user-points" class="font-bold text-b-hl-light font-mono text-lg">0</p>
+                </div>
+                <div class="w-10 h-10 bg-b-hl-light/20 rounded-full flex items-center justify-center text-b-hl-light">
+                    <i class="fas fa-star"></i>
                 </div>
             </div>
         </header>
 
-        <div id="leader-dashboard" class="hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="content-card p-6 rounded-2xl border-l-4 border-l-purple-500">
-                    <h3 class="text-gray-400 text-sm mb-2">أعضاء الفريق</h3>
-                    <p class="text-3xl font-bold">5 <span class="text-xs text-gray-500">أعضاء</span></p>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-8">
+                
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold border-r-4 border-b-primary pr-3">المسارات المتاحة لك</h3>
                 </div>
-                <div class="content-card p-6 rounded-2xl border-l-4 border-l-yellow-500">
-                    <h3 class="text-gray-400 text-sm mb-2">مهام قيد المراجعة</h3>
-                    <p class="text-3xl font-bold">12 <span class="text-xs text-gray-500">مهمة</span></p>
+
+                <div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="col-span-full text-center py-10">
+                        <i class="fas fa-spinner fa-spin text-3xl text-b-primary mb-4"></i>
+                        <p class="text-gray-400">جاري تحضير مسارك التعليمي...</p>
+                    </div>
                 </div>
-                <div class="content-card p-6 rounded-2xl border-l-4 border-l-green-500">
-                    <h3 class="text-gray-400 text-sm mb-2">نقاط الفريق</h3>
-                    <p class="text-3xl font-bold">1500 <span class="text-xs text-gray-500">XP</span></p>
-                </div>
+
             </div>
 
-            <div class="content-card rounded-2xl p-6">
-                <h3 class="font-bold text-lg mb-4">آخر التسليمات</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-400">
-                        <thead class="text-xs text-gray-200 uppercase bg-black/20">
-                            <tr>
-                                <th class="px-4 py-3">الطالب</th>
-                                <th class="px-4 py-3">المهمة</th>
-                                <th class="px-4 py-3">الحالة</th>
-                                <th class="px-4 py-3">الإجراء</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="border-b border-gray-800">
-                                <td class="px-4 py-3 font-medium text-white">محمد أحمد</td>
-                                <td class="px-4 py-3">تصميم ALU 4-bit</td>
-                                <td class="px-4 py-3"><span class="bg-yellow-900 text-yellow-300 px-2 py-1 rounded text-xs">انتظار</span></td>
-                                <td class="px-4 py-3"><button class="text-b-hl-light hover:underline">مراجعة</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="student-dashboard" class="hidden space-y-6">
-            <div class="content-card p-6 rounded-2xl relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gray-800"><div class="h-full bg-b-hl-light w-1/3"></div></div>
-                <h3 class="font-bold text-xl mb-2">أكمل مسارك: Digital Logic Design</h3>
-                <p class="text-gray-400 text-sm mb-4">أنت متقدم بنسبة 35% في المستوى الحالي.</p>
-                <button class="px-6 py-2 bg-b-primary hover:bg-[#005a57] text-white rounded-lg font-bold transition-colors">
-                    <i class="fas fa-play ml-2"></i> استكمال الدرس
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-6">
+                
                 <div class="content-card p-6 rounded-2xl">
-                    <h3 class="font-bold mb-4">المهام القادمة</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-center gap-3 text-sm text-gray-300">
-                            <i class="far fa-circle text-gray-500"></i>
-                            <span>مشاهدة فيديو K-Map الجزء الثاني</span>
+                    <h3 class="font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-tasks text-gray-400"></i> المهام القادمة
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3 text-sm text-gray-300 pb-3 border-b border-white/5">
+                            <i class="far fa-circle text-b-primary mt-1"></i>
+                            <div>
+                                <span class="block font-bold text-white">Digital Logic Quiz</span>
+                                <span class="text-xs text-gray-500">ينتهي خلال يومين</span>
+                            </div>
                         </li>
-                        <li class="flex items-center gap-3 text-sm text-gray-300">
-                            <i class="far fa-circle text-gray-500"></i>
-                            <span>تسليم كويز Logic Gates</span>
+                        <li class="flex items-start gap-3 text-sm text-gray-300">
+                            <i class="far fa-circle text-gray-500 mt-1"></i>
+                            <div>
+                                <span class="block font-bold text-white">مشروع Verilog بسيط</span>
+                                <span class="text-xs text-gray-500">لم يبدأ بعد</span>
+                            </div>
                         </li>
                     </ul>
                 </div>
-                <div class="content-card p-6 rounded-2xl">
-                    <h3 class="font-bold mb-4">إحصائياتي</h3>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-400">ساعات التعلم</span>
-                        <span class="text-white font-bold">12 ساعة</span>
+
+                <div class="bg-gradient-to-br from-b-primary to-black p-6 rounded-2xl border border-b-primary/30 relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h3 class="font-bold text-lg mb-2">هل انضممت لفريق؟</h3>
+                        <p class="text-sm text-gray-300 mb-4">انضم لفريق جامعتك الآن لتشارك في التحديات وتضاعف نقاطك.</p>
+                        <button class="bg-white text-b-primary px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-100 transition-colors">
+                            استعراض الفرق
+                        </button>
                     </div>
+                    <i class="fas fa-users absolute -bottom-4 -left-4 text-8xl text-white/5"></i>
                 </div>
+
             </div>
         </div>
 
     </main>
 
-    <script type="module" src="../js/dashboard.js"></script>
+    <script type="module" src="../js/student-dash.js"></script>
+
 </body>
 </html>

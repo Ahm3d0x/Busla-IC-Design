@@ -1,7 +1,23 @@
 // js/firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { 
+    getFirestore, 
+    collection, 
+    doc, 
+    setDoc, 
+    getDoc, 
+    updateDoc, 
+    arrayUnion, // 👈 تم إضافة استيراد الدالة هنا
+    serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged, 
+    signOut 
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 // إعدادات مشروعك
 const firebaseConfig = {
@@ -19,4 +35,18 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // تصدير الأدوات لباقي الملفات
-export { db, auth, collection, doc, setDoc, getDoc, updateDoc, serverTimestamp, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut };
+export { 
+    db, 
+    auth, 
+    collection, 
+    doc, 
+    setDoc, 
+    getDoc, 
+    updateDoc, 
+    arrayUnion, // 👈 تم إضافة تصدير الدالة هنا لتستخدمها في الملفات الأخرى
+    serverTimestamp, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged, 
+    signOut 
+};
