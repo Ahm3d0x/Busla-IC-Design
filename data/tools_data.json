@@ -1,0 +1,555 @@
+[
+    {
+        "category": "أساسيات ومحاكاة",
+        "name": "Logisim Evolution",
+        "description": "أداة شائعة للمبتدئين لبناء ومحاكاة الدوائر المنطقية البسيطة بشكل رسومي.",
+        "level": "مبتدئ",
+        "link": "https://github.com/logisim-evolution/logisim-evolution",
+        "badges": ["Free", "Open Source", "أساسيات"],
+        "guidance": "ابدأ بهذه الأداة لتطبيق ما تعلمته في كورس Logic Design وفهم كيف تعمل البوابات والـ Flip-flops.",
+        "usage": "مثالية لطلاب السنة الثانية والثالثة لفهم أساسيات الدوائر المنطقية بشكل عملي.",
+        "pros": [
+            "واجهة رسومية بسيطة وسهلة الاستخدام",
+            "مناسبة تمامًا للمشاريع الأكاديمية الصغيرة",
+            "تدعم محاكاة الدوائر خطوة بخطوة"
+        ],
+        "cons": [
+            "محدودة للمشاريع الكبيرة والمعقدة",
+            "لا تدعم HDL بشكل كامل"
+        ],
+        "alternatives": "Digital (Hneemann) للمشاريع الأكثر تعقيدًا",
+        "systemRequirements": "Windows, Linux, macOS - يتطلب Java Runtime Environment"
+    },
+    {
+        "category": "أساسيات ومحاكاة",
+        "name": "Digital (Hneemann)",
+        "description": "محاكي دوائر رقمية أقوى من Logisim، يدعم ميزات أقرب للهاردوير الواقعي.",
+        "level": "مبتدئ - متوسط",
+        "link": "https://github.com/hneemann/Digital",
+        "badges": ["Free", "Open Source"],
+        "guidance": "خيار ممتاز إذا وجدت Logisim بسيطًا جدًا وتريد محاكاة أكثر تقدمًا لدوائرك الأولى.",
+        "usage": "مناسب لمشاريع التخرج البسيطة والمتوسطة التي تحتاج محاكاة دقيقة.",
+        "pros": [
+            "يدعم ميزات متقدمة مثل Testbenches",
+            "أداء أفضل في المحاكاة من Logisim",
+            "يدعم تصدير VHDL و Verilog"
+        ],
+        "cons": [
+            "منحنى تعلم أعلى قليلاً من Logisim"
+        ],
+        "alternatives": "Logisim للمبتدئين، CircuitVerse للعمل الأونلاين",
+        "systemRequirements": "Windows, Linux, macOS - يتطلب Java 8 أو أحدث"
+    },
+    {
+        "category": "أساسيات ومحاكاة",
+        "name": "CircuitVerse",
+        "description": "محاكي أونلاين ممتاز لبناء الدوائر، يحتوي على مشاريع جاهزة ومصادر تعليمية منظمة.",
+        "level": "مبتدئ",
+        "link": "https://circuitverse.org",
+        "badges": ["Free", "Online"],
+        "guidance": "استخدمه إذا كنت تفضل العمل مباشرة من المتصفح دون الحاجة لتثبيت أي برامج.",
+        "usage": "ممتاز للتعلم السريع ومشاركة المشاريع مع الزملاء.",
+        "pros": [
+            "لا يحتاج تثبيت - يعمل من المتصفح مباشرة",
+            "مجتمع نشط ومشاريع جاهزة للتعلم",
+            "سهولة مشاركة التصاميم عبر الروابط"
+        ],
+        "cons": [
+            "يحتاج اتصال بالإنترنت",
+            "أقل مرونة من البرامج المثبتة"
+        ],
+        "systemRequirements": "أي متصفح حديث مع اتصال إنترنت"
+    },
+    {
+        "category": "كتابة ومحاكاة HDL",
+        "name": "VS Code + Extensions",
+        "description": "المحرر البرمجي الأفضل حاليًا لكتابة Verilog/VHDL. استخدم إضافات مثل (Verilog-HDL/SystemVerilog).",
+        "level": "كل المستويات",
+        "link": "https://code.visualstudio.com",
+        "badges": ["Free", "أساسي"],
+        "guidance": "هذه هي أداتك الأساسية لكتابة الكود. تعلم اختصاراتها جيدًا.",
+        "usage": "محرر أساسي لكل مهندس ديجيتال - من المبتدئين للمحترفين.",
+        "pros": [
+            "إضافات قوية لـ Verilog و SystemVerilog",
+            "خفيف وسريع مقارنة بالبدائل",
+            "يدعم Git integration",
+            "Syntax highlighting و IntelliSense"
+        ],
+        "cons": [
+            "يحتاج إعداد الإضافات يدويًا"
+        ],
+        "alternatives": "Sublime Text, Vim/Neovim, Emacs",
+        "systemRequirements": "Windows, Linux, macOS - 1GB RAM minimum"
+    },
+    {
+        "category": "كتابة ومحاكاة HDL",
+        "name": "Icarus Verilog",
+        "description": "محاكي Verilog مجاني ومفتوح المصدر. بسيط وخفيف وسهل للمبتدئين.",
+        "level": "مبتدئ",
+        "link": "http://iverilog.icarus.com",
+        "badges": ["Free", "Open Source", "Simulation"],
+        "guidance": "أداة ممتازة لعمل Simulation سريع من سطر الأوامر (Command Line). يُستخدم غالبًا مع GTKWave لعرض النتائج.",
+        "usage": "ممتاز لتعلم Verilog والتطبيق السريع للأفكار.",
+        "pros": [
+            "خفيف جدًا وسريع في المحاكاة",
+            "سهل التثبيت والاستخدام",
+            "يعمل بشكل ممتاز مع GTKWave"
+        ],
+        "cons": [
+            "لا يوفر GUI - يعمل من Command Line",
+            "يدعم Verilog-2005 فقط (لا SystemVerilog كامل)"
+        ],
+        "alternatives": "Verilator للسرعة، ModelSim للمحاكاة المتقدمة",
+        "systemRequirements": "Windows, Linux, macOS - متطلبات منخفضة جدًا"
+    },
+    {
+        "category": "كتابة ومحاكاة HDL",
+        "name": "ModelSim / QuestaSim",
+        "description": "المحاكي الأشهر في الصناعة والجامعات. يدعم Verilog, VHDL, و SystemVerilog بقوة.",
+        "level": "متوسط - احترافي",
+        "link": "https://eda.sw.siemens.com/en-US/ic/modelsim/",
+        "badges": ["Industry Standard", "Paid", "Simulation"],
+        "guidance": "يجب أن تتعلم هذه الأداة جيدًا. نسخة الطلاب (Student Edition) مجانية وممتازة للبداية.",
+        "usage": "الأداة القياسية في معظم الشركات والجامعات للمحاكاة.",
+        "pros": [
+            "محاكاة دقيقة ومتقدمة",
+            "يدعم جميع لغات HDL",
+            "Waveform viewer قوي ومرن",
+            "نسخة مجانية للطلاب"
+        ],
+        "cons": [
+            "ثقيل على الأجهزة الضعيفة",
+            "النسخة المجانية محدودة (10,000 lines)"
+        ],
+        "alternatives": "Xcelium (Cadence), VCS (Synopsys)",
+        "systemRequirements": "Windows/Linux - 4GB RAM minimum, 8GB recommended"
+    },
+    {
+        "category": "كتابة ومحاكاة HDL",
+        "name": "Verilator",
+        "description": "محاكي فائق السرعة يحول Verilog/SystemVerilog إلى كود C++/SystemC لعمل محاكاة سريعة.",
+        "level": "متوسط",
+        "link": "https://www.veripool.org/verilator",
+        "badges": ["Free", "Open Source", "Simulation"],
+        "guidance": "أداة متقدمة، تركز على سرعة المحاكاة (Simulation) وليس الـ Debugging الغني بالرسوميات مثل ModelSim.",
+        "usage": "مثالي للمحاكاة السريعة للتصاميم الكبيرة.",
+        "pros": [
+            "أسرع محاكي متاح",
+            "ممتاز للـ Regression Testing",
+            "يدعم SystemVerilog بشكل جيد"
+        ],
+        "cons": [
+            "لا يدعم SystemVerilog بالكامل",
+            "Debugging أصعب من ModelSim",
+            "يحتاج معرفة C++"
+        ],
+        "alternatives": "Icarus Verilog للبساطة، ModelSim للـ debugging",
+        "systemRequirements": "Linux recommended, Windows via WSL - C++ compiler required"
+    },
+    {
+        "category": "كتابة ومحاكاة HDL",
+        "name": "Xcelium (Cadence)",
+        "description": "محاكي عالي الأداء من Cadence. يُعتبر الأفضل في تشغيل UVM والـ Verification المتقدمة.",
+        "level": "احترافي",
+        "link": "https://www.cadence.com/en_US/home/tools/system-design-and-verification/simulation-and-testbench/xcelium-logic-simulation.html",
+        "badges": ["Industry Standard", "Paid", "Verification"],
+        "guidance": "ستصادف هذه الأداة كثيرًا في الشركات الكبرى المتخصصة في الـ Verification.",
+        "usage": "الأداة المفضلة لمهندسي Verification في الشركات الكبرى.",
+        "pros": [
+            "أداء عالي جدًا في UVM",
+            "يدعم Advanced Verification",
+            "Integration ممتاز مع أدوات Cadence"
+        ],
+        "cons": [
+            "مكلف جدًا",
+            "يحتاج تدريب متخصص"
+        ],
+        "alternatives": "VCS (Synopsys), ModelSim/QuestaSim",
+        "systemRequirements": "Linux - 8GB+ RAM, High-end workstation recommended"
+    },
+    {
+        "category": "كتابة ومحاكاة HDL",
+        "name": "VCS (Synopsys)",
+        "description": "المحاكي المنافس المباشر لـ Xcelium من شركة Synopsys.",
+        "level": "احترافي",
+        "link": "https://www.synopsys.com/verification/simulation/vcs.html",
+        "badges": ["Industry Standard", "Paid", "Verification"],
+        "guidance": "الأداة القياسية الثانية في الصناعة للمحاكاة والـ Verification.",
+        "usage": "الخيار الأول أو الثاني في معظم الشركات الكبرى.",
+        "pros": [
+            "سرعة محاكاة عالية",
+            "يدعم SystemVerilog و UVM بالكامل",
+            "Integration قوي مع أدوات Synopsys"
+        ],
+        "cons": [
+            "مكلف جدًا",
+            "معقد للمبتدئين"
+        ],
+        "alternatives": "Xcelium (Cadence), QuestaSim",
+        "systemRequirements": "Linux - 8GB+ RAM, Enterprise license required"
+    },
+    {
+        "category": "أدوات FPGA",
+        "name": "Xilinx Vivado",
+        "description": "الأداة الرسمية من Xilinx (الآن AMD) لكل لوحاتها الحديثة. تتضمن كل شيء من Synthesis إلى Implementation.",
+        "level": "مبتدئ - متوسط",
+        "link": "https://www.xilinx.com/support/download.html",
+        "badges": ["Free (WebPACK)", "FPGA"],
+        "guidance": "هذه هي الأداة التي ستستخدمها إذا كانت الـ FPGA board لديك من نوع Xilinx (مثل Artix, Zynq, Spartan).",
+        "usage": "الأداة الأساسية لجميع مشاريع FPGA من Xilinx.",
+        "pros": [
+            "أداة متكاملة (IDE كامل)",
+            "نسخة WebPACK مجانية وقوية",
+            "يدعم IP cores جاهزة",
+            "Documentation ممتازة"
+        ],
+        "cons": [
+            "حجم التثبيت كبير جدًا (30GB+)",
+            "بطيء نسبيًا في Synthesis",
+            "يحتاج جهاز قوي"
+        ],
+        "alternatives": "Intel Quartus لـ Intel/Altera FPGAs",
+        "systemRequirements": "Windows/Linux - 16GB RAM recommended, 100GB disk space"
+    },
+    {
+        "category": "أدوات FPGA",
+        "name": "Intel Quartus Prime",
+        "description": "الأداة الرسمية من Intel (Altera سابقًا) للوحاتها. توفر نسخة Lite مجانية ممتازة.",
+        "level": "مبتدئ - متوسط",
+        "link": "https://www.intel.com/content/www/us/en/software/programmable/quartus-prime/download.html",
+        "badges": ["Free (Lite)", "FPGA"],
+        "guidance": "هذه هي الأداة التي ستستخدمها إذا كانت الـ FPGA board لديك من نوع Intel/Altera (مثل Cyclone).",
+        "usage": "الأداة الأساسية لمشاريع Intel/Altera FPGA.",
+        "pros": [
+            "نسخة Lite مجانية",
+            "أسرع من Vivado في بعض الحالات",
+            "واجهة نظيفة ومنظمة"
+        ],
+        "cons": [
+            "حجم كبير",
+            "محدودة في النسخة المجانية"
+        ],
+        "alternatives": "Xilinx Vivado",
+        "systemRequirements": "Windows/Linux - 8GB RAM minimum, 16GB recommended"
+    },
+    {
+        "category": "أدوات التصنيع (ASIC)",
+        "name": "Synopsys Design Compiler (DC)",
+        "description": "الأداة رقم 1 والملك المتوج في الصناعة لعملية الـ Synthesis (تحويل RTL إلى Gates).",
+        "level": "احترافي",
+        "link": "https://www.synopsys.com/implementation-and-signoff/rtl-synthesis-test.html",
+        "badges": ["Industry Standard", "Paid", "Synthesis"],
+        "guidance": "معرفة هذه الأداة أساسية لأي مهندس Design أو PnR. فهم ملفات SDC (Constraints) المرتبطة بها أهم من الأداة نفسها.",
+        "usage": "الأداة القياسية لـ Synthesis في معظم الشركات العالمية.",
+        "pros": [
+            "الأداة الأقوى في Synthesis",
+            "تحسينات متقدمة للأداء والطاقة",
+            "يدعم Advanced Nodes"
+        ],
+        "cons": [
+            "مكلف جدًا",
+            "منحنى تعلم حاد",
+            "يحتاج Training متخصص"
+        ],
+        "alternatives": "Cadence Genus, Yosys (Open Source)",
+        "systemRequirements": "Linux - 16GB+ RAM, Enterprise license"
+    },
+    {
+        "category": "أدوات التصنيع (ASIC)",
+        "name": "Cadence Genus",
+        "description": "البديل القوي والمنافس الرئيسي لأداة Design Compiler من شركة Cadence.",
+        "level": "احترافي",
+        "link": "https://www.cadence.com/en_US/home/tools/digital-design-and-signoff/synthesis/genus-synthesis-solution.html",
+        "badges": ["Industry Standard", "Paid", "Synthesis"],
+        "guidance": "الشركة التي ستعمل بها ستستخدم إما DC أو Genus. المفاهيم واحدة ولكن الأوامر تختلف قليلاً.",
+        "usage": "البديل الرئيسي لـ Design Compiler في الصناعة.",
+        "pros": [
+            "أسرع من DC في بعض الحالات",
+            "تحسينات ممتازة للطاقة",
+            "Integration جيد مع أدوات Cadence"
+        ],
+        "cons": [
+            "مكلف",
+            "انتشار أقل من DC"
+        ],
+        "alternatives": "Synopsys Design Compiler",
+        "systemRequirements": "Linux - 16GB+ RAM, Enterprise license"
+    },
+    {
+        "category": "أدوات التصنيع (ASIC)",
+        "name": "Yosys",
+        "description": "أداة Synthesis مفتوحة المصدر. ممتازة للتعلم وتُستخدم كنواة في الـ Open Source Flows مثل OpenLane.",
+        "level": "متوسط",
+        "link": "https://yosyshq.net/yosys/",
+        "badges": ["Free", "Open Source", "Synthesis"],
+        "guidance": "أفضل طريقة لتعلم الـ Synthesis مجانًا. ضرورية إذا كنت مهتمًا بـ OpenLane.",
+        "usage": "ممتاز للتعلم والمشاريع الأكاديمية.",
+        "pros": [
+            "مجاني ومفتوح المصدر بالكامل",
+            "يدعم معظم Verilog-2005",
+            "جزء من OpenLane Flow",
+            "مجتمع نشط"
+        ],
+        "cons": [
+            "أقل قوة من الأدوات التجارية",
+            "لا يدعم SystemVerilog بالكامل"
+        ],
+        "alternatives": "Design Compiler, Genus للاحترافي",
+        "systemRequirements": "Linux/macOS/Windows - متطلبات منخفضة"
+    },
+    {
+        "category": "أدوات التصنيع (ASIC)",
+        "name": "Cadence Innovus",
+        "description": "الأداة الأشهر عالميًا لعملية الـ Place & Route (PnR) أو التصميم المادي.",
+        "level": "احترافي",
+        "link": "https://www.cadence.com/en_US/home/tools/digital-design-and-signoff/implementation/innovus-implementation-system.html",
+        "badges": ["Industry Standard", "Paid", "PnR"],
+        "guidance": "هذه هي الأداة الأساسية لمهندسي الـ Backend (Physical Design).",
+        "usage": "الأداة الأولى لـ Physical Design في معظم الشركات.",
+        "pros": [
+            "أداء عالي في PnR",
+            "تحسينات ممتازة للتوقيت والطاقة",
+            "يدعم Advanced Nodes"
+        ],
+        "cons": [
+            "مكلف جدًا",
+            "معقد ويحتاج خبرة"
+        ],
+        "alternatives": "Synopsys ICC2",
+        "systemRequirements": "Linux - 32GB+ RAM recommended, High-end workstation"
+    },
+    {
+        "category": "أدوات التصنيع (ASIC)",
+        "name": "Synopsys ICC2",
+        "description": "المنافس المباشر لـ Innovus من شركة Synopsys لعملية الـ PnR.",
+        "level": "احترافي",
+        "link": "https://www.synopsys.com/implementation-and-signoff/physical-implementation.html",
+        "badges": ["Industry Standard", "Paid", "PnR"],
+        "guidance": "الأداة القياسية الثانية في الصناعة للـ PnR.",
+        "usage": "البديل الرئيسي لـ Innovus في الشركات الكبرى.",
+        "pros": [
+            "أداء ممتاز في Advanced Nodes",
+            "تحسينات قوية للطاقة",
+            "Integration مع أدوات Synopsys"
+        ],
+        "cons": [
+            "مكلف",
+            "منحنى تعلم حاد"
+        ],
+        "alternatives": "Cadence Innovus",
+        "systemRequirements": "Linux - 32GB+ RAM, Enterprise license"
+    },
+    {
+        "category": "أدوات التصنيع (ASIC)",
+        "name": "OpenROAD / OpenLane",
+        "description": "مشروع متكامل ومفتوح المصدر لعملية تصميم IC كاملة (RTL-to-GDSII) باستخدام أدوات مجانية.",
+        "level": "متوسط",
+        "link": "https://theopenroadproject.org/",
+        "badges": ["Free", "Open Source", "Full Flow"],
+        "guidance": "فرصة ذهبية لتطبيق الـ ASIC Flow بالكامل بنفسك مجانًا. ممتاز لمشاريع التخرج والبحث الأكاديمي.",
+        "usage": "مثالي لمشاريع التخرج والبحث الأكاديمي.",
+        "pros": [
+            "مجاني بالكامل ومفتوح المصدر",
+            "يغطي Flow كامل من RTL إلى GDSII",
+            "يدعم Sky130 PDK",
+            "مجتمع نشط ودعم جيد"
+        ],
+        "cons": [
+            "أقل قوة من الأدوات التجارية",
+            "محدود في Advanced Nodes",
+            "Documentation أقل تنظيمًا"
+        ],
+        "alternatives": "Commercial tools للإنتاج الفعلي",
+        "systemRequirements": "Linux - 8GB+ RAM recommended"
+    },
+    {
+        "category": "أدوات التحقق (Verification)",
+        "name": "UVM Library",
+        "description": "ليست أداة، بل هي مكتبة ومنهجية (Methodology) قياسية للـ Verification مبنية على SystemVerilog.",
+        "level": "متوسط - احترافي",
+        "link": "https://www.accellera.org/downloads/standards/uvm",
+        "badges": ["Industry Standard", "Free", "Verification"],
+        "guidance": "إتقان الـ UVM إجباري لأي مهندس Verification. يتم استخدامها داخل محاكيات مثل Xcelium أو VCS.",
+        "usage": "المنهجية القياسية لـ Verification في الصناعة.",
+        "pros": [
+            "معيار صناعي عالمي",
+            "إعادة استخدام عالية للكود",
+            "مجتمع كبير ودعم واسع"
+        ],
+        "cons": [
+            "منحنى تعلم حاد",
+            "معقدة للمشاريع الصغيرة"
+        ],
+        "alternatives": "VMM (قديمة), OVM (قديمة)",
+        "systemRequirements": "تُستخدم مع محاكي يدعم SystemVerilog"
+    },
+    {
+        "category": "أدوات التحقق (Verification)",
+        "name": "Synopsys Verdi",
+        "description": "الأداة الأشهر في الصناعة لتحليل الـ Waveforms وعمل Debugging متقدم.",
+        "level": "احترافي",
+        "link": "https://www.synopsys.com/verification/debug/verdi.html",
+        "badges": ["Industry Standard", "Paid", "Debugging"],
+        "guidance": "رؤية الـ Waveforms في ModelSim جيدة، لكن Verdi ينقل الـ Debugging لمستوى آخر.",
+        "usage": "الأداة المفضلة لـ Debug في الشركات الكبرى.",
+        "pros": [
+            "أقوى أداة Debug في الصناعة",
+            "تحليل متقدم للـ Waveforms",
+            "يدعم UVM Debug",
+            "Integration مع VCS"
+        ],
+        "cons": [
+            "مكلف جدًا",
+            "يحتاج تدريب"
+        ],
+        "alternatives": "GTKWave (مجاني), ModelSim waveform viewer",
+        "systemRequirements": "Linux - 8GB+ RAM, Enterprise license"
+    },
+    {
+        "category": "أدوات التحقق (Verification)",
+        "name": "GTKWave",
+        "description": "عارض Waveforms (ملفات VCD) مجاني ومفتوح المصدر.",
+        "level": "مبتدئ - متوسط",
+        "link": "http://gtkwave.sourceforge.net",
+        "badges": ["Free", "Open Source", "Debugging"],
+        "guidance": "البديل المجاني لـ Verdi. عندما تستخدم Icarus Verilog، ستحتاج هذه الأداة لرؤية النتائج.",
+        "usage": "الأداة الأساسية لمشاهدة Waveforms مع Icarus Verilog.",
+        "pros": [
+            "مجاني بالكامل",
+            "خفيف وسريع",
+            "يدعم معظم صيغ Waveform"
+        ],
+        "cons": [
+            "واجهة قديمة",
+            "ميزات محدودة مقارنة بـ Verdi"
+        ],
+        "alternatives": "Verdi للاحترافي, ModelSim viewer",
+        "systemRequirements": "Linux/Windows/macOS - متطلبات منخفضة"
+    },
+    {
+        "category": "أدوات التحقق (Verification)",
+        "name": "Synopsys VC Formal",
+        "description": "أداة قوية للـ Formal Verification (الإثبات الرياضي لصحة التصميم).",
+        "level": "احترافي",
+        "link": "https://www.synopsys.com/verification/formal-verification-test-generation.html",
+        "badges": ["Industry Standard", "Paid", "Formal"],
+        "guidance": "مجال متقدم في الـ Verification لا يعتمد على الـ Simulation.",
+        "usage": "للتحقق الرياضي من صحة التصميم دون محاكاة.",
+        "pros": [
+            "تغطية شاملة لكل الحالات الممكنة",
+            "لا يحتاج Testbenches",
+            "يكتشف أخطاء نادرة"
+        ],
+        "cons": [
+            "مكلف جدًا",
+            "معقد جدًا للمبتدئين",
+            "State explosion problem"
+        ],
+        "alternatives": "Cadence JasperGold",
+        "systemRequirements": "Linux - 16GB+ RAM, Enterprise license"
+    },
+    {
+        "category": "أدوات مساعدة",
+        "name": "Python",
+        "description": "لغة برمجة أساسية للأتمتة (Automation) وكتابة الـ Scripts. تُستخدم أيضًا في الـ Verification (مثل Cocotb).",
+        "level": "كل المستويات",
+        "link": "https://www.python.org",
+        "badges": ["Free", "Open Source", "Scripting"],
+        "guidance": "لا غنى عنها لأي مهندس. ستستخدمها في الأتمتة، معالجة الملفات، وفي الـ Verification.",
+        "usage": "أساسية للأتمتة وكتابة Scripts في كل مراحل التصميم.",
+        "pros": [
+            "سهلة التعلم",
+            "مكتبات ضخمة",
+            "تُستخدم في كل مكان",
+            "Cocotb للـ Verification"
+        ],
+        "cons": [
+            "أبطأ من اللغات المترجمة"
+        ],
+        "alternatives": "Perl للـ Scripts القديمة",
+        "systemRequirements": "أي نظام تشغيل"
+    },
+    {
+        "category": "أدوات مساعدة",
+        "name": "TCL",
+        "description": "لغة برمجة إجبارية للتحكم في أدوات الصناعة مثل Design Compiler, Vivado, Innovus.",
+        "level": "متوسط",
+        "link": "https://www.tcl.tk",
+        "badges": ["Free", "Scripting"],
+        "guidance": "ستحتاج تعلم أساسيات TCL لتشغيل الأدوات الكبيرة وعمل أتمتة لخطوات الـ Flow.",
+        "usage": "لغة التحكم الأساسية في معظم أدوات EDA.",
+        "pros": [
+            "اللغة القياسية لأدوات EDA",
+            "قوية في معالجة النصوص",
+            "مدمجة في معظم الأدوات"
+        ],
+        "cons": [
+            "Syntax غريب للمبتدئين",
+            "مجتمع أصغر من Python"
+        ],
+        "alternatives": "Python لبعض الأدوات الحديثة",
+        "systemRequirements": "أي نظام تشغيل"
+    },
+    {
+        "category": "أدوات مساعدة",
+        "name": "EDA Playground",
+        "description": "موقع يتيح لك كتابة كود HDL وعمل Simulation و Synthesis أونلاين بدون تثبيت أي شيء.",
+        "level": "مبتدئ - متوسط",
+        "link": "https://www.edaplayground.com",
+        "badges": ["Free", "Online"],
+        "guidance": "أسرع طريقة لتجربة فكرة كود صغيرة أو مشاركة كود مع زميلك.",
+        "usage": "مثالي لتجربة أكواد صغيرة ومشاركتها.",
+        "pros": [
+            "لا يحتاج تثبيت",
+            "يدعم محاكيات متعددة",
+            "سهولة المشاركة",
+            "مجاني بالكامل"
+        ],
+        "cons": [
+            "محدود للمشاريع الكبيرة",
+            "يحتاج إنترنت"
+        ],
+        "systemRequirements": "متصفح حديث مع إنترنت"
+    },
+    {
+        "category": "أدوات مساعدة",
+        "name": "HDLBits",
+        "description": "موقع للتدريب على حل مسائل Verilog. يشبه LeetCode ولكن للـ Hardware.",
+        "level": "مبتدئ - متوسط",
+        "link": "https://hdlbits.01xz.net/wiki/Main_Page",
+        "badges": ["Free", "Online", "أساسيات"],
+        "guidance": "أفضل طريقة لتمرين عقلك على التفكير كـ Hardware Designer. ضروري جدًا بعد تعلم أساسيات Verilog.",
+        "usage": "موقع تدريب أساسي لكل من يتعلم Verilog.",
+        "pros": [
+            "تمارين متدرجة الصعوبة",
+            "Feedback فوري",
+            "مجاني بالكامل",
+            "يغطي معظم مفاهيم Verilog"
+        ],
+        "cons": [
+            "يركز على Verilog فقط",
+            "لا يوجد مشاريع كبيرة"
+        ],
+        "systemRequirements": "متصفح حديث"
+    },
+    {
+        "category": "أدوات مساعدة",
+        "name": "Design And Reuse",
+        "description": "موقع بمثابة كتالوج ضخم للـ IPs (الملكية الفكرية) الجاهزة في السوق.",
+        "level": "متوسط - احترافي",
+        "link": "https://www.design-reuse.com",
+        "badges": ["Info", "Online"],
+        "guidance": "مفيد لمعرفة ما هي الـ IPs التي تبيعها الشركات (مثل Mixel, Si-Vision) وفهم متطلبات السوق.",
+        "usage": "للبحث عن IPs جاهزة أو معرفة ما تقدمه الشركات.",
+        "pros": [
+            "قاعدة بيانات ضخمة للـ IPs",
+            "معلومات عن الشركات والمنتجات",
+            "مفيد للبحث عن عمل"
+        ],
+        "cons": [
+            "معظم المحتوى للشركات",
+            "الأسعار غير معلنة غالبًا"
+        ],
+        "systemRequirements": "متصفح حديث"
+    }
+]

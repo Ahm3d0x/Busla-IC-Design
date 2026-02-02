@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>غرفة القيادة | بوصلة</title>
+    <link rel="icon" type="image/jpg" href="../assets/icons/icon.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { colors: { 'b-bg': '#000000', 'b-primary': '#006A67', 'b-hl': '#22C45D' }, fontFamily: { 'cairo': ['Cairo'] } }
+            }
+        }
+    </script>
+    <style>body { background-color: #000; color: white; font-family: 'Cairo'; }</style>
+</head>
+<body class="bg-b-bg min-h-screen">
+
+    <nav class="bg-gray-900 border-b border-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">LEADER</div>
+                <h1 class="font-bold text-xl">لوحة القيادة</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="leader-name" class="text-gray-300 text-sm">القائد ...</span>
+                <button id="logout-btn" class="text-red-400 hover:text-red-300"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-3 bg-gray-900 rounded-2xl p-6 border border-gray-800">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-2xl font-bold mb-1" id="team-name">اسم الفريق...</h2>
+                    <p class="text-gray-400 text-sm">جامعة <span id="team-uni">...</span></p>
+                </div>
+                <div class="bg-b-primary/20 text-b-primary px-4 py-2 rounded-xl text-center">
+                    <span class="block text-xs text-gray-400">نقاط الفريق</span>
+                    <span class="text-2xl font-bold" id="team-points">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-gray-900 rounded-2xl p-6 border border-gray-800">
+            <h3 class="font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-clipboard-check text-yellow-500"></i> مراجعة المهام
+            </h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-right text-gray-400">
+                    <thead class="bg-black/50 text-xs uppercase text-gray-200">
+                        <tr>
+                            <th class="px-4 py-3">العضو</th>
+                            <th class="px-4 py-3">المهمة</th>
+                            <th class="px-4 py-3">الرابط</th>
+                            <th class="px-4 py-3">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reviews-table">
+                        <tr class="border-b border-gray-800 hover:bg-white/5">
+                            <td class="px-4 py-3 text-white">محمد أحمد</td>
+                            <td class="px-4 py-3">تصميم Logic Gates</td>
+                            <td class="px-4 py-3"><a href="#" class="text-blue-400 underline">Github</a></td>
+                            <td class="px-4 py-3 flex gap-2">
+                                <button class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-500">قبول</button>
+                                <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-500">رفض</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+            <h3 class="font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-users text-blue-500"></i> الأعضاء
+            </h3>
+            <ul class="space-y-3" id="members-list">
+                <li class="flex items-center gap-3 bg-black/20 p-3 rounded-lg">
+                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">م</div>
+                    <div class="flex-1">
+                        <p class="text-sm font-bold text-white">محمد أحمد</p>
+                        <p class="text-xs text-gray-500">Member</p>
+                    </div>
+                </li>
+            </ul>
+            <button class="w-full mt-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-lg text-sm border border-gray-700 border-dashed">
+                + دعوة عضو جديد
+            </button>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { auth, db, doc, getDoc, signOut } from '../js/firebase-config.js';
+        
+        // التحقق من الليدر عند التحميل
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) window.location.href = "auth.html";
+            
+            // التأكد إنه ليدر فعلاً
+            const snap = await getDoc(doc(db, "users", user.uid));
+            if (snap.exists()) {
+                const data = snap.data();
+                if (data.system_info.role !== 'Leader') {
+                    alert("غير مصرح لك بدخول غرفة القيادة!");
+                    window.location.href = "student-dash.html";
+                }
+                
+                // عرض البيانات
+                document.getElementById('leader-name').innerText = data.personal_info.full_name;
+                // هنا ممكن نجيب بيانات التيم لو عنده تيم
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => window.location.href = "../index.html");
+        });
+    </script>
+</body>
+</html>

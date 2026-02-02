@@ -1,0 +1,2321 @@
+[
+  {
+    "id": "res001",
+    "title": "كورس Verilog - Anas Verilog",
+    "author": "Anas Verilog",
+    "description": "كورس شامل يبدأ من الصفر في لغة Verilog، يركز على التطبيق العملي باستخدام Vivado ويغطي أساسيات الـ FPGA Flow.",
+    "type": "video",
+    "tags": ["Verilog", "FPGA", "عربي", "مبتدئ", "Vivado"],
+    "stage": "stage1",
+    "track": "fpga",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: الأساسيات",
+      "summary": "الأفضل للمبتدئين باللغة العربية. يشرح الدكتور أناس لغة Verilog بطريقة عملية باستخدام برنامج Vivado، ويغطي Flow الـ FPGA بشكل كامل.",
+      "features": [
+        "شرح كامل لـ FPGA Flow",
+        "مشاريع عملية كثيرة يمكن إضافتها للـ CV",
+        "يستخدم Vivado في الشرح",
+        "مناسب جداً للمبتدئين"
+      ],
+      "url": "https://www.youtube.com/playlist?list=PL-iIOnHwN7NXw01eBDR7wI8KzGK4mu8Sr"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res003",
+    "title": "Logic Design - Dr. Ayman Wahba",
+    "author": "Dr. Ayman Wahba",
+    "description": "كورس Logic Design من جامعة القاهرة، يغطي الأساسيات والـ FSM بشكل ممتاز.",
+    "type": "video",
+    "tags": ["Logic Design", "FSM", "عربي", "أساسيات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - First",
+      "summary": "كورس أساسي في Logic Design من د. أيمن وهبة - جامعة القاهرة. يركز بشكل خاص على Finite State Machines.",
+      "features": [
+        "شرح ممتاز للـ FSM",
+        "الفيديوهات من 14 إلى 17 مهمة جداً",
+        "يغطي Synchronous Sequential Logic Analysis & Design",
+        "أساسي قبل البدء في Digital Design"
+      ],
+      "url": "https://www.youtube.com/playlist?list=PLBt5ZQGn4YKTD2mVI1eBwAVR1gsqpWkwg"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res004",
+    "title": "Computer Architecture - Dr. Khattab & Dr. Hossam Fahmy",
+    "author": "Dr. Khattab & Dr. Hossam Fahmy",
+    "description": "كورس Computer Architecture الشامل من جامعة القاهرة يغطي Pipelining و Buses و Memories.",
+    "type": "video",
+    "tags": ["Computer Architecture", "Pipelining", "AMBA", "عربي"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الثانية: Phase Two - Fourth",
+      "summary": "كورس عظيم من جامعة القاهرة يغطي مفاهيم مهمة مثل Pipelining و Buses (AMBA Bus) و Memories.",
+      "features": [
+        "شرح Pipelining بالتفصيل",
+        "يغطي AMBA Bus",
+        "شرح أنواع Memories",
+        "محاضرات مكتوبة متاحة",
+        "Drive كامل للمحتوى"
+      ],
+      "url": "https://youtube.com/playlist?list=PLFmuI4Q8F-ar4Ye-Mi5Qu5NAZ33hrYMHx"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res005",
+    "title": "Analog IC Design 1 - Dr. Hesham Omran",
+    "author": "Dr. Hesham Omran",
+    "description": "كورس Analog IC Design - الجزء الخاص بـ CMOS فقط مطلوب للـ Digital Design.",
+    "type": "video",
+    "tags": ["Analog", "CMOS", "IC Design", "عربي"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الثانية: Phase Two - Third",
+      "summary": "من كورس Analog IC Design، المطلوب فقط الجزء الخاص بالـ CMOS لفهم أساسيات الترانزستورات.",
+      "features": [
+        "التركيز على CMOS فقط",
+        "أساسي لفهم Digital IC Design",
+        "شرح ممتاز من د. هشام عمران"
+      ],
+      "url": "https://www.youtube.com/playlist?list=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res006",
+    "title": "VLSI Design - Dr. Diaa Khalil",
+    "author": "Dr. Diaa El-Deen Khalil",
+    "description": "كورس VLSI Design من جامعة عين شمس يغطي Implementation Approaches و Design Flow.",
+    "type": "video",
+    "tags": ["VLSI", "Design Flow", "Implementation", "عربي"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الأولى: Phase One - First",
+      "summary": "كورس مهم جداً يشرح الفرق بين Full Custom و Semi Custom و FPGA و Gate Arrays، ويشرح Design Flow بالتفصيل.",
+      "features": [
+        "المحاضرة 6 تشرح Implementation Approaches",
+        "المحاضرة 7 تشرح Design Flow (مهمة للـ Interview)",
+        "محاضرات مكتوبة متاحة من ياسين صالح",
+        "يجب حفظ الـ Flow جيداً"
+      ],
+      "url": "https://www.youtube.com/playlist?list=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res007",
+    "title": "NPTEL Hardware Modeling Using Verilog",
+    "author": "NPTEL",
+    "description": "كورس شامل من NPTEL يحتوي على معلومات نظرية كثيرة وأمثلة حل.",
+    "type": "video",
+    "tags": ["Verilog", "NPTEL", "English", "نظري"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الأولى: الأساسيات",
+      "summary": "كورس أكاديمي من NPTEL يحتوي على معلومات نظرية غزيرة وأمثلة محلولة كثيرة.",
+      "features": [
+        "معلومات نظرية كثيرة وحل",
+        "أمثلة محلولة",
+        "شرح أكاديمي متعمق"
+      ],
+      "url": "https://nptel.ac.in/courses/106105165/"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res008",
+    "title": "Verilog Course - Paul Franzon",
+    "author": "Paul Franzon",
+    "description": "كورس Verilog قديم لكنه ممتاز، يغطي مدة زمنية طويلة على YouTube.",
+    "type": "video",
+    "tags": ["Verilog", "English", "شامل"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الأولى: الأساسيات",
+      "summary": "كورس قديم لكنه ممتاز جداً. يغطي Verilog على مدة زمنية كبيرة ويحتوي على فيديوهات كثيرة لم يتم التطرق إليها في Playlists أخرى.",
+      "features": [
+        "يغطي 10 سنوات من شرح Verilog على YouTube",
+        "كورس فعلاً ممتاز",
+        "فيديوهات كثيرة عن Topics لم تُذكر في مصادر أخرى"
+      ],
+      "url": "https://www.youtube.com/playlist?list=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res009",
+    "title": "Digital Verification - Dr. Ayman Wahba (CSE412)",
+    "author": "Dr. Ayman Wahba",
+    "description": "كورس Digital Verification يشرح SystemVerilog ثم UVM.",
+    "type": "video",
+    "tags": ["Verification", "SystemVerilog", "UVM", "عربي"],
+    "stage": "stage2",
+    "track": "verification",
+    "details": {
+      "level": "متوسط إلى متقدم",
+      "roadmap": "Verification Track",
+      "summary": "كورس ممتاز في Digital Verification يبدأ بـ SystemVerilog ثم ينتقل لـ UVM. هناك كورسات أخرى من Siemens تكمل الموضوع.",
+      "features": [
+        "يشرح SystemVerilog من الأساس",
+        "ينتقل بعدها لـ UVM",
+        "يوجد مراجع إضافية من Siemens"
+      ],
+      "url": "https://www.youtube.com/playlist?list=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res010",
+    "title": "VLSI Physical Design - NPTEL",
+    "author": "NPTEL",
+    "description": "كورس شامل في Physical Design من NPTEL.",
+    "type": "video",
+    "tags": ["Physical Design", "PnR", "NPTEL", "English"],
+    "stage": "stage2",
+    "track": "pnr",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "PnR Track",
+      "summary": "كورس أكاديمي ممتاز جداً يغطي VLSI Physical Design بالتفصيل.",
+      "features": [
+        "كورس أكاديمي شامل",
+        "يغطي كل جوانب Physical Design",
+        "من NPTEL"
+      ],
+      "url": "https://www.youtube.com/playlist?list=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "book001",
+    "title": "Principles of Digital RTL Design",
+    "author": "Multiple Authors",
+    "description": "كتاب أساسي يغطي أساسيات Digital Design و RTL و STA و Power Reduction و DFT.",
+    "type": "book",
+    "tags": ["RTL", "STA", "Power", "DFT", "كتاب"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط إلى متقدم",
+      "roadmap": "جميع المراحل - مرجع أساسي",
+      "summary": "كتاب ممتاز جداً ومهم للمجال. يغطي أساسيات كثيرة ويشرح STA و Power Reduction Techniques و DFT بشكل ممتاز.",
+      "features": [
+        "يشرح أساسيات المجال",
+        "فصول ممتازة عن STA",
+        "يغطي Power Reduction Techniques",
+        "يشرح DFT",
+        "مرجع أساسي يجب العودة إليه"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "book002",
+    "title": "The Verilog Golden Reference Guide by DOULOS",
+    "author": "DOULOS",
+    "description": "مرجع ذهبي لتعلم Verilog بشكل كامل.",
+    "type": "book",
+    "tags": ["Verilog", "Reference", "كتاب", "مرجع"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "المرحلة الأولى - مرجع",
+      "summary": "Reference جميل جداً يمكن تعلم Verilog منه بشكل كامل. مفيد كمرجع سريع.",
+      "features": [
+        "مرجع شامل لـ Verilog",
+        "سهل الاستخدام",
+        "من DOULOS"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "paper001",
+    "title": "Clock Domain Crossing (CDC) Design & Verification - Sunburst",
+    "author": "Sunburst Design",
+    "description": "ورقة بحثية مهمة عن CDC من Sunburst Design.",
+    "type": "article",
+    "tags": ["CDC", "Clock Domain Crossing", "Paper", "Asynchronous"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "موضوع متقدم في Digital Design",
+      "summary": "Paper مهم جداً من Sunburst عن CDC (Clock Domain Crossing). يجب مشاهدته عند وجود Design فيه أكثر من Clock وهم Asynchronous.",
+      "features": [
+        "يشرح CDC بالتفصيل",
+        "من Sunburst Design",
+        "مهم للـ Multi-clock Designs",
+        "مذكور أيضاً في كتاب Principles of Digital RTL Design"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "project001",
+    "title": "HDLBits - Verilog Practice",
+    "author": "HDLBits",
+    "description": "موقع لممارسة Verilog مع أسئلة Problem Solving والإجابات على الموقع.",
+    "type": "project",
+    "tags": ["Verilog", "Practice", "Problem Solving", "تدريب"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "المرحلة الأولى - التدريب العملي",
+      "summary": "موقع ممتاز للتدريب على Verilog. فيه أسئلة Problem Solving والإجابات موجودة على الموقع. مفيد جداً للتدريب.",
+      "features": [
+        "أسئلة Verilog متنوعة",
+        "Problem Solving عملي",
+        "الإجابات متاحة",
+        "مفيد جداً للممارسة"
+      ],
+      "url": "https://hdlbits.01xz.net/"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "project002",
+    "title": "Verilog Quizzes",
+    "author": "Various",
+    "description": "Quizzes لـ Verilog للتدريب والاختبار.",
+    "type": "project",
+    "tags": ["Verilog", "Quiz", "اختبارات", "تدريب"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "المرحلة الأولى - التدريب",
+      "summary": "Quizzes لـ Verilog مفيدة للتدريب واختبار المعلومات.",
+      "features": [
+        "اختبارات متنوعة",
+        "تقييم ذاتي",
+        "مفيد للمراجعة"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern001",
+    "title": "IC-Pedia Internship",
+    "author": "IC-Pedia",
+    "description": "فرصة تدريب في IC-Pedia.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "فرص التدريب",
+      "summary": "فرصة تدريب متاحة في IC-Pedia في مصر.",
+      "features": [
+        "تدريب في مصر",
+        "IC-Pedia"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern002",
+    "title": "Si-Vision Internship",
+    "author": "Si-Vision",
+    "description": "فرصة تدريب في Si-Vision.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "فرص التدريب",
+      "summary": "فرصة تدريب متاحة في Si-Vision في مصر.",
+      "features": [
+        "تدريب في مصر",
+        "Si-Vision"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "diploma001",
+    "title": "Digital Verification Diploma - Sherif Hosny",
+    "author": "Sherif Hosny",
+    "description": "دبلومة Digital Verification أونلاين.",
+    "type": "diploma",
+    "tags": ["Diploma", "Verification", "دبلومة", "أونلاين"],
+    "stage": "stage2",
+    "track": "verification",
+    "details": {
+      "level": "متوسط إلى متقدم",
+      "roadmap": "Verification Track - Diploma",
+      "summary": "دبلومة Digital Verification من المهندس شريف حسني - متاحة أونلاين.",
+      "features": [
+        "دبلومة متخصصة في Verification",
+        "أونلاين",
+        "للتواصل: 01208822401"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "diploma002",
+    "title": "NajahNow - FPGA Diploma",
+    "author": "NajahNow",
+    "description": "دبلومة FPGA من NajahNow.",
+    "type": "diploma",
+    "tags": ["Diploma", "FPGA", "دبلومة", "أونلاين"],
+    "stage": "stage1",
+    "track": "fpga",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "FPGA Track - Diploma",
+      "summary": "دبلومة FPGA من NajahNow - متاحة أونلاين.",
+      "features": [
+        "دبلومة متخصصة في FPGA",
+        "أونلاين",
+        "للتواصل: 01208822401"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "diploma003",
+    "title": "NajahNow - ASIC Diploma",
+    "author": "NajahNow",
+    "description": "دبلومة ASIC من NajahNow.",
+    "type": "diploma",
+    "tags": ["Diploma", "ASIC", "دبلومة", "أونلاين"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "ASIC Track - Diploma",
+      "summary": "دبلومة ASIC من NajahNow - متاحة أونلاين.",
+      "features": [
+        "دبلومة متخصصة في ASIC",
+        "أونلاين",
+        "للتواصل: 01208822401"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "diploma004",
+    "title": "NajahNow - Verification Diploma",
+    "author": "NajahNow",
+    "description": "دبلومة Verification من NajahNow.",
+    "type": "diploma",
+    "tags": ["Diploma", "Verification", "دبلومة", "أونلاين"],
+    "stage": "stage2",
+    "track": "verification",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "Verification Track - Diploma",
+      "summary": "دبلومة Verification من NajahNow - متاحة أونلاين.",
+      "features": [
+        "دبلومة متخصصة في Verification",
+        "أونلاين",
+        "للتواصل: 01208822401"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "diploma005",
+    "title": "ASIC & Verification Diploma - Ali Eltemsah",
+    "author": "Ali Eltemsah",
+    "description": "دبلومة ASIC وmodule Verification - Offline.",
+    "type": "diploma",
+    "tags": ["Diploma", "ASIC", "Verification", "دبلومة", "Offline"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "ASIC & Verification Track - Diploma",
+      "summary": "دبلومة ASIC و Verification Module من المهندس علي التمساح - Offline.",
+      "features": [
+        "دبلومة شاملة في ASIC",
+        "يتضمن module للـ Verification",
+        "Offline"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "diploma006",
+    "title": "Digital Design & Verification Diploma - Kareem Waseem",
+    "author": "Kareem Waseem",
+    "description": "دبلومة Digital Design و Design Verification - Offline.",
+    "type": "diploma",
+    "tags": ["Diploma", "Digital Design", "Verification", "دبلومة", "Offline"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط إلى متقدم",
+      "roadmap": "Digital Design & Verification Track - Diploma",
+      "summary": "دبلومة Digital Design و Design Verification من المهندس كريم وسيم - Offline.",
+      "features": [
+        "دبلومة شاملة في Digital Design",
+        "يتضمن Design Verification",
+        "Offline",
+        "من مهندس متخصص"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern003",
+    "title": "Center of Nanoelectronics and Devices (CND) Internship",
+    "author": "CND",
+    "description": "فرصة تدريب في مركز CND.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر", "CND"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "فرص التدريب",
+      "summary": "فرصة تدريب متاحة في مركز Nanoelectronics and Devices في مصر.",
+      "features": [
+        "تدريب في مصر",
+        "مركز متخصص في Nanoelectronics",
+        "Facebook Page متاح"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern004",
+    "title": "Summer Code Camp Digital IC Design - ITI",
+    "author": "ITI",
+    "description": "برنامج تدريب صيفي في Digital IC Design من ITI.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر", "ITI", "Summer Program"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ إلى متوسط",
+      "roadmap": "فرص التدريب - البرامج الصيفية",
+      "summary": "برنامج تدريب صيفي في Digital IC Design من معهد تكنولوجيا المعلومات ITI.",
+      "features": [
+        "برنامج صيفي",
+        "من ITI",
+        "متاح في مصر",
+        "يركز على Digital IC Design"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern005",
+    "title": "Summer Camp Digital IC Design - NTI",
+    "author": "NTI",
+    "description": "برنامج تدريب صيفي في Digital IC Design من NTI.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر", "NTI", "Summer Program"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ إلى متوسط",
+      "roadmap": "فرص التدريب - البرامج الصيفية",
+      "summary": "برنامج تدريب صيفي في Digital IC Design من المعهد القومي للاتصالات NTI.",
+      "features": [
+        "برنامج صيفي",
+        "من NTI",
+        "متاح في مصر",
+        "يركز على Digital IC Design"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern006",
+    "title": "Chipions Internship",
+    "author": "Chipions",
+    "description": "فرصة تدريب في Chipions.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "فرص التدريب",
+      "summary": "فرصة تدريب متاحة في Chipions في مصر.",
+      "features": [
+        "تدريب في مصر",
+        "Chipions"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern007",
+    "title": "Siemens Internship",
+    "author": "Siemens",
+    "description": "فرصة تدريب في Siemens مصر.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر", "Siemens"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "فرص التدريب",
+      "summary": "فرصة تدريب متاحة في Siemens في مصر.",
+      "features": [
+        "تدريب في مصر",
+        "شركة عالمية - Siemens"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern008",
+    "title": "STM Microelectronics Internship",
+    "author": "STMicroelectronics",
+    "description": "فرصة تدريب في STMicroelectronics مصر.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر", "STM"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "فرص التدريب",
+      "summary": "فرصة تدريب متاحة في STMicroelectronics في مصر.",
+      "features": [
+        "تدريب في مصر",
+        "شركة عالمية - STMicroelectronics"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern009",
+    "title": "Analog Devices - Digital Internship",
+    "author": "Analog Devices",
+    "description": "فرصة تدريب في Digital Design في Analog Devices.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر", "Analog Devices"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "فرص التدريب",
+      "summary": "فرصة تدريب في Digital Design متاحة في Analog Devices في مصر.",
+      "features": [
+        "تدريب في مصر",
+        "شركة عالمية - Analog Devices",
+        "تخصص Digital Design"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "intern010",
+    "title": "Si-Vision Academy",
+    "author": "Si-Vision",
+    "description": "برنامج أكاديمي تدريبي من Si-Vision.",
+    "type": "internship",
+    "tags": ["Internship", "تدريب", "مصر", "Si-Vision", "Academy"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "فرص التدريب",
+      "summary": "برنامج أكاديمي تدريبي من Si-Vision Academy في مصر.",
+      "features": [
+        "برنامج أكاديمي",
+        "من Si-Vision",
+        "متاح في مصر"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res011",
+    "title": "Digital Design Introduction - Yusuf Shiref",
+    "author": "Yusuf Shiref",
+    "description": "جلسة تعريفية بمجال Digital Design.",
+    "type": "video",
+    "tags": ["Introduction", "Digital Design", "عربي", "تعريف"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "Non-Technical Knowledge - البداية",
+      "summary": "جلسة تعريفية ممتازة بمجال Digital Design من يوسف شريف.",
+      "features": [
+        "مقدمة للمجال",
+        "للمبتدئين تماماً",
+        "يوضح أساسيات المجال"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res012",
+    "title": "Digital Orientation Session - Kareem Waseem",
+    "author": "Kareem Waseem",
+    "description": "جلسة توجيهية عن مجال Digital Design.",
+    "type": "video",
+    "tags": ["Introduction", "Digital Design", "عربي", "توجيه"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "Non-Technical Knowledge - البداية",
+      "summary": "جلسة توجيهية تعريفية بالمجال من المهندس كريم وسيم.",
+      "features": [
+        "تعريف بالمجال",
+        "للمبتدئين",
+        "من مهندس متخصص"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res013",
+    "title": "FPGA Introduction - Valeo Xperts Meetup",
+    "author": "Tarek Eldeeb",
+    "description": "فيديو تعريفي حلو عن FPGA من Valeo.",
+    "type": "video",
+    "tags": ["FPGA", "Introduction", "عربي", "Valeo"],
+    "stage": "stage1",
+    "track": "fpga",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "Non-Technical Knowledge - FPGA",
+      "summary": "فيديو حلو وواضح يشرح FPGA من Valeo Xperts Meetup.",
+      "features": [
+        "مقدمة عن FPGA",
+        "من Valeo",
+        "شرح واضح ومبسط"
+      ],
+      "url": "https://www.youtube.com/watch?v=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res014",
+    "title": "Introduction to IC Design - Si-Vision",
+    "author": "Si-Vision",
+    "description": "فيديو تعريفي بمجال IC Design بشكل عام.",
+    "type": "video",
+    "tags": ["IC Design", "Introduction", "عربي", "Si-Vision"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "Non-Technical Knowledge - IC Design",
+      "summary": "فيديو تعريفي بمجال IC Design من Si-Vision - يعطي نظرة عامة على المجال.",
+      "features": [
+        "مقدمة شاملة لـ IC Design",
+        "من Si-Vision",
+        "للمبتدئين"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res015",
+    "title": "Introduction to ASIC - Si-Vision",
+    "author": "Si-Vision",
+    "description": "جلسة شرح للـ ASIC Flow - كل الكلام Technical.",
+    "type": "video",
+    "tags": ["ASIC", "Introduction", "عربي", "Si-Vision", "Technical"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "Non-Technical Knowledge - ASIC",
+      "summary": "جلسة من Si-Vision تشرح ASIC Flow - كل الكلام Technical. خلي فهم المصطلحات اللي هتقابلك في المجال.",
+      "features": [
+        "شرح ASIC Flow",
+        "كلام Technical",
+        "من Si-Vision",
+        "مفيد لفهم المصطلحات"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res016",
+    "title": "Introduction to Digital Design - Si-Vision",
+    "author": "Si-Vision",
+    "description": "جلسة عن Digital Design - كل الكلام Technical.",
+    "type": "video",
+    "tags": ["Digital Design", "Introduction", "عربي", "Si-Vision", "Technical"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "Non-Technical Knowledge - Digital Design",
+      "summary": "جلسة من Si-Vision تتكلم عن Digital Design - كل الكلام Technical.",
+      "features": [
+        "شرح Digital Design",
+        "كلام Technical",
+        "من Si-Vision"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res017",
+    "title": "Design Verification Introduction - Si-Vision",
+    "author": "Si-Vision",
+    "description": "جلسة عن Digital Verification - كل الكلام Technical.",
+    "type": "video",
+    "tags": ["Verification", "Introduction", "عربي", "Si-Vision", "Technical"],
+    "stage": "stage1",
+    "track": "verification",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "Non-Technical Knowledge - Verification",
+      "summary": "جلسة من Si-Vision تتكلم عن Digital Verification - كل الكلام Technical.",
+      "features": [
+        "شرح Digital Verification",
+        "كلام Technical",
+        "من Si-Vision"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res018",
+    "title": "Knowledge Exchange Live Sessions - ECE Group",
+    "author": "ECE Knowledge Exchange",
+    "description": "Live Sessions على ECE Knowledge Exchange - مهندسين بيجاوبوا على أسئلتنا.",
+    "type": "video",
+    "tags": ["Live Sessions", "Q&A", "عربي", "ECE"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "Non-Technical Knowledge - جلسات مباشرة",
+      "summary": "جلسات Live على ECE Knowledge Exchange - مهندسين بيجاوبوا على أسئلة الطلاب.",
+      "features": [
+        "جلسات مباشرة",
+        "أسئلة وأجوبة",
+        "من مهندسين متخصصين",
+        "مع: Eng. Adel Ammar, Eng. Ihab Othman, Eng. Mahmoud Abdellatif"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res019",
+    "title": "Overview of the Electronics Industry - Dr. Amr El-Assal",
+    "author": "Dr. Amr El-Assal",
+    "description": "فيديوهات تعريفية بمجال الإلكترونيات من دكتور عمرو العسال - جامعة القاهرة.",
+    "type": "video",
+    "tags": ["Electronics", "Industry Overview", "عربي", "جامعة القاهرة"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "Non-Technical Knowledge - نظرة عامة",
+      "summary": "فيديوهات تعريفية بمجال الإلكترونيات والصناعة من دكتور عمرو العسال - جامعة القاهرة.",
+      "features": [
+        "نظرة عامة على الصناعة",
+        "من جامعة القاهرة",
+        "للمبتدئين"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res020",
+    "title": "TCL Scripting for VLSI",
+    "author": "Various",
+    "description": "Playlist لتعلم لغة TCL المستخدمة في الـ Tools.",
+    "type": "video",
+    "tags": ["TCL", "Scripting", "Tools", "English"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "Technical Skills - Scripting",
+      "summary": "Playlist لتعلم TCL - لغة Scripting مهمة جداً للتعامل مع الـ Tools في VLSI.",
+      "features": [
+        "تعلم syntax اللغة",
+        "استخدام TCL في الـ Tools",
+        "Parsing للملفات",
+        "عمل Scripts بشكل Automatic"
+      ],
+      "url": "https://youtube.com/playlist?list=PL1h5a0eaDD3rsGDFnVki_fFEtDWQfXjca"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res021",
+    "title": "CDC Design - Electronicspedia Channel",
+    "author": "Electronicspedia",
+    "description": "فيديوهات عن Clock Domain Crossing من قناة Electronicspedia.",
+    "type": "video",
+    "tags": ["CDC", "Clock Domain Crossing", "عربي"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "Advanced Topics - CDC",
+      "summary": "فيديوهات تشرح Clock Domain Crossing من قناة Electronicspedia على YouTube.",
+      "features": [
+        "شرح CDC",
+        "من قناة متخصصة",
+        "باللغة العربية"
+      ],
+      "url": "https://www.youtube.com/@Electronicspedia"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res022",
+    "title": "Electron Tube Channel - Dr. Karim Ossama",
+    "author": "Dr. Karim Ossama",
+    "description": "قناة د. كريم أسامة - محتوى جميل في Digital Design.",
+    "type": "video",
+    "tags": ["Digital Design", "Content", "عربي", "YouTube Channel"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "مصادر إضافية - قنوات مفيدة",
+      "summary": "قناة YouTube للدكتور كريم أسامة - محتوى جميل ومفيد في Digital Design.",
+      "features": [
+        "محتوى متنوع",
+        "شرح واضح",
+        "مفيد جداً"
+      ],
+      "url": "https://www.youtube.com/@ElectronTube"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res023",
+    "title": "STA Bootcamp: Static Timing Analysis",
+    "author": "Various",
+    "description": "Bootcamp متخصص في Static Timing Analysis.",
+    "type": "video",
+    "tags": ["STA", "Static Timing Analysis", "English", "Bootcamp"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "Advanced Topics - STA",
+      "summary": "Bootcamp متخصص في Static Timing Analysis - مهم جداً لفهم التوقيت في الدوائر.",
+      "features": [
+        "شرح متعمق لـ STA",
+        "Bootcamp متخصص",
+        "مهم للـ Digital Design"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res024",
+    "title": "Setup & Hold Time Explanation Videos",
+    "author": "Various",
+    "description": "فيديوهات تشرح الـ Internal Structure للـ Flip-flops و Latches.",
+    "type": "video",
+    "tags": ["Setup Time", "Hold Time", "Flip-flops", "English"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "Technical Topics - Timing",
+      "summary": "فيديوهات تشرح الـ Internal Structure للـ Flip-flops و Latches وتفهم معنى Setup & Hold Time.",
+      "features": [
+        "شرح Setup & Hold Time",
+        "فهم Internal Structure",
+        "يوضح لماذا Hold يمكن أن يكون 0 أو سالب"
+      ],
+      "url": "https://youtu.be/Km-uej4xrR4"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res025",
+    "title": "Write, Compile, and Simulate Verilog using ModelSim",
+    "author": "Various",
+    "description": "Tutorial لتعلم استخدام ModelSim.",
+    "type": "video",
+    "tags": ["ModelSim", "Verilog", "Simulation", "Tutorial", "English"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "Tools - Simulation",
+      "summary": "Tutorial جميل يشرح كيفية استخدام برنامج ModelSim لكتابة وتصحيح ومحاكاة Verilog Code.",
+      "features": [
+        "شرح ModelSim",
+        "من الصفر",
+        "عملي جداً"
+      ],
+      "url": "https://www.youtube.com/watch?v=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res026",
+    "title": "Synthesis & Formality Meetings",
+    "author": "Yousef Sherif",
+    "description": "فيديوهات تشرح Synthesis و Formality Flow بالتطبيق.",
+    "type": "video",
+    "tags": ["Synthesis", "Formality", "Practical", "عربي"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "Advanced Topics - Synthesis",
+      "summary": "فيديوهات عملية تشرح Synthesis Script وكيفية استخدام Formality Tool عن طريق GUI و Script.",
+      "features": [
+        "شرح Synthesis بالتفصيل",
+        "Formality Flow عملي",
+        "GUI & Script"
+      ],"url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res027",
+    "title": "Verilog HDL Tutorial in Arabic",
+    "author": "Various",
+    "description": "Playlist عربي لتعلم Verilog HDL للمبتدئين.",
+    "type": "video",
+    "tags": ["Verilog", "HDL", "عربي", "مبتدئ"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى - Verilog",
+      "summary": "Playlist عربي لتعلم Verilog HDL - مناسب للمبتدئين الذين يفضلون المحتوى العربي.",
+      "features": [
+        "محتوى عربي كامل",
+        "للمبتدئين",
+        "شرح Verilog من الصفر"
+      ],
+      "url": "https://www.youtube.com/playlist?list=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res028",
+    "title": "Digital IC Design 1, 2, 3 - Dr. Hesham Omran",
+    "author": "Dr. Hesham Omran",
+    "description": "سلسلة كورسات Digital IC Design من د. هشام عمران.",
+    "type": "video",
+    "tags": ["Digital IC", "IC Design", "عربي", "متقدم"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "المرحلة الثانية: Phase Two - Third",
+      "summary": "سلسلة من 3 كورسات في Digital IC Design من الدكتور هشام عمران - تغطي الموضوع بعمق.",
+      "features": [
+        "3 كورسات شاملة",
+        "من د. هشام عمران",
+        "تغطية عميقة للموضوع",
+        "مهمة جداً للتخصص"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res029",
+    "title": "Digital Integrated Circuits - Dr. Karim Ossama",
+    "author": "Dr. Karim Ossama",
+    "description": "كورس Digital Integrated Circuits من د. كريم أسامة.",
+    "type": "video",
+    "tags": ["Digital Integrated", "IC Design", "عربي"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متوسط إلى متقدم",
+      "roadmap": "المرحلة الثانية: Phase Two - Third",
+      "summary": "كورس Digital Integrated Circuits من الدكتور كريم أسامة.",
+      "features": [
+        "شرح Digital Integrated Circuits",
+        "من د. كريم أسامة",
+        "محتوى متقدم"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res030",
+    "title": "Computer Organization - Dr. Wathiq",
+    "author": "Dr. Wathiq",
+    "description": "كورس Computer Organization من د. واثق.",
+    "type": "video",
+    "tags": ["Computer Organization", "عربي", "أساسيات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الأولى: Phase One - First",
+      "summary": "كورس Computer Organization من الدكتور واثق - يغطي الأساسيات المهمة.",
+      "features": [
+        "أساسيات Computer Organization",
+        "شرح عربي",
+        "مهم للفهم العام"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res031",
+    "title": "Computer Organization - Eng. Mohamed Maher",
+    "author": "Eng. Mohamed Maher",
+    "description": "كورس Computer Organization من م. محمد ماهر (اختياري).",
+    "type": "video",
+    "tags": ["Computer Organization", "عربي", "اختياري"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الأولى: Phase One - First (Optional)",
+      "summary": "كورس Computer Organization من المهندس محمد ماهر - مصدر اختياري إضافي.",
+      "features": [
+        "مصدر اختياري",
+        "شرح عربي",
+        "تكميلي للمصادر الأخرى"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res032",
+    "title": "Logic Design - Eng. Mohamed Maher",
+    "author": "Eng. Mohamed Maher",
+    "description": "كورس Logic Design من م. محمد ماهر (اختياري).",
+    "type": "video",
+    "tags": ["Logic Design", "عربي", "اختياري"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - First (Optional)",
+      "summary": "كورس Logic Design من المهندس محمد ماهر - مصدر اختياري إضافي.",
+      "features": [
+        "مصدر اختياري",
+        "شرح عربي",
+        "بديل أو تكميلي"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res033",
+    "title": "Logic Circuits - Dr. Ayman Wahba",
+    "author": "Dr. Ayman Wahba",
+    "description": "كورس Logic Circuits من د. أيمن وهبة.",
+    "type": "video",
+    "tags": ["Logic Circuits", "عربي", "أساسيات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - First",
+      "summary": "كورس Logic Circuits من الدكتور أيمن وهبة - يغطي الدوائر المنطقية الأساسية.",
+      "features": [
+        "أساسيات Logic Circuits",
+        "من د. أيمن وهبة",
+        "مهم للبداية"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res034",
+    "title": "Digital Electronics - Eng. Walid Issa",
+    "author": "Eng. Walid Issa",
+    "description": "كورس Digital Electronics من م. وليد عيسى.",
+    "type": "video",
+    "tags": ["Digital Electronics", "عربي", "أساسيات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - First",
+      "summary": "كورس Digital Electronics من المهندس وليد عيسى.",
+      "features": [
+        "أساسيات Digital Electronics",
+        "شرح عربي",
+        "للمبتدئين"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res035",
+    "title": "Digital Electronics - Neso Academy",
+    "author": "Neso Academy",
+    "description": "كورس Digital Electronics من Neso Academy.",
+    "type": "video",
+    "tags": ["Digital Electronics", "English", "أساسيات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - First",
+      "summary": "كورس Digital Electronics من Neso Academy - مصدر إنجليزي ممتاز.",
+      "features": [
+        "أساسيات Digital Electronics",
+        "من Neso Academy",
+        "شرح واضح ومنظم"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res036",
+    "title": "Digital Circuits - Dr. Sameh Ibrahim",
+    "author": "Dr. Sameh Ibrahim",
+    "description": "كورس Digital Circuits من د. سامح إبراهيم.",
+    "type": "video",
+    "tags": ["Digital Circuits", "عربي", "أساسيات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - First",
+      "summary": "كورس Digital Circuits من الدكتور سامح إبراهيم.",
+      "features": [
+        "أساسيات Digital Circuits",
+        "شرح عربي",
+        "مناسب للبدايه"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res037",
+    "title": "Digital Circuits - CommanDo High Tech",
+    "author": "CommanDo High Tech",
+    "description": "كورس Digital Circuits من CommanDo High Tech (اختياري).",
+    "type": "video",
+    "tags": ["Digital Circuits", "عربي", "اختياري"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - First (Optional)",
+      "summary": "كورس Digital Circuits من CommanDo High Tech - مصدر اختياري.",
+      "features": [
+        "مصدر اختياري",
+        "شرح عربي",
+        "تكميلي"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res038",
+    "title": "VLSI Design - Dr. Bassam Gamil",
+    "author": "Dr. Bassam Gamil",
+    "description": "كورس VLSI Design من د. بسام جميل.",
+    "type": "video",
+    "tags": ["VLSI", "Design", "عربي"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الأولى: Phase One - First",
+      "summary": "كورس VLSI Design من الدكتور بسام جميل.",
+      "features": [
+        "أساسيات VLSI",
+        "شرح عربي",
+        "مكمل للمصادر الأخرى"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res039",
+    "title": "Electrical Circuits - Dr. Razavi",
+    "author": "Dr. Razavi",
+    "description": "كورس Electrical Circuits من د. رزافي.",
+    "type": "video",
+    "tags": ["Electrical Circuits", "English", "أساسيات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - Second",
+      "summary": "كورس Electrical Circuits من البروفيسور رزافي - مصدر ممتاز بالإنجليزية.",
+      "features": [
+        "من Dr. Razavi",
+        "شرح ممتاز",
+        "أساسيات مهمة"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res040",
+    "title": "Electrical Circuits - Azzam Zagzoog",
+    "author": "Azzam Zagzoog",
+    "description": "كورس Electrical Circuits من عزام زغزوغ (كل Playlists القناة) (اختياري).",
+    "type": "video",
+    "tags": ["Electrical Circuits", "عربي", "اختياري"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - Second (Optional)",
+      "summary": "كورسات Electrical Circuits من عزام زغزوغ - كل Playlists القناة مفيدة - مصدر اختياري.",
+      "features": [
+        "محتوى عربي شامل",
+        "كل playlists القناة",
+        "مصدر اختياري"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res041",
+    "title": "Introduction to Electronics - Dr. Hesham Omran",
+    "author": "Dr. Hesham Omran",
+    "description": "كورس Introduction to Electronics من د. هشام عمران (نظري).",
+    "type": "video",
+    "tags": ["Electronics", "Introduction", "عربي", "نظري"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - Second",
+      "summary": "كورس Introduction to Electronics من الدكتور هشام عمران - الجزء النظري.",
+      "features": [
+        "مقدمة للإلكترونيات",
+        "شرح نظري",
+        "من د. هشام عمران"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res042",
+    "title": "Introduction to Electronics (Practical) - Dr. Hesham Omran",
+    "author": "Dr. Hesham Omran",
+    "description": "كورس Introduction to Electronics من د. هشام عمران (عملي).",
+    "type": "video",
+    "tags": ["Electronics", "Introduction", "عربي", "عملي"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - Second",
+      "summary": "كورس Introduction to Electronics من الدكتور هشام عمران - الجزء العملي.",
+      "features": [
+        "مقدمة للإلكترونيات",
+        "شرح عملي",
+        "من د. هشام عمران"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res043",
+    "title": "Introduction to Electronics - Razavi (to Video 45)",
+    "author": "Dr. Razavi",
+    "description": "كورس Introduction to Electronics من د. رزافي (حتى الفيديو 45) - بديل.",
+    "type": "video",
+    "tags": ["Electronics", "Introduction", "English", "بديل"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى: Phase One - Second (Alternative)",
+      "summary": "كورس Introduction to Electronics من البروفيسور رزافي - يُكتفى بالفيديوهات حتى رقم 45 - بديل لكورس د. هشام.",
+      "features": [
+        "من Dr. Razavi",
+        "شرح ممتاز بالإنجليزية",
+        "حتى الفيديو 45",
+        "بديل لكورس د. هشام"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res044",
+    "title": "Computer Architecture - Dr. Ibrahim Qamar",
+    "author": "Dr. Ibrahim Qamar",
+    "description": "كورس Computer Architecture من د. إبراهيم قمر.",
+    "type": "video",
+    "tags": ["Computer Architecture", "عربي"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الثانية: Phase Two - Fourth",
+      "summary": "كورس Computer Architecture من الدكتور إبراهيم قمر.",
+      "features": [
+        "Computer Architecture متقدم",
+        "شرح عربي",
+        "من د. إبراهيم قمر"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res045",
+    "title": "Computer Architecture - Coursera",
+    "author": "Coursera",
+    "description": "كورس Computer Architecture من Coursera (اختياري).",
+    "type": "video",
+    "tags": ["Computer Architecture", "English", "Coursera", "اختياري"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الثانية: Phase Two - Fourth (Optional)",
+      "summary": "كورس Computer Architecture من منصة Coursera - مصدر اختياري إضافي.",
+      "features": [
+        "من Coursera",
+        "محتوى أكاديمي",
+        "مصدر اختياري"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res046",
+    "title": "Advanced Computer Architecture - Dr. Hossam Fahmy",
+    "author": "Dr. Hossam Fahmy",
+    "description": "كورس Advanced Computer Architecture من د. حسام فهمي.",
+    "type": "video",
+    "tags": ["Computer Architecture", "Advanced", "عربي"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "المرحلة الثانية: Phase Two - Fourth",
+      "summary": "كورس Advanced Computer Architecture من الدكتور حسام فهمي.",
+      "features": [
+        "متقدم في Computer Architecture",
+        "من د. حسام فهمي",
+        "محتوى عميق"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res047",
+    "title": "Advanced Computer Architecture - Coursera",
+    "author": "Coursera",
+    "description": "كورس Advanced Computer Architecture من Coursera (اختياري).",
+    "type": "video",
+    "tags": ["Computer Architecture", "Advanced", "English", "Coursera", "اختياري"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "المرحلة الثانية: Phase Two - Fourth (Optional)",
+      "summary": "كورس Advanced Computer Architecture من منصة Coursera - مصدر اختياري.",
+      "features": [
+        "من Coursera",
+        "متقدم",
+        "مصدر اختياري"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res048",
+    "title": "Digital Design & Computer Architecture - ETH Zürich",
+    "author": "ETH Zürich",
+    "description": "كورس Digital Design & Computer Architecture من ETH Zürich.",
+    "type": "video",
+    "tags": ["Digital Design", "Computer Architecture", "English", "ETH"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متوسط إلى متقدم",
+      "roadmap": "المرحلة الثانية: Phase Two - Fourth",
+      "summary": "كورس Digital Design & Computer Architecture من جامعة ETH Zürich السويسرية.",
+      "features": [
+        "من ETH Zürich",
+        "محتوى أكاديمي رفيع المستوى",
+        "يجمع بين Digital Design و Computer Architecture"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res049",
+    "title": "Digital Signal Processing - Michael Ibrahim",
+    "author": "Michael Ibrahim",
+    "description": "كورس Digital Signal Processing من مايكل إبراهيم.",
+    "type": "video",
+    "tags": ["DSP", "Signal Processing", "عربي"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الثانية: Phase Two - Third",
+      "summary": "كورس Digital Signal Processing من مايكل إبراهيم.",
+      "features": [
+        "DSP أساسيات",
+        "شرح عربي",
+        "مفيد للتخصصات ذات العلاقة"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res050",
+    "title": "ECE487 - VLSI Design & Automation - Dr. Diaa Khalil",
+    "author": "Dr. Diaa El-Deen Khalil",
+    "description": "كورس VLSI Design & Automation يتكلم عن ASIC Flow بالتفصيل.",
+    "type": "video",
+    "tags": ["VLSI", "ASIC", "Design Automation", "عربي"],
+    "stage": "stage2",
+    "track": "design",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "Advanced Topics - ASIC Flow",
+      "summary": "كورس من د. ضياء الدين خليل يتكلم عن ASIC Flow بالتفصيل - كورس متقدم جداً.",
+      "features": [
+        "ASIC Flow بالتفصيل",
+        "من د. ضياء الدين خليل",
+        "محتوى متقدم",
+        "Drive متاح: ASIC Design and Automation"
+      ],
+      "url": "https://www.youtube.com/playlist?list=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res051",
+    "title": "VLSI Physical Design Full Course",
+    "author": "Various",
+    "description": "كورس كامل في VLSI Physical Design.",
+    "type": "video",
+    "tags": ["Physical Design", "PnR", "VLSI", "English"],
+    "stage": "stage2",
+    "track": "pnr",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "PnR Track - Full Course",
+      "summary": "كورس كامل وشامل في VLSI Physical Design.",
+      "features": [
+        "كورس شامل",
+        "يغطي Physical Design كاملاً",
+        "للنظري والعملي"
+      ],
+      "url": "https://www.youtube.com/playlist?list=..."
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "res052",
+    "title": "ASIC Implementation Notes - Fatma Ali (خطيبتي)",
+    "author": "Fatma Ali",
+    "description": "ملاحظات ممتازة جداً للـ PnR مكتوبة بواسطة فاطمة علي.",
+    "type": "book",
+    "tags": ["PnR", "Notes", "ASIC Implementation", "عربي"],
+    "stage": "stage2",
+    "track": "pnr",
+    "details": {
+      "level": "متقدم",
+      "roadmap": "PnR Track - Notes",
+      "summary": "ملاحظات ممتازة جداً مكتوبة عن PnR وASIC Implementation - ننصح بمذاكرتها.",
+      "features": [
+        "ملاحظات شاملة",
+        "مكتوبة بشكل منظم",
+        "مفيدة جداً للـ PnR",
+        "ننصح بها بشدة"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "community001",
+    "title": "VLSI Community Drive - Yusuf Shiref",
+    "author": "Yusuf Shiref",
+    "description": "Drive كامل للمجتمع يحتوي على مصادر كثيرة.",
+    "type": "resource",
+    "tags": ["Community", "Drive", "Resources", "مجتمع"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "مصادر المجتمع",
+      "summary": "Drive كامل من مجتمع VLSI يحتوي على مصادر متنوعة وكتب ومحاضرات.",
+      "features": [
+        "مصادر متنوعة",
+        "كتب ومحاضرات",
+        "من مجتمع VLSI",
+        "محدث باستمرار"
+      ],
+      "url": "https://drive.google.com/drive/folders/1xybxKdevnhAntzfM2v-YcEjSUZLvNtxI?usp=sharing"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "community002",
+    "title": "ASIC Design Roadmap - Ahmed Abdelazeem",
+    "author": "Ahmed Abdelazeem",
+    "description": "خارطة طريق لـ ASIC Design من أحمد عبد العظيم.",
+    "type": "resource",
+    "tags": ["Roadmap", "ASIC", "خارطة طريق"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "خارطة الطريق الكاملة",
+      "summary": "خارطة طريق شاملة لمجال ASIC Design من أحمد عبد العظيم.",
+      "features": [
+        "خارطة طريق كاملة",
+        "من خبير في المجال",
+        "توجيه للمبتدئين والمتقدمين"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "community003",
+    "title": "ECE Knowledge Exchange Digital Post",
+    "author": "ECE Knowledge Exchange",
+    "description": "منشورات ومصادر من مجموعة ECE Knowledge Exchange.",
+    "type": "resource",
+    "tags": ["Community", "Posts", "مجتمع", "ECE"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "مصادر المجتمع",
+      "summary": "منشورات ومصادر مفيدة من مجموعة ECE Knowledge Exchange.",
+      "features": [
+        "منشورات تعليمية",
+        "من مجتمع ECE",
+        "محتوى متنوع"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "community004",
+    "title": "Book Links for IC Design - Kareem Elhafi",
+    "author": "Kareem Elhafi",
+    "description": "روابط لكتب IC Design من كريم الحافي.",
+    "type": "resource",
+    "tags": ["Books", "Links", "كتب", "IC Design"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "مصادر الكتب",
+      "summary": "مجموعة روابط لكتب مهمة في IC Design - 3 Drives مختلفة.",
+      "features": [
+        "Drive 1, Drive 2, Drive 3",
+        "كتب متنوعة",
+        "من كريم الحافي",
+        "مصادر قيمة"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource001",
+    "title": "Logic Design Notes - Notion by Jolink",
+    "author": "Jolink",
+    "description": "ملاحظات مكتوبة على Notion لكورس Logic Design.",
+    "type": "resource",
+    "tags": ["Logic Design", "Notes", "Notion", "ملاحظات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "مبتدئ",
+      "roadmap": "المرحلة الأولى - ملاحظات مساعدة",
+      "summary": "ملاحظات مكتوبة بشكل جيد على Notion تلخص كورس Logic Design.",
+      "features": [
+        "ملاحظات منظمة",
+        "على Notion",
+        "سهلة المتابعة",
+        "ملخص للكورس"
+      ],
+      "url": "https://jolink.notion.site/Logic-Design-be435324aa854fe2bbfc0cab435e44d3"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource002",
+    "title": "Interview Q&A: Digital Design",
+    "author": "Various",
+    "description": "أسئلة Interview معتمدة على كورس Logic Design.",
+    "type": "resource",
+    "tags": ["Interview", "Q&A", "Digital Design", "أسئلة مقابلات"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "التحضير للمقابلات",
+      "summary": "أسئلة Interview مهمة معتمدة على كورس Logic Design - تُسأل في المقابلات.",
+      "features": [
+        "أسئلة Interview حقيقية",
+        "مبنية على Logic Design",
+        "مفيدة للتحضير",
+        "تغطي المواضيع المهمة"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource003",
+    "title": "General Questions File with Expert Answers",
+    "author": "Experts",
+    "description": "ملف أسئلة عامة مع إجابات من Experts.",
+    "type": "resource",
+    "tags": ["Q&A", "General", "Experts", "أسئلة عامة"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "Non-Technical Knowledge",
+      "summary": "ملف يحتوي على أسئلة كثيرة لها علاقة بالمجال مع إجابات من Experts.",
+      "features": [
+        "أسئلة متنوعة",
+        "إجابات من خبراء",
+        "يغطي جوانب مختلفة من المجال",
+        "مفيد جداً للمبتدئين"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource004",
+    "title": "Computer Architecture Drive - Dr. Khattab & Dr. Fahmy",
+    "author": "Dr. Khattab & Dr. Hossam Fahmy",
+    "description": "Drive يحتوي على محاضرات مكتوبة لكورس Computer Architecture.",
+    "type": "resource",
+    "tags": ["Computer Architecture", "Drive", "Notes", "محاضرات مكتوبة"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الأولى - مواد مساعدة",
+      "summary": "Drive يحتوي على المحاضرات المكتوبة لكورس Computer Architecture من د. خطاب ود. حسام فهمي.",
+      "features": [
+        "محاضرات مكتوبة كاملة",
+        "منظمة في Drive",
+        "مرجع ممتاز",
+        "يكمل الفيديوهات"
+      ],
+      "url": "https://drive.google.com/drive/folders/11u9MxAz0CP6kVJ8nhV6h1zkZzzZh6GBF"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource005",
+    "title": "VLSI Design Written Lectures - Yaseen Salah",
+    "author": "Yaseen Salah",
+    "description": "المحاضرات مكتوبة بشكل عظيم من ياسين صالح.",
+    "type": "resource",
+    "tags": ["VLSI", "Notes", "Written Lectures", "محاضرات مكتوبة"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "متوسط",
+      "roadmap": "المرحلة الأولى - مواد مساعدة",
+      "summary": "المحاضرات مكتوبة بشكل رائع ومنظم من ياسين صالح - تغطي كورس VLSI Design.",
+      "features": [
+        "محاضرات مكتوبة بجودة عالية",
+        "منظمة ومرتبة",
+        "من ياسين صالح",
+        "مرجع ممتاز"
+      ],
+      "url": null
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource006",
+    "title": "VLSI Community WhatsApp Group",
+    "author": "VLSI Community",
+    "description": "مجموعة WhatsApp لمجتمع VLSI.",
+    "type": "community",
+    "tags": ["Community", "WhatsApp", "مجتمع", "تواصل"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "الانضمام للمجتمع",
+      "summary": "مجموعة WhatsApp لمجتمع VLSI للتواصل وتبادل المعرفة والمساعدة.",
+      "features": [
+        "تواصل مباشر",
+        "تبادل المعرفة",
+        "مساعدة متبادلة",
+        "فرص عمل"
+      ],
+      "url": "https://chat.whatsapp.com/H9ZnlmQHlnL6YYbmsrDYIh"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource007",
+    "title": "VLSI Community Facebook Group",
+    "author": "VLSI Community",
+    "description": "مجموعة Facebook لمجتمع VLSI.",
+    "type": "community",
+    "tags": ["Community", "Facebook", "مجتمع", "تواصل"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "الانضمام للمجتمع",
+      "summary": "مجموعة Facebook لمجتمع VLSI - للتواصل ومشاركة المصادر والفرص.",
+      "features": [
+        "مجتمع كبير",
+        "مشاركة المصادر",
+        "فرص عمل وتدريب",
+        "أسئلة وأجوبة"
+      ],
+      "url": "https://www.facebook.com/groups/360009679595950/"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource008",
+    "title": "VLSI Community Telegram Group",
+    "author": "VLSI Community",
+    "description": "مجموعة Telegram لمجتمع VLSI.",
+    "type": "community",
+    "tags": ["Community", "Telegram", "مجتمع", "تواصل"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "الانضمام للمجتمع",
+      "summary": "مجموعة Telegram لمجتمع VLSI للتواصل السريع وتبادل الملفات.",
+      "features": [
+        "تواصل سريع",
+        "مشاركة الملفات",
+        "إشعارات فورية",
+        "مجتمع نشط"
+      ],
+      "url": "https://t.me/+eC30tk1FOyJhMzZk"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  },
+  {
+    "id": "resource009",
+    "title": "VLSI Community Feedback Form",
+    "author": "VLSI Community",
+    "description": "نموذج لإرسال Feedback للمجتمع.",
+    "type": "community",
+    "tags": ["Feedback", "Form", "مجتمع"],
+    "stage": "stage1",
+    "track": "design",
+    "details": {
+      "level": "جميع المستويات",
+      "roadmap": "المشاركة في المجتمع",
+      "summary": "نموذج Google Form لإرسال أي Feedback أو اقتراحات للمجتمع.",
+      "features": [
+        "إرسال الاقتراحات",
+        "تحسين المحتوى",
+        "المشاركة الفعالة",
+        "التواصل مع المسؤولين"
+      ],
+      "url": "https://docs.google.com/forms/d/1zwIdx7aRtFbO3-DJT2cgcrhg7PLlDv_Te52o3ysERts/edit?usp=sharing"
+    },
+    "contributor": {
+      "name": "Yousef Sherif",
+      "linkedin": "https://www.linkedin.com/in/yousef-sherif-6343b219b/",
+      "github": null,
+      "email": "shirefy49@gmail.com"
+    }
+  }
+]

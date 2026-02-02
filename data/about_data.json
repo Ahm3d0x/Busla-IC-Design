@@ -1,0 +1,797 @@
+{
+  "creator": [
+    {
+      "id": "ahmed_attia",
+      "name": {
+        "ar": "أحمد محمد عطية",
+        "en": "Ahmed Mohamed Attia"
+      },
+      "title": {
+        "ar": "منشئ الموقع | طالب هندسة اتصالات والإلكترونيات",
+        "en": "Website Creator | Electronics & Comm. Engineering Student"
+      },
+      "imageUrl": "https://placehold.co/400x400/006A67/F6F6F6?text=AMA",
+      "bio": {
+        "ar": "طالب في كلية الهندسة، قسم الاتصالات والإلكترونيات، جامعة الزقازيق. مهتم بشدة بمجال تصميم الدوائر المتكاملة (IC Design) والأنظمة الرقمية.",
+        "en": "Student at the Faculty of Engineering, Electronics and Communications Department, Zagazig University. Passionate about IC Design and Digital Systems."
+      },
+      "role": {
+        "ar": "صاحب فكرة ومطور موقع \"بوصلة\". الهدف كان تنظيم المعلومات المتناثرة في المجال وتقديمها في شكل خريطة طريق واضحة ومبسطة، لمساعدة كل طالب يبدأ رحلته في هذا المجال دون تشتت.",
+        "en": "Idea owner and developer of 'Busla'. The goal was to organize scattered information in the field and present it in a clear, simplified roadmap to help students start their journey without distraction."
+      },
+      "socials": [
+        { "name": "LinkedIn", "url": "https://www.linkedin.com/in/ahmed-m-attia-757aa6292/" },
+        { "name": "GitHub", "url": "https://github.com/Ahm3d0x" },
+        { "name": "Email", "url": "mailto:ahm3d.m.attia@gmail.com" }
+      ]
+    }
+  ],
+  "mainContributor": [
+    {
+      "id": "yousef_sherif",
+      "name": {
+        "ar": "م. يوسف شريف",
+        "en": "Eng. Yousef Sherif"
+      },
+      "title": {
+        "ar": "صاحب درايف المحتوى الرئيسي",
+        "en": "Owner of the Main Content Drive"
+      },
+      "imageUrl": "https://placehold.co/400x400/A2D5C6/000000?text=YS",
+      "bio": {
+        "ar": "Verification Engineer @ ICpedia (Synopsys Contractor) و TA سابق في AUC. يعتبر يوسف المصدر الرئيسي والأول للمحتوى العلمي الثري الذي بني عليه هذا الموقع.",
+        "en": "Verification Engineer @ ICpedia (Synopsys Contractor) and former TA at AUC. Yousef is the primary source of the rich scientific content upon which this site was built."
+      },
+      "role": {
+        "ar": "قام يوسف بجهد هائل في تجميع ومراجعة وتنظيم \"الدليل الشامل لمجال Digital IC Design\" والملفات المرفقة به. هذا الموقع هو بمثابة واجهة تفاعلية منظمة لهذا المحتوى القيم.",
+        "en": "Yousef made a huge effort in compiling, reviewing, and organizing the 'Comprehensive Guide to Digital IC Design'. This website serves as an organized interactive interface for this valuable content."
+      },
+      "socials": [
+        { "name": "LinkedIn", "url": "https://www.linkedin.com/in/yousef-sherif-6343b219b/" },
+        { "name": "Facebook", "url": "https://www.facebook.com/eng.yousef.sherif/" },
+        { "name": "Email", "url": "mailto:shirefy49@gmail.com" }
+      ]
+    }
+  ],
+  "contributors": [
+    {
+      "id": "ziad_mohammed",
+      "name": {
+        "ar": "م. زياد محمد",
+        "en": "Eng. Ziad Mohammed"
+      },
+      "title": {
+        "ar": "مساهم في تنظيم البيانات وهيكلة محتوى الموقع",
+        "en": "Contributor to Data Organization & Content Structure"
+      },
+      "imageUrl": "https://placehold.co/400x400/006A67/FFFFFF?text=ZM",
+      "bio": {
+        "ar": "Electrical Engineering Student مهتم بالأنظمة الرقمية وتنظيم البيانات. ساهم بشكل جوهري في تنسيق المحتوى وتجهيز الداتا الداخليّة لموقع بوصلة، وضمان خروجها بصورة احترافية ومنظمة.",
+        "en": "Electrical Engineering Student interested in digital systems and data organization. Contributed significantly to coordinating content and preparing the internal data for Busla."
+      },
+      "role": {
+        "ar": "كان لزياد دور محوري في ترتيب، تنسيق، وتنظيف البيانات المستخدمة في بناء صفحات الموقع. عمل على هيكلة الداتا الخاصة بالأقسام المختلفة لتظهر بشكل متسق وسهل الاستخدام.",
+        "en": "Ziad played a pivotal role in arranging, formatting, and cleaning the data used to build the site pages, structuring the data for different sections to appear consistent and user-friendly."
+      },
+      "socials": [
+        { "name": "LinkedIn", "url": "https://www.linkedin.com/in/ziad-muhammed-1b71a434b/" }
+      ]
+    },
+    {
+      "id": "yaseen_salah",
+      "name": {
+        "ar": "م. ياسين صلاح",
+        "en": "Eng. Yaseen Salah"
+      },
+      "title": {
+        "ar": "مساهم بالمحتوى",
+        "en": "Content Contributor"
+      },
+      "imageUrl": "https://placehold.co/400x400/E6FF94/000000?text=YS",
+      "bio": {
+        "ar": "مساهم فعال في تجميع المحتوى.",
+        "en": "Active contributor in content compilation."
+      },
+      "role": {
+        "ar": "قدم ملاحظات قيمة وساعد في توفير مصادر هامة لإثراء الدليل.",
+        "en": "Provided valuable feedback and helped provide important resources to enrich the guide."
+      },
+      "socials": []
+    },
+    {
+      "id": "fatma_ali",
+      "name": {
+        "ar": "م. فاطمة علي",
+        "en": "Eng. Fatma Ali"
+      },
+      "title": {
+        "ar": "مساهمة بالمحتوى",
+        "en": "Content Contributor"
+      },
+      "imageUrl": "https://placehold.co/400x400/FFF4B7/000000?text=FA",
+      "bio": {
+        "ar": "مساهمة فعالة في تجميع المحتوى.",
+        "en": "Active contributor in content compilation."
+      },
+      "role": {
+        "ar": "قدمت نصائح قيمة ومصادر متخصصة في مجالي MATLAB والـ Verification.",
+        "en": "Provided valuable advice and specialized resources in MATLAB and Verification."
+      },
+      "socials": []
+    },
+    {
+      "id": "moumen_sameh",
+      "name": {
+        "ar": "م. مؤمن سامح",
+        "en": "Eng. Moumen Sameh"
+      },
+      "title": {
+        "ar": "مساهم بالمحتوى",
+        "en": "Content Contributor"
+      },
+      "imageUrl": "https://placehold.co/400x400/CFFFE2/000000?text=MS",
+      "bio": {
+        "ar": "مساهم فعال في تجميع المحتوى.",
+        "en": "Active contributor in content compilation."
+      },
+      "role": {
+        "ar": "شارك بتجربته القيمة في مشروع التخرج وقدم نصائح عملية للطلاب.",
+        "en": "Shared his valuable graduation project experience and provided practical advice to students."
+      },
+      "socials": []
+    }
+  ],
+  "experts": [
+  {
+    "id": "yousef_sherif",
+    "name": {
+      "ar": "م. يوسف شريف",
+      "en": "Eng. Yousef Sherif"
+    },
+    "title": {
+      "ar": "(Verification Engineer)",
+      "en": "Digital Verification Engineer"
+    },
+    "imageUrl": "https://placehold.co/400x400/A2D5C6/000000?text=YS",
+    "bio": {
+      "ar": "صاحب المحتوى الأساسي وخبير في مجال الـ Verification والـ FPGA.",
+      "en": "Primary content creator and expert in Verification and FPGA domains."
+    },
+    "role": {
+      "ar": "محاضر ومعد المادة العلمية",
+      "en": "Instructor & Content Creator"
+    },
+    "socials": []
+  },
+  {
+    "id": "kareem_waseem",
+    "name": {
+      "ar": "م. كريم وسيم",
+      "en": "Eng. Kareem Waseem"
+    },
+    "title": {
+      "ar": "مهندس تصميم رقمي",
+      "en": "Digital Design Engineer"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=KW",
+    "bio": {
+      "ar": "مقدم سيشنات تعريفية ودبلومات في مجال التصميم الرقمي.",
+      "en": "Provider of orientation sessions and diplomas in Digital Design."
+    },
+    "role": {
+      "ar": "محاضر وموجه",
+      "en": "Instructor & Mentor"
+    },
+    "socials": []
+  },
+  {
+    "id": "tarek_eldeeb",
+    "name": {
+      "ar": "م. طارق الديب",
+      "en": "Eng. Tarek Eldeeb"
+    },
+    "title": {
+      "ar": "مهندس متخصص في FPGA",
+      "en": "FPGA Engineer"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=TE",
+    "bio": {
+      "ar": "محاضر سابق في Valeo وخبير في مجالات الـ FPGA.",
+      "en": "Former instructor at Valeo and FPGA expert."
+    },
+    "role": {
+      "ar": "محاضر",
+      "en": "Instructor"
+    },
+    "socials": []
+  },
+  {
+    "id": "amr_wassal",
+    "name": {
+      "ar": "د. عمرو وصال",
+      "en": "Dr. Amr Wassal"
+    },
+    "title": {
+      "ar": "أستاذ بجامعة القاهرة",
+      "en": "Professor at Cairo University"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=AW",
+    "bio": {
+      "ar": "له محاضرات تعريفية هامة عن صناعة الإلكترونيات.",
+      "en": "Has important orientation lectures about the electronics industry."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "diaa_khalil",
+    "name": {
+      "ar": "د. ضياء الدين خليل",
+      "en": "Dr. Diaa Eldeen Khalil"
+    },
+    "title": {
+      "ar": "أستاذ وخبير في VLSI",
+      "en": "Professor & VLSI Expert"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=DK",
+    "bio": {
+      "ar": "أستاذ بجامعة عين شمس، له محاضرات قيمة في ASIC Flow و VLSI.",
+      "en": "Professor at Ain Shams University, known for valuable ASIC Flow and VLSI lectures."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "yaseen_salah",
+    "name": {
+      "ar": "م. ياسين صلاح",
+      "en": "Eng. Yaseen Salah"
+    },
+    "title": {
+      "ar": "مهندس ومساهم بالمحتوى",
+      "en": "Engineer & Content Contributor"
+    },
+    "imageUrl": "https://placehold.co/400x400/E6FF94/000000?text=YS",
+    "bio": {
+      "ar": "قام بتلخيص محاضرات هامة وكتابة ملاحظات مفيدة للطلاب.",
+      "en": "Summarized important lectures and wrote useful notes for students."
+    },
+    "role": {
+      "ar": "مساهم بالمحتوى",
+      "en": "Content Contributor"
+    },
+    "socials": []
+  },
+  {
+    "id": "ayman_wahba",
+    "name": {
+      "ar": "د. أيمن وهبة",
+      "en": "Dr. Ayman Wahba"
+    },
+    "title": {
+      "ar": "أستاذ هندسة الحاسبات",
+      "en": "Professor of Computer Engineering"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=AW",
+    "bio": {
+      "ar": "أستاذ بجامعة عين شمس، كورساته في Logic Design و Verification تعتبر مراجع أساسية.",
+      "en": "Professor at Ain Shams University, his Logic Design and Verification courses are fundamental references."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "rizk_tawfik",
+    "name": {
+      "ar": "م. رزق توفيق",
+      "en": "Eng. Rizk Tawfik"
+    },
+    "title": {
+      "ar": "مهندس ومحاضر",
+      "en": "Engineer & Instructor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=RT",
+    "bio": {
+      "ar": "مشهور بشرح سكاشن مادة Logic Design.",
+      "en": "Famous for teaching Logic Design tutorials."
+    },
+    "role": {
+      "ar": "معيد/محاضر",
+      "en": "Teaching Assistant"
+    },
+    "socials": []
+  },
+  {
+    "id": "ahmed_abouelhamayed",
+    "name": {
+      "ar": "م. أحمد أبو الحميد",
+      "en": "Eng. Ahmed AbouElhamayed"
+    },
+    "title": {
+      "ar": "مهندس ومحاضر",
+      "en": "Engineer & Instructor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=AA",
+    "bio": {
+      "ar": "مشهور بشرح سكاشن مادة Logic Design.",
+      "en": "Famous for teaching Logic Design tutorials."
+    },
+    "role": {
+      "ar": "معيد/محاضر",
+      "en": "Teaching Assistant"
+    },
+    "socials": []
+  },
+  {
+    "id": "mohamed_maher",
+    "name": {
+      "ar": "م. محمد ماهر",
+      "en": "Eng. Mohamed Maher"
+    },
+    "title": {
+      "ar": "مهندس ومحاضر",
+      "en": "Engineer & Instructor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=MM",
+    "bio": {
+      "ar": "له سلاسل تعليمية في Logic Design و Computer Organization.",
+      "en": "Has educational series in Logic Design and Computer Organization."
+    },
+    "role": {
+      "ar": "محاضر",
+      "en": "Instructor"
+    },
+    "socials": []
+  },
+  {
+    "id": "yousef_walid",
+    "name": {
+      "ar": "د. يوسف وليد",
+      "en": "Dr. Yousef Walid"
+    },
+    "title": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=YW",
+    "bio": {
+      "ar": "له شرح ممتاز لمادة Logic Design وخاصة الـ FSM.",
+      "en": "Excellent explanation of Logic Design, especially FSM."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "walid_issa",
+    "name": {
+      "ar": "م. وليد عيسى",
+      "en": "Eng. Walid Issa"
+    },
+    "title": {
+      "ar": "خبير إلكترونيات",
+      "en": "Electronics Expert"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=WI",
+    "bio": {
+      "ar": "مشهور بشرح الإلكترونيات العملية والرقمية.",
+      "en": "Famous for teaching practical and digital electronics."
+    },
+    "role": {
+      "ar": "محاضر",
+      "en": "Instructor"
+    },
+    "socials": []
+  },
+  {
+    "id": "sameh_ibrahim",
+    "name": {
+      "ar": "د. سامح إبراهيم",
+      "en": "Dr. Sameh Ibrahim"
+    },
+    "title": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=SI",
+    "bio": {
+      "ar": "يركز على بناء الدوائر الرقمية.",
+      "en": "Focuses on building digital circuits."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "anas_verilog",
+    "name": {
+      "ar": "م. أنس (Anas Verilog)",
+      "en": "Eng. Anas"
+    },
+    "title": {
+      "ar": "مهندس ومحاضر Verilog",
+      "en": "Verilog Instructor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=AV",
+    "bio": {
+      "ar": "محتواه مفضل للمبتدئين في تعلم Verilog مع تطبيقات عملية على Vivado.",
+      "en": "His content is preferred for beginners in Verilog with practical applications on Vivado."
+    },
+    "role": {
+      "ar": "محاضر",
+      "en": "Instructor"
+    },
+    "socials": []
+  },
+  {
+    "id": "adam_teman",
+    "name": {
+      "ar": "أدم تيمان",
+      "en": "Adam Teman"
+    },
+    "title": {
+      "ar": "محاضر وخبير",
+      "en": "Lecturer & Expert"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=AT",
+    "bio": {
+      "ar": "له محاضرات متعمقة في Verilog و ASIC Flow و Physical Design.",
+      "en": "Has in-depth lectures on Verilog, ASIC Flow, and Physical Design."
+    },
+    "role": {
+      "ar": "محاضر",
+      "en": "Lecturer"
+    },
+    "socials": []
+  },
+  {
+    "id": "paul_franzon",
+    "name": {
+      "ar": "بول فرانزون",
+      "en": "Paul Franzon"
+    },
+    "title": {
+      "ar": "أستاذ بجامعة NC State",
+      "en": "Professor at NC State University"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=PF",
+    "bio": {
+      "ar": "يقدم محتوى أكاديمي قوي في مجال الـ Hardware Modeling.",
+      "en": "Provides strong academic content in Hardware Modeling."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "dr_wathiq",
+    "name": {
+      "ar": "د. واثق",
+      "en": "Dr. Wathiq"
+    },
+    "title": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=DW",
+    "bio": {
+      "ar": "له شرح أكاديمي لأساسيات تنظيم الحاسب (Computer Organization).",
+      "en": "Has academic explanations for Computer Organization basics."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "bassam_gamil",
+    "name": {
+      "ar": "د. بسام جميل",
+      "en": "Dr. Bassam Gamil"
+    },
+    "title": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=BG",
+    "bio": {
+      "ar": "يقدم كورسات في مجال VLSI Design.",
+      "en": "Provides courses in VLSI Design."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "behzad_razavi",
+    "name": {
+      "ar": "بروفيسور بهزاد رضوي",
+      "en": "Prof. Behzad Razavi"
+    },
+    "title": {
+      "ar": "أستاذ الإلكترونيات",
+      "en": "Professor of Electronics"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=BR",
+    "bio": {
+      "ar": "مرجع عالمي في دوائر الإلكترونيات والـ Microelectronics.",
+      "en": "Global reference in Electronics circuits and Microelectronics."
+    },
+    "role": {
+      "ar": "أستاذ ومؤلف",
+      "en": "Professor & Author"
+    },
+    "socials": []
+  },
+  {
+    "id": "azzam_zagzoog",
+    "name": {
+      "ar": "د. عزام زقزوق",
+      "en": "Dr. Azzam Zagzoog"
+    },
+    "title": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=AZ",
+    "bio": {
+      "ar": "قناته تحتوي على شروحات مفيدة للدوائر الكهربائية.",
+      "en": "His channel contains useful explanations for Electrical Circuits."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "hesham_omran",
+    "name": {
+      "ar": "د. هشام عمران",
+      "en": "Dr. Hesham Omran"
+    },
+    "title": {
+      "ar": "أستاذ تصميم الدوائر المتكاملة",
+      "en": "Professor of IC Design"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=HO",
+    "bio": {
+      "ar": "من أهم المصادر العربية في مجال Analog & Digital IC Design.",
+      "en": "One of the most important Arabic sources in Analog & Digital IC Design."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "karim_ossama",
+    "name": {
+      "ar": "د. كريم أسامة",
+      "en": "Dr. Karim Ossama"
+    },
+    "title": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=KO",
+    "bio": {
+      "ar": "يشرح بناء الدوائر الرقمية على مستوى الترانزستور (Digital Integrated Circuits).",
+      "en": "Teaches Digital Integrated Circuits at the transistor level."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "michael_ibrahim",
+    "name": {
+      "ar": "م. مايكل إبراهيم",
+      "en": "Eng. Michael Ibrahim"
+    },
+    "title": {
+      "ar": "محاضر",
+      "en": "Instructor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=MI",
+    "bio": {
+      "ar": "له شروحات في معالجة الإشارات الرقمية (DSP).",
+      "en": "Has explanations in Digital Signal Processing (DSP)."
+    },
+    "role": {
+      "ar": "محاضر",
+      "en": "Instructor"
+    },
+    "socials": []
+  },
+  {
+    "id": "mohamed_khattab",
+    "name": {
+      "ar": "د. محمد خطاب",
+      "en": "Dr. Mohamed Khattab"
+    },
+    "title": {
+      "ar": "أستاذ معمارية الحاسب",
+      "en": "Professor of Computer Architecture"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=MK",
+    "bio": {
+      "ar": "مصدر أساسي لكورسات Computer Architecture.",
+      "en": "Main source for Computer Architecture courses."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "hossam_fahmy",
+    "name": {
+      "ar": "د. حسام فهمي",
+      "en": "Dr. Hossam Fahmy"
+    },
+    "title": {
+      "ar": "أستاذ معمارية الحاسب المتقدمة",
+      "en": "Professor of Advanced Computer Arch"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=HF",
+    "bio": {
+      "ar": "متخصص في المواضيع المتقدمة في المعمارية مثل Multicore و GPUs.",
+      "en": "Specializes in advanced architecture topics like Multicore and GPUs."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "ibrahim_qamar",
+    "name": {
+      "ar": "د. إبراهيم قمر",
+      "en": "Dr. Ibrahim Qamar"
+    },
+    "title": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=IQ",
+    "bio": {
+      "ar": "يقدم كورسات في Computer Architecture.",
+      "en": "Provides courses in Computer Architecture."
+    },
+    "role": {
+      "ar": "أستاذ جامعي",
+      "en": "Professor"
+    },
+    "socials": []
+  },
+  {
+    "id": "sherif_hosny",
+    "name": {
+      "ar": "م. شريف حسني",
+      "en": "Eng. Sherif Hosny"
+    },
+    "title": {
+      "ar": "خبير التحقق الرقمي",
+      "en": "Digital Verification Expert"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=SH",
+    "bio": {
+      "ar": "يقدم دبلومات متخصصة في Digital Verification.",
+      "en": "Offers specialized diplomas in Digital Verification."
+    },
+    "role": {
+      "ar": "محاضر ومدرب",
+      "en": "Instructor & Trainer"
+    },
+    "socials": []
+  },
+  {
+    "id": "ali_eltemsah",
+    "name": {
+      "ar": "م. علي التمساح",
+      "en": "Eng. Ali Eltemsah"
+    },
+    "title": {
+      "ar": "مهندس ومحاضر",
+      "en": "Engineer & Instructor"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=AE",
+    "bio": {
+      "ar": "يقدم دبلومات في ASIC و Verification.",
+      "en": "Offers diplomas in ASIC and Verification."
+    },
+    "role": {
+      "ar": "محاضر",
+      "en": "Instructor"
+    },
+    "socials": []
+  },
+  {
+    "id": "fatma_ali",
+    "name": {
+      "ar": "م. فاطمة علي",
+      "en": "Eng. Fatma Ali"
+    },
+    "title": {
+      "ar": "مهندسة ومساهمة",
+      "en": "Engineer & Contributor"
+    },
+    "imageUrl": "https://placehold.co/400x400/FFF4B7/000000?text=FA",
+    "bio": {
+      "ar": "قدمت ملاحظات قيمة (Notes) خاصة في مجال الـ ASIC Implementation.",
+      "en": "Provided valuable notes, especially in ASIC Implementation."
+    },
+    "role": {
+      "ar": "مساهمة بالمحتوى",
+      "en": "Content Contributor"
+    },
+    "socials": []
+  },
+  {
+    "id": "ahmed_abdelazeem",
+    "name": {
+      "ar": "م. أحمد عبد العظيم",
+      "en": "Eng. Ahmed Abdelazeem"
+    },
+    "title": {
+      "ar": "مهندس",
+      "en": "Engineer"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=AA",
+    "bio": {
+      "ar": "صاحب خريطة طريق ASIC Design Roadmap على GitHub.",
+      "en": "Creator of the ASIC Design Roadmap on GitHub."
+    },
+    "role": {
+      "ar": "مساهم بالمحتوى",
+      "en": "Content Contributor"
+    },
+    "socials": []
+  },
+  {
+    "id": "kareem_elhafi",
+    "name": {
+      "ar": "م. كريم الحافي",
+      "en": "Eng. Kareem Elhafi"
+    },
+    "title": {
+      "ar": "مهندس",
+      "en": "Engineer"
+    },
+    "imageUrl": "https://placehold.co/400x400/444/F6F6F6?text=KE",
+    "bio": {
+      "ar": "قام بتجميع مكتبة ضخمة من الكتب في مجال IC Design.",
+      "en": "Compiled a huge library of books in IC Design."
+    },
+    "role": {
+      "ar": "مساهم بالمحتوى",
+      "en": "Content Contributor"
+    },
+    "socials": []
+  }
+]
+}

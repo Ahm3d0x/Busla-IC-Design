@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خريطة الطريق - بوصلة Digital IC Design</title>
+          <link rel="icon" type="image/jpg" href="../assets/icons/icon.jpg">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="../css/global.css">
+    <style>
+        body {
+            background-color: #000000;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #006A67 0%, #22C45D 50%, #E6FF94 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .accordion-content {
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        padding 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        
+        .accordion-content.open {
+            max-height: 15000px;
+            opacity: 1;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        
+        .accordion-icon svg {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .accordion-button.open .accordion-icon svg {
+            transform: rotate(180deg);
+        }
+
+        .resource-card {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+        .stagger-4 { animation-delay: 0.4s; opacity: 0; }
+
+        .spinner {
+            border: 3px solid rgba(0, 106, 103, 0.1);
+            border-top: 3px solid #006A67;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'b-bg': '#000000',
+                        'b-text': '#F6F6F6',
+                        'b-primary': '#006A67',
+                        'b-hl-light': '#22C45D',
+                        'b-hl-medium': '#22C45D',
+                        'b-hl-green': '#E6FF94',
+                        'b-hl-yellow': '#FFF4B7',
+                        'b-surface': '#111111',
+                        'b-border': '#222222',
+                    },
+                    fontFamily: {
+                        'cairo': ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+
+</head>
+
+<body class="antialiased bg-b-bg text-b-text">
+
+    <!-- Header -->
+    <header class="bg-b-surface shadow-2xl border-b border-b-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
+        <nav class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="text-3xl font-bold text-b-primary hover:text-b-hl-light transition-all duration-300 hover:scale-105 flex items-center gap-3">
+                        <i>🧭</i>
+                        <span class="gradient-text">بوصلة</span>
+                    </a>
+                </div>
+
+                <div class="hidden lg:flex lg:items-center lg:space-x-1 lg:space-x-reverse">
+                    <a href="index.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-surface">الرئيسية</a>
+                    <a href="roadmap.html" class="text-white font-semibold bg-b-surface px-4 py-2 rounded-lg border-b-2 border-b-primary" aria-current="page">خريطة الطريق</a>
+                    <a href="resources.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-surface">المصادر</a>
+                    <a href="tools.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-surface">الأدوات</a>
+                    <a href="experts.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-surface">نصائح الخبراء</a>
+                    <a href="about.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-surface">عن الموقع</a>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-b-surface focus:outline-none focus:ring-2 focus:ring-inset focus:ring-b-primary transition-all" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">فتح القائمة الرئيسية</span>
+                        <i data-feather="menu" class="block h-6 w-6" id="icon-open"></i>
+                        <i data-feather="x" class="hidden h-6 w-6" id="icon-close"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="lg:hidden hidden bg-b-surface border-t border-b-border" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="text-gray-400 hover:bg-b-surface hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">الرئيسية</a>
+                <a href="roadmap.html" class="bg-b-surface text-white block px-3 py-3 rounded-md text-base font-medium border-r-4 border-b-primary" aria-current="page">خريطة الطريق</a>
+                <a href="resources.html" class="text-gray-400 hover:bg-b-surface hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">المصادر</a>
+                <a href="tools.html" class="text-gray-400 hover:bg-b-surface hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">الأدوات</a>
+                <a href="experts.html" class="text-gray-400 hover:bg-b-surface hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">نصائح الخبراء</a>
+                <a href="about.html" class="text-gray-400 hover:bg-b-surface hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">عن الموقع</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        
+        <!-- Hero Section -->
+        <div class="text-center mb-20 p-5 animate-fade-in-up">
+            <div class="inline-block ">
+                <i data-feather="map" class="w-20 h-20 text-b-primary mx-auto"></i>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-extrabold relative bottom-6 p-3 text-white  gradient-text leading-tight">
+                خريطة الطريق الكاملة
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto leading-relaxed mb-8">
+                مسار تفاعلي مُنظّم يبدأ معك من الصفر وصولاً لبناء نظام متكامل (ASIC)
+            </p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center text-sm text-gray-500">
+                <div class="flex items-center gap-3">
+                    <i data-feather="check-circle" class="w-5 h-5 text-b-hl-light"></i>
+                    <span>مصادر موثوقة ومجربة</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i data-feather="clock" class="w-5 h-5 text-b-hl-light"></i>
+                    <span>مدة متوقعة لكل مرحلة</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <i data-feather="target" class="w-5 h-5 text-b-hl-light"></i>
+                    <span>إرشادات عملية</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roadmap Container -->
+        <div id="roadmap-container" class="space-y-8">
+            <div id="loading-indicator" class="text-center py-20">
+                <div class="spinner mb-6"></div>
+                <p class="text-lg text-gray-400 animate-pulse">جاري تحميل خريطة الطريق...</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-b-surface border-t border-b-border mt-32">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center">
+                <div class="flex justify-center items-center gap-2 mb-4">
+                    <i data-feather="heart" class="w-5 h-5 text-red-500 animate-pulse"></i>
+                    <p class="text-gray-400">صُنع بكل حب لمساعدة الطلاب</p>
+                </div>
+                <p class="text-gray-500 text-sm">
+                    &copy; <span id="current-year"></span> منصة بوصلة | تم إنشاؤه بواسطة 
+                    <a href="https://www.linkedin.com/in/ahmed-m-attia-757aa6292/" target="_blank" rel="noopener noreferrer" class="text-b-primary hover:text-b-hl-light transition-all font-semibold">
+                        Ahmed M. Attia
+                    </a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+
+    <!-- External Logic Script -->
+    <script src="../js/roadmap.js"></script>
+
+</body>
+</html>

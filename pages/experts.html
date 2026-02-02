@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+          <link rel="icon" type="image/jpg" href="../assets/icons/icon.jpg">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نصائح الخبراء | بوصلة</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'b-bg': '#000000',
+                        'b-text': '#F6F6F6',
+                        'b-primary': '#006A67',
+                        'b-hl-light': '#22C45D',
+                        'b-hl-medium': '#A2D5C6',
+                        'b-hl-green': '#E6FF94',
+                        'b-hl-yellow': '#FFF4B7',
+                        'b-surface': '#111111',
+                        'b-border': '#222222',
+                        'bot-bg': '#1a1a1a',
+                        'bot-user': '#006A67',
+                        'bot-ai': '#2a2a2a',
+                    },
+                    fontFamily: {
+                        'cairo': ['Cairo', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in-up {
+            animation: slideInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #A2D5C6 0%, #006A67 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-hover-effect {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 106, 103, 0.3);
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111111;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #006A67;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A2D5C6;
+        }
+
+        /* AI Assistant Styles */
+        .ai-assistant-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px -5px rgba(0, 106, 103, 0.5);
+        }
+        
+        .ai-assistant-btn:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 20px 30px -5px rgba(0, 106, 103, 0.6);
+        }
+
+        .ai-chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 600px;
+            max-height: 80vh;
+            max-width: calc(100vw - 40px);
+            z-index: 99;
+            transform-origin: bottom right;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            pointer-events: none;
+        }
+
+        .ai-chat-window.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: all;
+        }
+
+        .chat-messages {
+            scrollbar-width: thin;
+        }
+        
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .suggestion-chip {
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .suggestion-chip:hover {
+            background-color: #22C45D20;
+            border-color: #22C45D;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-b-bg text-b-text font-cairo">
+    
+    <!-- Header -->
+    <header class="bg-b-surface shadow-2xl border-b border-b-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
+        <nav class="container z-50 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="text-3xl font-bold text-b-primary hover:text-b-hl-light transition-all duration-300 hover:scale-105 flex items-center gap-3">
+                        <i>🧭</i>
+                        <span class="gradient-text">بوصلة</span>
+                    </a>
+                </div>
+
+                <div class="hidden lg:flex lg:items-center lg:space-x-1 lg:space-x-reverse">
+                    <a href="index.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-bg">الرئيسية</a>
+                    <a href="roadmap.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-bg">خريطة الطريق</a>
+                    <a href="resources.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-bg">المصادر</a>
+                    <a href="tools.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-bg">الأدوات</a>
+                    <a href="experts.html" class="text-white font-semibold bg-b-bg px-4 py-2 rounded-lg border-b-2 border-b-primary" aria-current="page">نصائح الخبراء</a>
+                    <a href="about.html" class="text-gray-400 hover:text-b-hl-light transition-all duration-300 px-4 py-2 rounded-lg hover:bg-b-bg">عن الموقع</a>
+                </div>
+
+                <div class="flex items-center lg:hidden">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-b-surface focus:outline-none focus:ring-2 focus:ring-inset focus:ring-b-primary transition-all">
+                        <span class="sr-only">فتح القائمة</span>
+                        <i class="fas fa-bars block h-6 w-6" id="icon-open"></i>
+                        <i class="fas fa-times hidden h-6 w-6" id="icon-close"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="lg:hidden hidden bg-b-surface border-t border-b-border" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="text-gray-400 hover:bg-b-bg hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">الرئيسية</a>
+                <a href="roadmap.html" class="text-gray-400 hover:bg-b-bg hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">خريطة الطريق</a>
+                <a href="resources.html" class="text-gray-400 hover:bg-b-bg hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">المصادر</a>
+                <a href="tools.html" class="text-gray-400 hover:bg-b-bg hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">الأدوات</a>
+                <a href="experts.html" class="bg-b-bg text-white block px-3 py-3 rounded-md text-base font-medium border-r-4 border-b-primary" aria-current="page">نصائح الخبراء</a>
+                <a href="about.html" class="text-gray-400 hover:bg-b-bg hover:text-white block px-3 py-3 rounded-md text-base font-medium transition-all">عن الموقع</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <div class="bg-b-surface pt-24 pb-20 text-center shadow-inner border-b border-b-border">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h1 class="text-5xl font-bold tracking-tight text-b-text sm:text-5xl md:text-6xl animate-slide-in-up stagger-1">
+                    <span class="gradient-text">خلاصة خبرة المهندسين</span>
+                </h1>
+                <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-300 sm:text-xl md:mt-8 animate-slide-in-up stagger-2">
+                    آلاف الساعات من التجارب، الأخطاء، والنجاحات... بين يديك في مكان واحد. 
+                    تعلم من نصائح خبراء مثل د. هشام عمران، يوسف شريف، ومرشدي الشركات الكبرى.
+                </p>
+                <div class="mt-8 animate-slide-in-up stagger-3">
+                    <p class="text-b-hl-light text-lg font-semibold">
+                        <i class="fas fa-lightbulb ml-2"></i>
+                        <span id="total-advice">0</span> نصيحة متاحة
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters & Advice Section -->
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+            
+            <!-- Filter System -->
+            <div class="mb-12 p-6 bg-b-surface rounded-2xl border border-b-border shadow-xl animate-slide-in-up stagger-4">
+                <h3 class="text-xl font-bold text-b-hl-light mb-6 flex items-center">
+                    <i class="fas fa-filter ml-2"></i>
+                    فلترة النصائح
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    
+                    <div class="md:col-span-1">
+                        <label for="filter-search" class="block text-sm font-medium text-gray-300 mb-2">
+                            <i class="fas fa-search ml-1"></i>
+                            ابحث بالكلمة:
+                        </label>
+                        <input type="text" 
+                               id="filter-search" 
+                               placeholder="اكتب للبحث..." 
+                               class="w-full bg-b-bg border border-b-border text-b-text rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-b-primary focus:border-transparent transition-all">
+                    </div>
+                    
+                    <div>
+                        <label for="filter-category" class="block text-sm font-medium text-gray-300 mb-2">
+                            <i class="fas fa-tag ml-1"></i>
+                            التصنيف:
+                        </label>
+                        <select id="filter-category" 
+                                class="w-full bg-b-bg border border-b-border text-b-text rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-b-primary transition-all">
+                            <option value="All">الكل</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="filter-source" class="block text-sm font-medium text-gray-300 mb-2">
+                            <i class="fas fa-user-tie ml-1"></i>
+                            المصدر:
+                        </label>
+                        <select id="filter-source" 
+                                class="w-full bg-b-bg border border-b-border text-b-text rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-b-primary transition-all">
+                            <option value="all">الكل</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <button id="reset-filters" 
+                            class="px-6 py-2 bg-b-bg text-b-hl-light border border-b-border rounded-lg hover:bg-b-border transition-all">
+                        <i class="fas fa-redo ml-2"></i>
+                        إعادة تعيين الفلاتر
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Results Counter -->
+            <div class="mb-6 text-center">
+                <p class="text-gray-400 text-lg">
+                    عرض <span id="showing-count" class="text-b-hl-light font-bold">0</span> من 
+                    <span id="total-count" class="text-b-hl-light font-bold">0</span> نصيحة
+                </p>
+            </div>
+
+            <!-- Advice Grid -->
+            <div id="advice-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="col-span-full text-center text-gray-400 text-lg py-16">
+                    <div class="animate-pulse">
+                        <i class="fas fa-spinner fa-spin text-4xl text-b-primary mb-4"></i>
+                        <p>جاري تحميل النصائح...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="no-results" class="hidden col-span-full text-center py-16 animate-slide-in-up">
+                <i class="fas fa-search text-6xl text-gray-600 mb-4"></i>
+                <p class="text-gray-400 text-xl">لا توجد نصائح تطابق معايير البحث الحالية.</p>
+                <button id="clear-search" 
+                        class="mt-6 px-6 py-2 bg-b-primary text-white rounded-lg hover:bg-b-hl-light hover:text-black transition-all">
+                    مسح البحث
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Advice Modal -->
+    <div id="advice-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div id="modal-content" class="bg-b-surface p-8 rounded-2xl border-2 border-b-primary shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto">
+            
+            <div class="flex justify-between items-start mb-6 border-b border-b-border pb-4">
+                <h3 id="modal-title" class="text-2xl font-bold text-b-hl-light flex-1"></h3>
+                <button id="modal-close-btn" 
+                        class="text-gray-400 hover:text-white text-4xl transition-colors flex-shrink-0 ml-4 leading-none">
+                    &times;
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                
+                <div id="modal-tags" class="flex flex-wrap gap-2">
+                    <!-- Tags will be inserted here -->
+                </div>
+
+                <div class="bg-b-bg p-6 rounded-lg">
+                    <div id="modal-full-text" class="text-gray-300 leading-8 text-lg advice-content">
+                        <!-- Full advice text will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="bg-b-bg p-4 rounded-lg border-r-4 border-b-primary">
+                    <p class="text-sm font-semibold text-b-hl-light">
+                        <i class="fas fa-user-graduate ml-2"></i>
+                        المصدر: <span id="modal-source"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant UI -->
+    <!-- 1. Floating Button -->
+    <button id="ai-toggle-btn" class="ai-assistant-btn group flex items-center gap-3 bg-b-primary text-white px-5 py-3 rounded-full hover:bg-b-hl-light hover:text-black">
+        <span class="text-xl animate-bounce-slow">🧠</span>
+        <span class="font-bold hidden group-hover:inline-block transition-all duration-300">اسأل بوصله الذكيه</span>
+    </button>
+
+    <!-- 2. Chat Window -->
+    <div id="ai-chat-window" class="ai-chat-window xxl:w-[600px] xl:w-[600px] lg:w-[550px] md:w-[500px] w-[350px] md:h-[600px] h-[500px] xxl:h-[800px] xl:h-[700px] lg:h-[600px] md:h-[500px] h-[450px] bg-bot-bg border border-b-border rounded-2xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl">
+        <!-- Chat Header -->
+        <div class="bg-gradient-to-r from-b-primary to-b-border p-4 flex justify-between items-center border-b border-gray-700">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-lg">🧠</div>
+                <div>
+                    <h3 class="font-bold text-white text-lg"> البوصله الذكيه</h3>
+                    <p class="text-xs text-gray-300 flex items-center gap-1">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        متصل - مدعوم بالخبراء
+                    </p>
+                </div>
+            </div>
+            <button id="ai-close-btn" class="text-gray-300 hover:text-white transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Chat Body -->
+        <div id="chat-messages" class="chat-messages flex-1 p-4 overflow-y-auto space-y-4 bg-b-surface/50">
+            <!-- Welcome Message -->
+            <div class="flex gap-3 justify-start animate-slide-in-up">
+                <div class="w-8 h-8 rounded-full bg-bot-ai flex items-center justify-center flex-shrink-0 text-sm border border-gray-700">🧠</div>
+                <div class="bg-bot-ai text-gray-100 p-3 rounded-2xl rounded-tr-none max-w-[85%] text-sm leading-relaxed shadow-md border border-gray-700">
+                    أهلاً يا هندسة 👋
+                    <br>
+                    أنا مساعد ذكي "مدرب" على كل نصائح الخبراء الموجودة هنا.
+                    <br><br>
+                    اسألني في أي حاجة تخص الـ VLSI، مشاريع التخرج، أو الـ Career وهجاوبك من كلام الخبراء فقط.
+                </div>
+            </div>
+        </div>
+
+        <!-- Suggestions Chips -->
+        <div class="p-3 bg-b-surface border-t border-b-border overflow-x-auto flex gap-2 no-scrollbar" id="chat-suggestions">
+            <button class="suggestion-chip px-3 py-1.5 bg-b-bg border border-gray-700 rounded-full text-xs text-gray-300 hover:text-white">
+                🎯 ملخص نصايح GP
+            </button>
+            <button class="suggestion-chip px-3 py-1.5 bg-b-bg border border-gray-700 rounded-full text-xs text-gray-300 hover:text-white">
+                🚩 أخطاء الـ MATLAB
+            </button>
+            <button class="suggestion-chip px-3 py-1.5 bg-b-bg border border-gray-700 rounded-full text-xs text-gray-300 hover:text-white">
+                💼 إزاي أبدأ Verification؟
+            </button>
+            <button class="suggestion-chip px-3 py-1.5 bg-b-bg border border-gray-700 rounded-full text-xs text-gray-300 hover:text-white">
+                🎤 نصائح الـ Presentation
+            </button>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-b-bg border-t border-b-border flex gap-2 items-end">
+            <div class="flex-1 relative">
+                <textarea id="chat-input" rows="1" placeholder="اسأل الخبراء..." class="w-full bg-b-surface text-white rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-b-primary resize-none text-sm scrollbar-hide" style="min-height: 44px; max-height: 120px;"></textarea>
+                <button id="chat-history-btn" class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-b-primary" title="سجل المحادثة">
+                    <i class="fas fa-history"></i>
+                </button>
+            </div>
+            <button id="send-btn" class="w-11 h-11 bg-b-primary text-white rounded-xl flex items-center justify-center hover:bg-b-hl-light hover:text-black transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-paper-plane transform rotate-180-rtl"></i>
+            </button>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="bg-b-surface border-t border-b-border mt-32">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+            <div class="text-center">
+                <div class="flex justify-center items-center gap-2 mb-4">
+                    <i data-feather="heart" class="w-5 h-5 text-red-500 animate-pulse"></i>
+                    <p class="text-gray-400">صُنع بكل حب لمساعدة الطلاب</p>
+                </div>
+                <p class="text-gray-500 text-sm">
+                    &copy; <span id="current-year"></span> منصة بوصلة | تم إنشاؤه بواسطة 
+                    <a href="https://www.linkedin.com/in/ahmed-m-attia-757aa6292/" target="_blank" rel="noopener noreferrer" class="text-b-primary hover:text-b-hl-light transition-all font-semibold">
+                        Ahmed M. Attia
+                    </a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <script src="../js/experts.js"></script>
+</body>
+</html>

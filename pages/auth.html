@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوصلة | بوابتك لاحتراف Digital IC Design</title>
+    <link rel="icon" type="image/jpg" href="assets/icons/icon.jpg">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'b-bg': '#000000',
+                        'b-text': '#F6F6F6',
+                        'b-primary': '#006A67',
+                        'b-hl-light': '#22C45D',
+                        'b-hl-medium': '#00dec8',
+                        'b-surface': '#111111',
+                        'b-border': '#222222',
+                    },
+                    fontFamily: { 'cairo': ['Cairo', 'sans-serif'] },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'circuit': 'circuit 20s linear infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
+                        circuit: { '0%': { backgroundPosition: '0% 50%' }, '100%': { backgroundPosition: '100% 50%' } },
+                        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                    }
+                }
+            }
+        }
+    </script>
+    
+<style>
+        body { font-family: 'Cairo', sans-serif; overflow-x: hidden; background-color: #000; }
+
+        /* 🟢 1. الخلفية الأساسية (شبكة واضحة) */
+        .circuit-bg {
+            position: fixed;
+            inset: 0;
+            background-color: #050505;
+            background-image: url('../assets/images/1.jpg');
+            background-size: cover;
+            z-index: -3;
+        }
+
+        /* 🟢 2. الإضاءة المتحركة (عشان تدي روح) */
+        .circuit-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 106, 103, 0.15), transparent 70%);
+            animation: pulse-bg 8s ease-in-out infinite alternate;
+            z-index: -2;
+        }
+
+        /* 🟢 3. الجزيئات المضيئة (Particles) */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #22C45D;
+            box-shadow: 0 0 10px #22C45D; /* توهج */
+            border-radius: 50%;
+            animation: float 10s linear infinite;
+            opacity: 0.7;
+        }
+        /* توزيع الجزيئات */
+        .particle:nth-child(1) { top: 10%; left: 10%; animation-duration: 8s; }
+        .particle:nth-child(2) { top: 70%; left: 85%; animation-duration: 12s; }
+        .particle:nth-child(3) { top: 40%; left: 60%; animation-duration: 10s; }
+        .particle:nth-child(4) { top: 80%; left: 20%; animation-duration: 15s; }
+        .particle:nth-child(5) { top: 20%; left: 80%; animation-duration: 9s; }
+
+        /* 🟢 4. تأثير الزجاج (Glassmorphism) */
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.7); /* تغميق بسيط */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 106, 103, 0.3); /* حدود بلون البراند */
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        /* باقي الستايلات زي ما هي */
+        .input-glow {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        .input-glow:focus {
+            border-color: #22C45D;
+            box-shadow: 0 0 15px rgba(34, 196, 93, 0.3);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        select.input-glow option { background-color: #000; color: #fff; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #22C45D 0%, #006A67 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(50px); opacity: 0; }
+        }
+        @keyframes pulse-bg {
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+    <div class="circuit-bg"></div>
+    <div class="circuit-overlay"></div>
+    
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="grid-pattern"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    
+    <div class="container mx-auto max-w-7xl relative z-10">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            
+            <div class="hidden lg:block space-y-8 animate-fade-in-up">
+                <div class=" bg-black/[0.66] border-r-4 border-r-b-primary p-10 rounded-2xl  text-right">
+                    <div class="inline-flex items-center gap-4 mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-b-primary to-b-hl-light flex items-center justify-center shadow-lg animate-float">
+                            <i class="fas fa-microchip text-3xl text-white"></i>
+                        </div>
+                        <h1 class="text-6xl font-black p-10 gradient-text">بوصلة</h1>
+                    </div>
+                    <p class="text-2xl text-gray-300 font-bold mb-2">منصتك الأولى لاحتراف Digital IC Design</p>
+                    <p class="text-gray-400 max-w-lg leading-relaxed">
+                        انضم لمجتمع من المهندسين، تعلم عبر مسارات تفاعلية، وشارك في تحديات الفرق الجامعية.
+                    </p>
+                </div>
+
+                <div class="grid gap-4">
+                    <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 border-r-4 border-r-b-hl-light hover:translate-x-2 transition-transform">
+                        <div class="w-12 h-12 bg-b-hl-light/10 rounded-full flex items-center justify-center text-b-hl-light">
+                            <i class="fas fa-map-signs text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold text-lg">خريطة طريق شاملة</h3>
+                            <p class="text-sm text-gray-400">من الأساسيات وحتى الـ Tape-out</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 border-r-4 border-r-b-primary hover:translate-x-2 transition-transform">
+                        <div class="w-12 h-12 bg-b-primary/10 rounded-full flex items-center justify-center text-b-primary">
+                            <i class="fas fa-users text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-white font-bold text-lg">نظام الفرق والتنافس</h3>
+                            <p class="text-sm text-gray-400">كوّن فريق جامعتك ونافس الجامعات الأخرى</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                
+                <div class="lg:hidden text-center mb-8">
+                    <h1 class="text-5xl font-black p-10 gradient-text mb-2">بوصلة</h1>
+                    <p class="text-gray-400">بوابتك لمستقبل الإلكترونيات</p>
+                </div>
+
+                <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-b-hl-light to-transparent opacity-50"></div>
+
+                    <div class="flex bg-black/40 p-1 rounded-xl mb-6">
+                        <button id="login-tab" onclick="switchTab('login')" class="flex-1 py-3 rounded-lg font-bold text-sm transition-all bg-gradient-to-r from-b-primary to-b-hl-light text-white shadow-lg">
+                            تسجيل الدخول
+                        </button>
+                        <button id="signup-tab" onclick="switchTab('signup')" class="flex-1 py-3 rounded-lg font-bold text-sm transition-all text-gray-400 hover:text-white">
+                            حساب جديد
+                        </button>
+                    </div>
+
+                    <form id="login-form" class="space-y-6">
+                        <div class="text-center mb-4">
+                            <h2 class="text-2xl font-bold text-white">أهلاً بعودتك! 👋</h2>
+                            <p class="text-sm text-gray-400">تابع تقدمك في المسارات التعليمية</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">البريد الإلكتروني</label>
+                                <div class="relative">
+                                    <i class="fas fa-envelope absolute right-4 top-3.5 text-gray-500"></i>
+                                    <input type="email" id="login-email" required placeholder="name@example.com" class="w-full pl-4 pr-10 py-3 rounded-xl text-white outline-none input-glow placeholder-gray-600">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">كلمة المرور</label>
+                                <div class="relative">
+                                    <i class="fas fa-lock absolute right-4 top-3.5 text-gray-500"></i>
+                                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-4 pr-10 py-3 rounded-xl text-white outline-none input-glow placeholder-gray-600">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-login" class="w-full py-3.5 bg-gradient-to-r from-b-primary to-b-hl-light text-white font-bold rounded-xl shadow-lg transition-transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                            <span>دخول</span>
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <p id="login-error" class="text-red-400 text-center text-sm hidden bg-red-900/20 py-2 rounded border border-red-500/20"></p>
+                    </form>
+
+                    <form id="signup-form" class="space-y-4 hidden">
+                        <div class="text-center mb-2">
+                            <h2 class="text-xl font-bold text-white">بياناتك</h2>
+                            <p class="text-xs text-gray-400">أكمل بياناتك بدقة لتحديد فريقك ومسارك</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">الاسم ثلاثي</label>
+                                <input type="text" id="signup-name" required placeholder="" class="w-full px-3 py-2 rounded-xl text-white text-sm outline-none input-glow">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">البريد الإلكتروني</label>
+                                <input type="email" id="signup-email" required placeholder="email@example.com" class="w-full px-3 py-2 rounded-xl text-white text-sm outline-none input-glow">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">المحافظة</label>
+                                    <select id="signup-gov" class="w-full px-3 py-2 rounded-xl text-gray-300 text-sm outline-none input-glow bg-b-bg">
+                                        <option value="" disabled selected>اختر المحافظة</option>
+                                        <option value="Sharqia">الشرقية</option>
+                                        <option value="Cairo">القاهرة</option>
+                                        <option value="Giza">الجيزة</option>
+                                        <option value="Alexandria">الإسكندرية</option>
+                                        <option value="Dakahlia">الدقهلية</option>
+                                        <option value="Red Sea">البحر الأحمر</option>
+                                        <option value="Beheira">البحيرة</option>
+                                        <option value="Fayoum">الفيوم</option>
+                                        <option value="Gharbia">الغربية</option>
+                                        <option value="Ismailia">الإسماعيلية</option>
+                                        <option value="Monufia">المنوفية</option>
+                                        <option value="Minya">المنيا</option>
+                                        <option value="Qalyubia">القليوبية</option>
+                                        <option value="New Valley">الوادي الجديد</option>
+                                        <option value="Suez">السويس</option>
+                                        <option value="Aswan">أسوان</option>
+                                        <option value="Assiut">أسيوط</option>
+                                        <option value="Beni Suef">بني سويف</option>
+                                        <option value="Port Said">بورسعيد</option>
+                                        <option value="Damietta">دمياط</option>
+                                        <option value="South Sinai">جنوب سيناء</option>
+                                        <option value="Kafr El Sheikh">كفر الشيخ</option>
+                                        <option value="Matrouh">مطروح</option>
+                                        <option value="Luxor">الأقصر</option>
+                                        <option value="Qena">قنا</option>
+                                        <option value="North Sinai">شمال سيناء</option>
+                                        <option value="Sohag">سوهاج</option>
+                                        <option value="Other">أخرى</option>
+                                    </select>
+
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">الجامعة</label>
+                                <select id="signup-uni" class="w-full px-3 py-2 rounded-xl text-gray-300 text-sm outline-none input-glow bg-b-bg">
+                                    <option value="" disabled selected>اختر الجامعة</option>
+                                    <optgroup label="الجامعات الحكومية">
+                                        <option value="Zagazig">جامعة الزقازيق</option>
+                                        <option value="Cairo">جامعة القاهرة</option>
+                                        <option value="Alexandria">جامعة الإسكندرية</option>
+                                        <option value="Ain Shams">جامعة عين شمس</option>
+                                        <option value="Mansoura">جامعة المنصورة</option>
+                                        <option value="Assiut">جامعة أسيوط</option>
+                                        <option value="Tanta">جامعة طنطا</option>
+                                        <option value="Helwan">جامعة حلوان</option>
+                                        <option value="Minya">جامعة المنيا</option>
+                                        <option value="Monufia">جامعة المنوفية</option>
+                                        <option value="Suez Canal">جامعة قناة السويس</option>
+                                        <option value="South Valley">جامعة جنوب الوادي</option>
+                                        <option value="Beni Suef">جامعة بني سويف</option>
+                                        <option value="Fayoum">جامعة الفيوم</option>
+                                        <option value="Benha">جامعة بنها</option>
+                                        <option value="Kafrelsheikh">جامعة كفر الشيخ</option>
+                                        <option value="Sohag">جامعة سوهاج</option>
+                                        <option value="Port Said">جامعة بورسعيد</option>
+                                        <option value="Damanhour">جامعة دمنهور</option>
+                                        <option value="Aswan">جامعة أسوان</option>
+                                        <option value="Damietta">جامعة دمياط</option>
+                                        <option value="Suez">جامعة السويس</option>
+                                        <option value="Sadat City">جامعة مدينة السادات</option>
+                                        <option value="Arish">جامعة العريش</option>
+                                        <option value="Luxor">جامعة الأقصر</option>
+                                    </optgroup>
+                                    <optgroup label="جامعات أخرى وخاصة">
+                                        <option value="Al-Azhar">جامعة الأزهر</option>
+                                        <option value="Zewail City">مدينة زويل للعلوم والتكنولوجيا</option>
+                                        <option value="E-JUST">الجامعة المصرية اليابانية (E-JUST)</option>
+                                        <option value="AUC">الجامعة الأمريكية بالقاهرة</option>
+                                        <option value="GUC">الجامعة الألمانية بالقاهرة</option>
+                                        <option value="BUE">الجامعة البريطانية في مصر</option>
+                                        <option value="MUST">جامعة مصر للعلوم والتكنولوجيا</option>
+                                        <option value="MIU">جامعة مصر الدولية</option>
+                                        <option value="Other">جامعة أخرى / معهد</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">الكلية</label>
+                                <select id="signup-faculty" class="w-full px-3 py-2 rounded-xl text-gray-300 text-sm outline-none input-glow bg-b-bg">
+                                    <option value="Engineering">هندسة</option>
+                                    <option value="Computers">حاسبات ومعلومات</option>
+                                    <option value="Science">علوم</option>
+                                    <option value="Other">أخرى</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">القسم</label>
+                                <select id="signup-dept" class="w-full px-3 py-2 rounded-xl text-gray-300 text-sm outline-none input-glow bg-b-bg">
+                                    <option value="Electronics">إتصالات وإلكترونيات</option>
+                                    <option value="CSE">حاسبات ونظم</option>
+                                    <option value="Mechatronics">ميكاترونكس</option>
+                                    <option value="Other">أخرى</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">الفرقة الدراسية</label>
+                                <select id="signup-year" class="w-full px-3 py-2 rounded-xl text-gray-300 text-sm outline-none input-glow bg-b-bg">
+                                    <option value="Prep">إعدادي</option>
+                                    <option value="1st Year">الأولى</option>
+                                    <option value="2nd Year">الثانية</option>
+                                    <option value="3rd Year">الثالثة</option>
+                                    <option value="4th Year">الرابعة</option>
+                                    <option value="Graduated">خريج</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 mr-1">كلمة المرور</label>
+                                <input type="password" id="signup-password" required placeholder="******" class="w-full px-3 py-2 rounded-xl text-white text-sm outline-none input-glow">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-signup" class="w-full py-3 bg-gradient-to-r from-b-hl-light to-b-primary text-white font-bold rounded-xl shadow-lg transition-transform hover:scale-[1.02] mt-2">
+                            إنشاء الحساب وبدء الرحلة
+                        </button>
+                        <p id="signup-error" class="text-red-400 text-center text-sm hidden bg-red-900/20 py-2 rounded border border-red-500/20"></p>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, signInWithEmailAndPassword } from '../js/firebase-config.js';
+        import { registerUser } from '../js/auth-handler.js';
+
+        // دالة التبديل بين التبويبات
+        window.switchTab = function(tab) {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            const loginTab = document.getElementById('login-tab');
+            const signupTab = document.getElementById('signup-tab');
+            
+            const activeClass = "flex-1 py-3 rounded-lg font-bold text-sm transition-all bg-gradient-to-r from-b-primary to-b-hl-light text-white shadow-lg";
+            const inactiveClass = "flex-1 py-3 rounded-lg font-bold text-sm transition-all text-gray-400 hover:text-white";
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginForm.classList.add('animate-fade-in-up');
+                loginTab.className = activeClass;
+                signupTab.className = inactiveClass;
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                signupForm.classList.add('animate-fade-in-up');
+                signupTab.className = activeClass;
+                loginTab.className = inactiveClass;
+            }
+        };
+
+        // منطق تسجيل الدخول
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-login');
+            const errorMsg = document.getElementById('login-error');
+            const originalContent = btn.innerHTML;
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
+            btn.disabled = true;
+            errorMsg.classList.add('hidden');
+
+            try {
+                await signInWithEmailAndPassword(auth, 
+                    document.getElementById('login-email').value, 
+                    document.getElementById('login-password').value
+                );
+                window.location.href = "/index.html";
+            } catch (error) {
+                console.error(error);
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                errorMsg.textContent = "بيانات الدخول غير صحيحة، حاول مرة أخرى.";
+                errorMsg.classList.remove('hidden');
+            }
+        });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+
+    if (mode === 'signup') {
+        // لو الرابط فيه كلمة signup، شغل دالة التبديل فوراً
+        switchTab('signup');
+    }
+});
+        // منطق إنشاء حساب جديد (بالبيانات الكاملة)
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-signup');
+            const errorMsg = document.getElementById('signup-error');
+            const originalContent = btn.innerHTML;
+
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> جاري تسجيل البيانات...';
+            btn.disabled = true;
+            errorMsg.classList.add('hidden');
+
+            // تجميع البيانات الكاملة
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            
+            const personalInfo = {
+                fullName: document.getElementById('signup-name').value,
+                governorate: document.getElementById('signup-gov').value,
+                phone: "" // يمكن إضافته لاحقاً
+            };
+            
+            const academicInfo = {
+                university: document.getElementById('signup-uni').value,
+                faculty: document.getElementById('signup-faculty').value,
+                department: document.getElementById('signup-dept').value,
+                year: document.getElementById('signup-year').value
+            };
+
+            try {
+                await registerUser(email, password, personalInfo, academicInfo);
+                btn.innerHTML = '<i class="fas fa-check"></i> تم إنشاء الحساب!';
+                btn.classList.replace('from-b-hl-light', 'from-green-600');
+                
+                // توجيه بعد ثانية ونصف
+                setTimeout(() => window.location.href = "pages/index.html", 1500);
+                
+            } catch (error) {
+                console.error(error);
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                
+                let msg = "حدث خطأ غير متوقع";
+                if (error.code === 'auth/email-already-in-use') msg = "هذا البريد مستخدم بالفعل";
+                if (error.code === 'auth/weak-password') msg = "كلمة المرور ضعيفة (6 أحرف على الأقل)";
+                
+                errorMsg.textContent = msg;
+                errorMsg.classList.remove('hidden');
+            }
+            
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+{
+  "creator": [
+    {
+      "id": "ahmed_attia",
+      "name": "Ahmed Mohamed Attia",
+      "title": "Website Creator | Electronics & Communications Engineering Student",
+      "imageUrl": "https://placehold.co/400x400/006A67/F6F6F6?text=AMA",
+      "bio": "Student at the Faculty of Engineering, Electronics & Communications Department, Zagazig University. Passionate about Integrated Circuit (IC) Design and Digital Systems.",
+      "role": "Ideator and Developer of \"Compass\" (Bawsala). The goal was to organize scattered information in the field and present it as a clear, simplified roadmap to help every student start their journey without distraction.",
+      "socials": [
+        {
+          "name": "LinkedIn",
+          "url": "https://www.linkedin.com/in/ahmed-m-attia-757aa6292/"
+        },
+        {
+          "name": "GitHub",
+          "url": "https://github.com/Ahm3d0x"
+        },
+        {
+          "name": "Email",
+          "url": "mailto:ahm3d.m.attia@gmail.com"
+        }
+      ]
+    }
+  ],
+  "mainContributor": [
+    {
+      "id": "yousef_sherif",
+      "name": "Eng. Yousef Sherif",
+      "title": "Owner of the Main Content Drive",
+      "imageUrl": "https://placehold.co/400x400/A2D5C6/000000?text=YS",
+      "bio": "Verification Engineer at ICpedia (Synopsys Contractor) and former TA at AUC. Yousef is considered the primary source of the rich scientific content upon which this website is built.",
+      "role": "Yousef put tremendous effort into compiling, reviewing, and organizing the \"Comprehensive Guide to Digital IC Design\" and its attachments. This website acts as an organized interactive interface for this valuable content.",
+      "socials": [
+        {
+          "name": "LinkedIn",
+          "url": "https://www.linkedin.com/in/yousef-sherif-6343b219b/"
+        },
+        {
+          "name": "Facebook",
+          "url": "https://www.facebook.com/eng.yousef.sherif/"
+        },
+        {
+          "name": "Email",
+          "url": "mailto:shirefy49@gmail.com"
+        }
+      ]
+    }
+  ],
+  "contributors": [
+    {
+      "id": "ziad_mohammed",
+      "name": "Eng. Ziad Mohammed",
+      "title": "Data Organization & Content Structuring Contributor",
+      "imageUrl": "https://placehold.co/400x400/006A67/FFFFFF?text=ZM",
+      "bio": "Electrical Engineering Student interested in digital systems and data organization. He contributed significantly to coordinating content and preparing the internal data for Compass, ensuring a professional and organized output.",
+      "role": "Ziad played a pivotal role in arranging, formatting, and cleaning the data used to build the website pages. He worked on structuring the data for various sections to appear consistent and user-friendly, helping transform raw content into a clear and organized learning experience.",
+      "socials": [
+        {
+          "name": "LinkedIn",
+          "url": "https://www.linkedin.com/in/ziad-muhammed-1b71a434b/"
+        }
+      ]
+    },
+    {
+      "id": "yaseen_salah",
+      "name": "Eng. Yaseen Salah",
+      "title": "Content Contributor",
+      "imageUrl": "https://placehold.co/400x400/E6FF94/000000?text=YS",
+      "bio": "Active contributor in compiling content.",
+      "role": "Provided valuable feedback and helped provide important resources to enrich the guide.",
+      "socials": []
+    },
+    {
+      "id": "fatma_ali",
+      "name": "Eng. Fatma Ali",
+      "title": "Content Contributor",
+      "imageUrl": "https://placehold.co/400x400/FFF4B7/000000?text=FA",
+      "bio": "Active contributor in compiling content.",
+      "role": "Provided valuable tips and specialized resources in MATLAB and Verification.",
+      "socials": []
+    },
+    {
+      "id": "moumen_sameh",
+      "name": "Eng. Moumen Sameh",
+      "title": "Content Contributor",
+      "imageUrl": "https://placehold.co/400x400/CFFFE2/000000?text=MS",
+      "bio": "Active contributor in compiling content.",
+      "role": "Shared his valuable graduation project experience and offered practical advice to students.",
+      "socials": []
+    }
+  ],
+  "experts": [
+    {
+      "id": "diaa_khalil",
+      "name": "Dr. Diaa Khalil",
+      "title": "Professor & Expert",
+      "imageUrl": "https://placehold.co/300x300/444/F6F6F6?text=DK",
+      "bio": "Professor specializing in Integrated Circuit Design.",
+      "role": "Essential source for valuable lectures in VLSI.",
+      "socials": []
+    },
+    {
+      "id": "hisham_omran",
+      "name": "Dr. Hisham Omran",
+      "title": "Professor & Expert",
+      "imageUrl": "https://placehold.co/300x300/444/F6F6F6?text=HO",
+      "bio": "Professor specializing in Digital Integrated Circuit Design.",
+      "role": "Main source for advanced Digital IC Design courses.",
+      "socials": []
+    },
+    {
+      "id": "ayman_wahba",
+      "name": "Dr. Ayman Wahba",
+      "title": "Professor & Expert",
+      "imageUrl": "https://placehold.co/300x300/444/F6F6F6?text=AW",
+      "bio": "Professor specializing in Logic Design and Verification.",
+      "role": "Important source for Logic Design and Digital Verification courses.",
+      "socials": []
+    },
+    {
+      "id": "mohamed_khattab",
+      "name": "Dr. Mohamed Khattab",
+      "title": "Professor & Expert",
+      "imageUrl": "https://placehold.co/300x300/444/F6F6F6?text=MK",
+      "bio": "Professor specializing in Computer Architecture.",
+      "role": "Source for Computer Architecture courses.",
+      "socials": []
+    },
+    {
+      "id": "hossam_fahmy",
+      "name": "Dr. Hossam Fahmy",
+      "title": "Professor & Expert",
+      "imageUrl": "https://placehold.co/300x300/444/F6F6F6?text=HF",
+      "bio": "Professor specializing in Advanced Computer Architecture.",
+      "role": "Source for Advanced Computer Architecture courses.",
+      "socials": []
+    },
+    {
+      "id": "kareem_waseem",
+      "name": "Eng. Kareem Waseem",
+      "title": "Engineer & Expert",
+      "imageUrl": "https://placehold.co/300x300/444/F6F6F6?text=KW",
+      "bio": "Expert Engineer in Digital Design.",
+      "role": "Provided important guidance and directions in the field (Digital Design Guidance).",
+      "socials": []
+    },
+    {
+      "id": "hisham_elready",
+      "name": "Eng. Hisham Elready",
+      "title": "Engineer & Expert",
+      "imageUrl": "https://placehold.co/300x300/444/F6F6F6?text=HE",
+      "bio": "Expert Engineer and Graduation Project Mentor.",
+      "role": "Provided valuable mentorship for graduation projects (GP Mentorship).",
+      "socials": []
+    }
+  ]
+}

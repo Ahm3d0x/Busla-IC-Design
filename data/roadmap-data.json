@@ -1,0 +1,893 @@
+[
+  {
+    "id": "introduction",
+    "title": "المرحلة التمهيدية: التعرف على المجال",
+    "duration": "المدة المتوقعة: 1 - 2 أسبوع",
+    "description": "قبل الغوص في التفاصيل التقنية، من المهم أن تأخذ فكرة عامة عن مجال تصميم الدوائر المتكاملة الرقمية (Digital IC Design)، مساراته المختلفة، وأهميته في الصناعة الحديثة.",
+    "guidance": [
+      "شاهد هذه الفيديوهات بالترتيب.",
+      "لا تقلق إذا لم تفهم كل المصطلحات التقنية الآن، الهدف هو الحصول على صورة كبيرة.",
+      "هذه مقدمة عامة، لا تستهلك وقتًا طويلاً هنا."
+    ],
+    "tracks": [
+      {
+        "title": "مصادر تمهيدية",
+        "modules": [
+          {
+            "title": "فيديوهات تعريفية أساسية",
+            "time": "أيام قليلة",
+            "topics": "مقدمة عامة عن IC Design (Analog/Digital)، الفروقات بين المسارات، ASIC vs FPGA، خطوات التصميم (Design Flow).",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Yusuf Sherif - Digital Design Introduction", 
+                "note": "مقدمة عن المجال كجزء من كورس FPGA.", 
+                "links": [
+                    {"title": " Digital IC Design - Intro Session", "link": "https://www.youtube.com/watch?v=dGQw4n0Av2w", "type": "video"}
+                ]
+              },
+              {
+                "type": "video",
+                "author": "Eng. Mostafa Sheshtawy",
+                "note": "فيديو تمهيدي مهم جدًا لفهم الفرق بين الأنالوج والديجيتال قبل الدخول في مسار الـ Digital IC Design.",
+                "links": [
+              {
+                "title": "  Analog IC Design - Intro Session",
+                "link": "https://www.youtube.com/watch?v=-rOk8fO3PEQ",
+                "type": "youtube"
+              }
+            ]
+          },
+              { 
+                "type": "video", 
+                "author": "Kareem Waseem - Digital Orientation Session", 
+                "note": "سيشن تعريفي ممتاز للمجال.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1JJq8SLtZPOOxeRN0tFOjMsd5hWxC0Eof/view", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Tarek Eldeeb - FPGA Introduction (Valeo)", 
+                "note": "شرح جيد لمعنى FPGA.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/watch?v=9-X6fO4FepQ", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Amr Wassal - Overview of Electronics Industry", 
+                "note": "فيديوهات تعريفية من جامعة القاهرة.", 
+                "links": [] 
+              }
+            ]
+          },
+          {
+            "title": "سيشنات تعريفية من Si-Vision",
+            "time": "يوم أو يومين",
+            "topics": "IC Design, ASIC Flow, Digital Design, Design Verification.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Si-Vision: Intro to IC Design", 
+                "note": "تعريف عام (أنالوج وديجيتال).", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1DjtZ9NDLuVJ24sTPNOCMpxcRQxAlw4HL/view", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Si-Vision: Intro to ASIC", 
+                "note": "شرح فني لخطوات ASIC Flow ومصطلحاته.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1PM_UnnHg8ykCkvPWFig9RcRtCpP0Djo0/view", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Si-Vision: Intro to Digital Design", 
+                "note": "سيشن فني عن تصميم الدوائر الرقمية.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1jQADEo8c8KGsknFGHeoQtxcsmEn7MAWo/view", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Si-Vision: Design Verification", 
+                "note": "سيشن فني عن التحقق من التصميم.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1GUhIhNxxSE2f7eZvUFvEl4R6m9HE6gH1/view", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "فهم خطوات التصميم (Design Flow)",
+            "time": "يوم واحد",
+            "topics": "الخطوات من متطلبات العميل حتى ملف GDSII للمصنع، Full Custom vs Semi Custom, FPGA vs ASIC.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Diaa Eldeen Khalil - Lecture 6 (Implementation Approaches)", 
+                "note": "محاضرة ممتازة عن طرق التنفيذ المختلفة.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/watch?v=19GEYx0eWsY", "type": "video"}
+                ]
+              },
+              { 
+                "type": "notes", 
+                "author": "Yaseen Salah - Lecture 6 Notes", 
+                "note": "ملخص مكتوب رائع للمحاضرة السابقة.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1QcsamHEIEKTPuWa9yPYt3cunBgNbEEo0/view", "type": "notes"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Diaa Eldeen Khalil - Lecture 7 (Design Flow)", 
+                "note": "شرح تفصيلي لخطوات التصميم.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/watch?v=JGk4UQOsegA", "type": "video"}
+                ]
+              },
+              { 
+                "type": "notes", 
+                "author": "Yaseen Salah - Lecture 7 Notes", 
+                "note": "ملخص مكتوب رائع لمحاضرة الـ Design Flow.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1goYcgChb6cSdSOVQ9gVqc2kSPuhT1ZWT/view", "type": "notes"}
+                ]
+              }
+            ],
+            "guidance": ["**مهم جداً:** احفظ خطوات الـ Design Flow جيداً، فهي سؤال أساسي في أي مقابلة عمل."]
+          },
+          {
+            "title": "مصادر تفاعلية إضافية",
+            "time": "حسب الحاجة",
+            "topics": "أسئلة وأجوبة حول المجال، نقاشات مع مهندسين.",
+            "resources": [
+              { 
+                "type": "website", 
+                "author": "ECE Knowledge Exchange Group", 
+                "note": "تابع الجلسات المباشرة واستفد من النقاشات.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.facebook.com/groups/ece.knowledge.exchange/", "type": "website"}
+                ]
+              },
+              { 
+                "type": "file", 
+                "author": "Yousef Sherif - General Questions", 
+                "note": "ملف يحتوي على أسئلة شائعة وإجابات من خبراء.", 
+                "links": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "phase-1",
+    "title": "المرحلة الأولى: أساسيات الدوائر الرقمية ولغة Verilog",
+    "duration": "المدة المتوقعة: 4 - 8 أشهر (حسب الخلفية الأكاديمية)",
+    "description": "هذه هي المرحلة التأسيسية الأهم. ستبدأ من المفاهيم المنطقية الأساسية وتتعلم لغة Verilog لوصف هذه الدوائر، بالإضافة لبعض الأساسيات الضرورية من معمارية الحاسب والدوائر الكهربائية.",
+    "guidance": [
+      "**ملاحظة هامة:** هذه الخطة تفترض أنك تدرس بالتوازي مواد الدوائر الكهربائية (Electrical Circuits) والإلكترونيات (Intro to Electronics) في الكلية، فهي ضرورية جداً.",
+      "ستدرس المسار الأول (First Track) بالتوازي مع المسار الثاني (Second Track).",
+      "التطبيق العملي هو سر النجاح هنا. لا تكتفِ بالمشاهدة، اكتب الكود بنفسك وجربه على ModelSim.",
+      "إذا شعرت أن المصادر كثيرة، ابدأ بمصدر واحد (المفضل غالباً) ثم انتقل للآخرين لتعميق الفهم أو لرؤية وجهات نظر مختلفة."
+    ],
+    "tracks": [
+      {
+        "title": "المسار الأول (First Track - الأولويات)",
+        "parallelWith": "Second Track",
+        "modules": [
+          {
+            "title": "1.1: Logic Design & Logic Circuits",
+            "time": "4 - 6 أسابيع",
+            "topics": "Boolean Algebra, K-Maps, Combinational Circuits (Adders, Mux, Decoders, Encoders), Sequential Circuits (Latches, Flip-Flops), FSMs (Moore/Mealy).",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Ayman Wahba - Logic Design", 
+                "note": "كورس ممتاز وشامل (يحتوي الآن على روابط المحاضرات، السكاشن، والمذكرات).", 
+                "links": [
+                    { "title": "قائمة المحاضرات (Playlist)", "link": "https://youtube.com/playlist?list=PLBt5ZQGn4YKTD2mVI1eBwAVR1gsqpWkwg", "type": "video" },
+                    {"title": "  تكملة  [ Dr. Ayman Wahba - Logic Circuits ]  ", "link": "https://www.youtube.com/playlist?list=PLkOpA9uAb9H3e0isTeEqkR-W5PwV8OSTG", "type": "video"},
+                    { "title": "السكاشن [ by Eng Rizk Tawfik ]", "link": "https://www.youtube.com/playlist?list=PLQqn4PS6fXnzHzbtlhmZ_oQ5xDrGhjhIY", "type": "video" },
+                    { "title": "السكاشن [ by Eng Ahmed AbouElhamayed ]", "link": "https://www.youtube.com/playlist?list=PLgHD1d9DOFEqkfRNZibvU4yyjn4YiTogp", "type": "video" },
+                    { "title": "المذكرات (Drive)", "link": "https://drive.google.com/drive/folders/1jFWSZqTFwucyGUFwBZnluHYwpuVtQbrR", "type": "file" }
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Eng. Mohamed Maher - Logic Design (Optional)", 
+                "note": "كورس إضافي للمزيد من الأمثلة.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLm877Wx3hfJ2ZKirS9kzoVRKTEOOt8Cq-", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Yousef Walid (FCIH OCW)", 
+                "note": "بديل جيد، ممتاز في شرح الـ FSM (فيديوهات 14-17).", 
+                "links": []
+              }
+            ],
+            "guidance": ["ركز جداً على فهم الـ FSM، فهي أساس تصميمات كثيرة مثل وحدات التحكم والبروتوكولات التسلسلية."]
+          },
+          {
+            "title": "1.2: Digital Electronics & Digital Circuits",
+            "time": "3 - 4 أسابيع",
+            "topics": "CMOS Logic Gates, Transistor characteristics (briefly), propagation delay, power consumption basics.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Eng. Walid Issa - Digital Electronics", 
+                "note": "شرح جيد لأساسيات الإلكترونيات الرقمية.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLww54WQ2wa5obq6IbRbIiql8oHaTUp3T_", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Neso Academy - Digital Electronics", 
+                "note": "مصدر إضافي ممتاز بالإنجليزية.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRjMH3mWf6kwqiTbT798eAOm", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Sameh Ibrahim - Digital Circuits", 
+                "note": "يركز على بناء الدوائر.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLffO0PKa_AqF3fy9YwNolJS6L2ihBfS2M", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "CommanDo High Tech - Digital Circuits (Optional)", 
+                "note": "للمزيد من التطبيقات.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLCs6mhXfX7c9Q2j66F6MwqpKcWZFVnOq6", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "1.3: Verilog HDL",
+            "time": "4 - 6 أسابيع",
+            "topics": "Syntax, Modules, `assign` vs `always`, Blocking (=) vs Non-blocking (<=), Parameters, Testbenches, Synthesizable code.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Anas Verilog (عربي)", 
+                "note": "**مفضل للمبتدئين.** شرح واضح ومشاريع عملية كثيرة على Vivado يمكن إضافتها للـ CV.", 
+                "links": [
+                    {"title": " youtube", "link": "https://www.youtube.com/playlist?list=PL-iIOnHwN7NXw01eBDR7wI8KzGK4mu8Sr", "type": "video"},
+                    {"title": "drive-pdfs", "link": "https://drive.google.com/drive/folders/1A6ZaHk8zShj0Tk9DtuNWgWmwlpHtBB2w", "type": "file"},
+                    {"title": "github-codes", "link": "https://github.com/aseddin/ece_3300", "type": "code"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Adam Teman (English)", 
+                "note": "للفهم العميق والربط مع ASIC Flow. يحتوي فيديو مهم عن 'How to write Synthesizable RTL'.", 
+                "links": [
+                    {"title": "youtube", "link": "https://www.youtube.com/playlist?list=PLZU5hLL_713x0_AV_rVbay0pW_MED7992G", "type": "video"}
+                ]
+              },
+              { "type": "video", "author": "NPTEL Hardware Modeling (Optional)", "note": "محتوى نظري ممتاز ومفصل.", "links": [
+                {"title": "youtube", "link": "https://www.youtube.com/playlist?list=PLUtfVcb-iqn-EkuBs3arreilxa2UKIChl", "type": "video"},
+                {"title": "course-NPTEL", "link": "https://nptel.ac.in/courses/106105165", "type": "link"},
+                {"title": "drive", "link": "https://drive.google.com/drive/folders/16ousUlKTwu6Y0dd3BP_GORjZ4oDuTlzi", "type": "file"}
+              ] },
+              { "type": "video", "author": "Paul Franzon (Optional)", "note": "كورس أكاديمي جيد آخر.", "links": [
+                {"title": "youtube", "link": "https://www.youtube.com/playlist?list=PLfGJEQLQIDBN0VsXQ68_FEYyqcym8CTDN", "type": "video"},
+                {"title": "drive", "link": "https://drive.google.com/drive/folders/1cNa7nktYvFQR78C9722m2xxE2FcV5vgg", "type": "file"}
+              ] },
+              { 
+                "type": "website", 
+                "author": "HDLBits (تطبيق عملي)", 
+                "note": "**ضروري جداً.** موقع لحل مسائل Verilog وتثبيت الفهم (Problem Solving).", 
+                "links": [
+                    {"title": "Site", "link": "https://hdlbits.01xz.net/wiki/Main_Page", "type": "website"},
+                    {"title": "solutions 1", "link": "https://gitee.com/mosqlwj/Solutions-to-HDLbits-Verilog-sets", "type": "website"},
+                    {"title": "solutions 2", "link": "https://github.com/viduraakalanka/HDL-Bits-Solutions", "type": "website"}
+                ]
+              },
+              { "type": "book", "author": "The Verilog Golden Reference Guide by DOULOS", "note": "مرجع مكتوب جيد للغة.", "links": [
+                {"title": "pdf", "link": "https://drive.google.com/file/d/1qS3fDkCeSwcsl-4lp93lWA51P-u6QxMx/view", "type": "file"}
+              ] }
+            ],
+            "guidance": [
+              "شاهد أمثلة كثيرة لكتابة دوائر مختلفة (Full Adder, ALU, Counters, Registers).",
+              "ابدأ باستخدام ModelSim للمحاكاة (Simulation). حمله واتبع الـ Tutorial المرفق في دليل المبتدئين."
+            ]
+          },
+          {
+            "title": "1.4: Computer Organization",
+            "time": "3 - 4 أسابيع",
+            "topics": "Instruction Set Architecture (ISA) basics, Datapath, Control Unit, Memory organization basics.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Wathiq - Computer Organization", 
+                "note": "شرح أكاديمي للأساسيات.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLwGtXviGGpvWFoO0BnRLs4UzlrgSORlJx", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Eng. Mohamed Maher - Computer Organization (Optional)", 
+                "note": "مصدر إضافي.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLm877Wx3hfJ34LL0iKvyvKLAJXbj4E5lj", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "1.5: VLSI Design (Introduction)",
+            "time": "3 - 4 أسابيع",
+            "topics": "Introduction to VLSI, Design Flow overview, Implementation Styles (Full-custom, Semi-custom, FPGA, Gate Arrays), Fabrication basics, Cost.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Diaa Eldeen Khalil - VLSI Design (Ain Shams)", 
+                "note": "كورس ممتاز يغطي الأساسيات وأنواع الـ Chips والـ Flow.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLn8yg3bTmnBPVg_kiuFYpVSiSvQxSNOhL", "type": "video"}
+                ]
+              },
+              { 
+                "type": "notes", 
+                "author": "Yaseen Salah - VLSI Design Notes", 
+                "note": "محاضرات الكورس مكتوبة بشكل رائع.", 
+                "links": []
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Bassam Gamil - VLSI Design", 
+                "note": "كورس بديل أو إضافي.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PL6DghyhCoI2i5NPT6i80c9IO3WV6QHcbM", "type": "video"}
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "المسار الثاني (Second Track - بالتوازي مع الأول)",
+        "parallelWith": "First Track",
+        "modules": [
+          {
+            "title": "1.6: Electrical Circuits",
+            "time": "مستمر (يفترض دراسته أكاديمياً)",
+            "topics": "Ohm's Law, KVL, KCL, Thevenin, Norton, Transient analysis (RC, RL, RLC).",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Razavi - Electrical Circuits", 
+                "note": "مرجع عالمي ممتاز (إنجليزية).", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PL3-wYxbt4yCgIAyskr6D92kqme0KGxgK9", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Azzam Zagzoog (Optional)", 
+                "note": "جميع قوائم التشغيل بالقناة مفيدة (عربي).", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/@azzamzagzoog", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "1.7: Introduction to Electronics",
+            "time": "مستمر (يفترض دراسته أكاديمياً)",
+            "topics": "Diodes, Transistors (BJT, MOSFET), Amplifiers basics, Operating regions.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Hesham - Intro. to Electronics", 
+                "note": "كورس نظري.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLMSBalys69yzbmRgoceGUidP8B7fir1dx&si=-F3EA-Zg6wv3fX9I", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Hesham - Intro. to Electronics (Practical)", 
+                "note": "تطبيقات عملية.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLMSBalys69yxideGtLlblOfoz2nnkY2V1", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Razavi - Intro. to Electronics (Optional)", 
+                "note": "بديل ممتاز (شاهد حتى الفيديو 45).", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLyYrySVqmyVPzvVlPW-TTzHhNWg1J_0LU", "type": "video"}
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "phase-2",
+    "title": "المرحلة الثانية: المواضيع المتقدمة والتخصص",
+    "duration": "المدة المتوقعة: 6 - 9 أشهر",
+    "description": "بعد بناء أساس قوي، تبدأ الآن في التعمق في مواضيع أكثر تقدماً وتختار المسار الذي ستركز عليه في مشروع تخرجك ومسارك المهني.",
+    "guidance": [
+      "ستدرس المسار الثالث (Third Track) بالتوازي مع المسار الرابع (Fourth Track).",
+      "ابدأ في التفكير في مشروع التخرج من الآن.",
+      "مادة Analog IC Design 1 مهمة حتى لو تخصصت ديجيتال، لفهم أساسيات الـ CMOS.",
+      "المصادر التي تحمل علامة (▲) اختيارية ويمكن مشاهدتها لاحقًا أو حسب الحاجة."
+    ],
+    "tracks": [
+      {
+        "title": "المسار الثالث (Third Track)",
+        "parallelWith": "Fourth Track",
+        "modules": [
+          {
+            "title": "2.1: Analog IC Design 1 (CMOS Basics)",
+            "time": "4 أسابيع",
+            "topics": "MOSFET operation (deep dive), CMOS Inverter, basic CMOS gates, layout basics (relevant for digital understanding).",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Hesham Omran - Analog IC Design 1", 
+                "note": "**مهم جداً.** ركز فقط على الجزء الخاص بالـ CMOS.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLMSBalys69yzp1vrmnYAmpRFiptbuGuaj", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "2.2: Digital Integrated Circuits",
+            "time": "4 - 6 أسابيع",
+            "topics": "Advanced CMOS logic, interconnect, timing, memory circuits (SRAM, DRAM), low power design.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Karim Ossama - Digital Integrated", 
+                "note": "يشرح بناء الدوائر الرقمية على مستوى الترانزستور.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PL1mBkce6oiJT6_Dtz4nb4Bm1HeoC1_rxO", "type": "video"}
+                ]
+              },
+              { 
+                "type": "book", 
+                "author": "Jan M. Rabaey - Digital Integrated Circuits", 
+                "note": "الكتاب المرجعي الشهير (Chapters 5,6,7,8,10,12).", 
+                "links": []
+              },
+              { 
+                "type": "book", 
+                "author": "Weste & Harris - CMOS VLSI Design (Alternative)", 
+                "note": "بديل ممتاز لـ Rabaey (Chapters 1-5 & 9-12).", 
+                "links": []
+              }
+            ]
+          },
+          {
+            "title": "2.3: Digital IC Design 1, 2, 3",
+            "time": "6 - 8 أسابيع",
+            "topics": "Deep dive into digital system design, advanced synthesis concepts, timing analysis (STA), power analysis, DFT.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Hesham Omran - Digital IC Design 1", 
+                "note": "**أساسي جداً.**", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLMSBalys69yzvAKErDt7tT70-IIKPIOCP", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Hesham Omran - Digital IC Design 2", 
+                "note": "**أساسي جداً.**", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLMSBalys69yxoljeZ2Q3fxs69cGCU14B1", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Hesham Omran - Digital IC Design 3", 
+                "note": "**أساسي جداً.**", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLMSBalys69yw1tSoF42QW9jbbC0-UeCAy", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "2.4: Digital Signal Processing (DSP)",
+            "time": "4 أسابيع",
+            "topics": "Sampling, Z-transform, DFT/FFT, FIR/IIR filters (understanding relevant for hardware implementation).",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Michael Ibrahim - Digital Signal processing", 
+                "note": "لفهم معالجة الإشارات الرقمية وتطبيقاتها.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLGZ7eihNHo7znYME2sbiA-sJ9zU3Ng1rj", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+              "title": "2.5: Static Timing Analysis (STA)",
+              "time": "2 - 3 أسابيع",
+              "topics": "Setup/Hold time, Clock Skew, Timing Paths, SDC Constraints, Timing Violations.",
+              "resources": [
+                  { 
+                    "type": "video", 
+                    "author": "Adam Teman - Lecture 5", 
+                    "note": "تغطية ممتازة للأساسيات.", 
+                    "links": [
+                        {"title": "فتح المصدر", "link": "https://www.youtube.com/watch?v=1uXp3q4gqFA&list=PLZU5hLL_713x0_AV_rVbay0pW_MED7992G&index=6", "type": "video"}
+                    ]
+                  },
+                  { 
+                    "type": "video", 
+                    "author": "Setup & Hold Time Explanation Videos", 
+                    "note": "فيديوهات لفهم أعمق لـ Setup/Hold ولماذا يمكن أن يكون Hold سالبًا.", 
+                    "links": [
+                        {"title": "فتح المصدر", "link": "https://youtu.be/Km-uej4xrR4", "type": "video"}
+                    ]
+                  },
+                  { "type": "website", "author": "STA Bootcamp (Optional)", "note": "دورة متخصصة (قد تكون مدفوعة).", "links": [] },
+                  { "type": "book", "author": "Principle of Digital RTL Design", "note": "**مرجع أساسي.**", "links": [] }
+              ]
+          },
+          {
+              "title": "2.6: Power Reduction Techniques",
+              "time": "1 - 2 أسابيع",
+              "topics": "Dynamic Power, Static Power, Clock Gating, Power Gating, Multi-Vdd, DVFS.",
+              "resources": [
+                  { "type": "book", "author": "Principle of Digital RTL Design", "note": "**المصدر الرئيسي.** يشرح أنواع الـ Power وكيفية تقليلها.", "links": [] }
+              ]
+          },
+          {
+              "title": "2.7: Design for Test (DFT)",
+              "time": "1 - 2 أسابيع",
+              "topics": "Scan Chains, ATPG, Fault Models (Stuck-at, Transition), BIST.",
+              "resources": [
+                  { "type": "book", "author": "Principle of Digital RTL Design", "note": "**المصدر الرئيسي.** يشرح الـ Hardware الإضافي المطلوب للاختبار.", "links": [] }
+              ]
+          },
+          {
+              "title": "2.8: Clock Domain Crossing (CDC)",
+              "time": "1 - 2 أسابيع",
+              "topics": "Metastability, Synchronizers (2-FF), Async FIFO, Handshake protocols, Gray Code.",
+              "resources": [
+                  { 
+                    "type": "paper", 
+                    "author": "Sunburst Design - CDC Paper", 
+                    "note": "**مهم جداً.** ورقة بحثية ممتازة.", 
+                    "links": [
+                        {"title": "فتح المصدر", "link": "https://www.sunburst-design.com/papers/", "type": "paper"}
+                    ]
+                  },
+                  { "type": "book", "author": "Principle of Digital RTL Design", "note": "مرجع جيد أيضاً.", "links": [] },
+                  { "type": "video", "author": "Electronicspedia Channel (Optional)", "note": "فيديوهات شرح إضافية.", "links": [] }
+              ]
+          },
+          {
+              "title": "2.9: TCL Scripting",
+              "time": "2 أسابيع",
+              "topics": "Basic Syntax, File I/O, Procedures, Usage in EDA tools (Synopsys, Cadence, Mentor).",
+              "resources": [
+                  { 
+                    "type": "video", 
+                    "author": "TCL Playlist (YouTube)", 
+                    "note": "لتعلم أساسيات اللغة وكتابة السكربتات البسيطة (لا يغطي سكربتات الأدوات نفسها).", 
+                    "links": [
+                        {"title": "فتح المصدر", "link": "https://youtube.com/playlist?list=PL1h5a0eaDD3rsGDFnVki_fFEtDWQfXjca", "type": "video"}
+                    ]
+                  }
+              ]
+          }
+        ]
+      },
+      {
+        "title": "المسار الرابع (Fourth Track - بالتوازي مع الثالث)",
+        "parallelWith": "Third Track",
+        "modules": [
+          {
+            "title": "2.10: Computer Architecture (Advanced)",
+            "time": "4 - 6 أسابيع",
+            "topics": "Advanced Pipelining, Superscalar, Out-of-Order Execution, Cache Coherence, Memory Controllers.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Khattab & Dr. Hossam Fahmy (Cairo Uni)", 
+                "note": "**أساسي.** تكملة كورس معمارية الحاسب الأساسي.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLFmuI4Q8F-ar4Ye-Mi5Qu5NAZ33hrYMHx", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Dr. Ibrahim Qamar - Computer Architecture", 
+                "note": "كورس إضافي أو بديل.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLfgGeadDOfmhcTNpVHQRkVVfCj5ds8pJd", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Coursera - Computer Architecture (▲ Optional)", 
+                "note": "إذا أردت التعمق أكثر.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.coursera.org/learn/digital-systems?allowOnboardingRedirect=true&courseSlug=digital-systems&showOnboardingModal=check", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "2.11: Advanced Computer Architecture",
+            "time": "4 أسابيع",
+            "topics": "Multicore processors, GPUs, Domain Specific Architectures.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Dr. Hossam Fahmy - Advanced Computer Architecture", 
+                "note": "مواضيع متقدمة.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLfgGeadDOfmjim-S8bVCdLAC3-8nLuTm1", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "Coursera - Advanced Computer Architecture (▲ Optional)", 
+                "note": "للمزيد من التعمق.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.coursera.org/learn/comparch?allowOnboardingRedirect=true&courseSlug=comparch&showOnboardingModal=check", "type": "video"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "2.12: Digital Design & Computer Architecture (Integrated Approach)",
+            "time": "حسب الحاجة",
+            "topics": "Connecting hardware design principles directly with computer architecture concepts.",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "ETH Zürich - Digital Design & Computer Architecture", 
+                "note": "كورس يربط المجالين بشكل جيد.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PL5Q2soXY2Zi_FRrloMa2fUYWPGiZUBQo2", "type": "video"}
+                ]
+              },
+              { "type": "book", "author": "Mano - Digital Design (Book)", "note": "الكتاب الكلاسيكي (قد تكون درسته أكاديمياً).", "links": [] },
+              { "type": "book", "author": "David Harris - Digital Design and Computer Architecture (Book)", "note": "كتاب آخر يربط المجالين.", "links": [] }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "phase-3",
+    "title": "المرحلة الثالثة: التخصص الدقيق وسوق العمل",
+    "duration": "المدة المتوقعة: 6 أشهر - سنة (أو أكثر)",
+    "description": "هنا تبدأ في تطبيق ما تعلمته بشكل مكثف على مشاريع حقيقية، وتختار التخصص الدقيق الذي ستعمل به (Design, Verification, PnR, DFT).",
+    "guidance": [
+      "الـ ITI، الدبلومات المتخصصة، والـ Internships هي طرق ممتازة لتسريع دخولك سوق العمل.",
+      "استمر في بناء معرض أعمالك (Portfolio) على GitHub.",
+      "الـ Networking والتواصل الفعال مع المهندسين في الشركات هو مفتاحك للحصول على فرصة."
+    ],
+    "tracks": [
+      {
+        "title": "مسارات التخصص والاحتراف",
+        "modules": [
+          {
+            "title": "3.1: Digital Verification Specialization",
+            "time": "3 - 6 أشهر",
+            "topics": "SystemVerilog (Advanced OOP, DPI), UVM (Deep Dive: Sequences, Register Layer, Virtual Sequencers), Formal Verification basics, Verification Planning.",
+            "resources": [
+              { "type": "video", "author": "Dr. Ayman Wahba - CSE412: Digital Verification", "note": "ابدأ بهذا إذا لم تدرسه سابقاً.", "links": [] },
+              { 
+                "type": "website", 
+                "author": "Siemens Verification Academy", 
+                "note": "**المصدر الأساسي لـ UVM.** ادرس الكورسات والـ Cookbook.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://verificationacademy.com/", "type": "website"}
+                ]
+              },
+              { 
+                "type": "diploma", 
+                "author": "Sherif Hosny - Digital Verification Diploma (Online)", 
+                "note": "دبلومة متخصصة عبر الإنترنت.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://docs.google.com/forms/d/16r_K4R3tbZiuwPq2YtJL1Nex_wjFcpPtnVvhjb5Nb7Y/viewform?fbclid=IwAR1MST40QmvlJrBtjvYoIznsggVUDUhVkDxCzhtmGoE_43RC06xxh1-sy9g&edit_requested=true&pli=1", "type": "diploma"}
+                ]
+              },
+              { 
+                "type": "diploma", 
+                "author": "NajahNow - Verification Diploma (Online)", 
+                "note": "خيار آخر للدبلومة عبر الإنترنت.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1sjOR5YbLXSfqFoakoNLBUKOGVrRmt9Cs/view?usp=sharing", "type": "diploma"}
+                ]
+              },
+              { 
+                "type": "diploma", 
+                "author": "Ali Eltemsah - Verification Module (Offline)", 
+                "note": "جزء من دبلومة أوفلاين.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1p6s8uKu6rz4k49FCiqi5mNfQQB_P6Hb0/view?usp=drivesdk", "type": "diploma"}
+                ]
+              },
+              { 
+                "type": "diploma", 
+                "author": "Kareem Waseem - Design Verification (Offline)", 
+                "note": "دبلومة أوفلاين.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.facebook.com/groups/319864175836046/permalink/1178139760008479/?mibextid=oFDknk&rdid=n0r03PvN2d0z4dlk&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fp%2FsYBahihuffETpuys%2F%3Fmibextid%3DoFDknk#", "type": "diploma"}
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3.2: Physical Design (PnR) Specialization",
+            "time": "3 - 6 أشهر",
+            "topics": "Advanced Synthesis, Floorplanning Strategies, Power Planning, CTS Techniques, Routing Algorithms, Static Timing Analysis (Advanced), Crosstalk, IR Drop, Signoff Checks (DRC, LVS).",
+            "resources": [
+              { 
+                "type": "video", 
+                "author": "Adam Teman Course", 
+                "note": "تغطية جيدة للـ Flow المادي.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLZU5hLL_713x0_AV_rVbay0pW_MED7992G", "type": "video"}
+                ]
+              },
+              { 
+                "type": "video", 
+                "author": "NPTEL VLSI Physical Design", 
+                "note": "كورس أكاديمي مفصل.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.youtube.com/playlist?list=PLTfS8Yc_eV8GfHG9n1d1N3z3W-0TJBvXv", "type": "video"}
+                ]
+              },
+              { "type": "notes", "author": "Fatma Ali Notes - ASIC Implementation", "note": "ملاحظات قيمة مكتوبة بخط اليد.", "links": [] },
+              { "type": "video", "author": "VLSI Physical Design Full Course (YouTube)", "note": "Playlist آخر يغطي المجال.", "links": [] },
+              { "type": "video", "author": "Yousef Sherif - Synthesis & Formality Videos", "note": "فيديوهات عملية عن Synthesis و Formality باستخدام الأدوات.", "links": [] }
+            ]
+          },
+          {
+            "title": "3.3: FPGA Specialization",
+            "time": "3 - 6 أشهر",
+            "topics": "Advanced FPGA Architectures (Xilinx/Intel), High-Level Synthesis (HLS), Embedded Systems on FPGA (SoC), Debugging on Hardware, Optimization for FPGA.",
+            "resources": [
+              { "type": "diploma", "author": "NajahNow - FPGA Diploma (Online)", "note": "دبلومة متخصصة عبر الإنترنت.", "links": [] },
+              { "type": "book", "author": "FPGA Prototyping by VHDL/Verilog Examples", "note": "كتب تحتوي أمثلة عملية.", "links": [] }
+            ]
+          },
+          {
+            "title": "3.4: ASIC Design Specialization",
+            "time": "3 - 6 أشهر",
+            "topics": "Advanced RTL Design, Low Power Design Techniques (UPF), Design for Testability (DFT), Synthesis Constraints (SDC), Formal Verification (Intro).",
+            "resources": [
+                { 
+                    "type": "diploma", 
+                    "author": "NajahNow - ASIC Diploma (Online)", 
+                    "note": "دبلومة متخصصة عبر الإنترنت.", 
+                    "links": [
+                        {"title": "فتح المصدر", "link": "https://drive.google.com/file/d/1pc_yybLGopk6z-loZoail8UMt-U2YIOC/view?usp=sharing", "type": "diploma"}
+                    ]
+                },
+                { "type": "diploma", "author": "Ali Eltemsah - ASIC Diploma (Offline)", "note": "دبلومة أوفلاين.", "links": [] },
+                { "type": "diploma", "author": "Kareem Waseem - Digital Design (Offline)", "note": "دبلومة أوفلاين.", "links": [] }
+            ]
+          },
+          {
+            "title": "3.5: Internships & Academies",
+            "time": "فترات مختلفة (صيفية أو أطول)",
+            "topics": "فرص للتدريب العملي داخل الشركات واكتساب خبرة حقيقية.",
+            "resources": [
+              { 
+                "type": "internship", 
+                "author": "IC-Pedia Internship", 
+                "note": "من أفضل الفرص في مصر.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.linkedin.com/posts/icpedia_accelerateyourcareer-summerinternship2024-activity-7198112313323749376-S5ll?utm_source=share&utm_medium=member_android", "type": "internship"}
+                ]
+              },
+              { 
+                "type": "internship", 
+                "author": "Si-Vision Internship / Academy", 
+                "note": "شركة رائدة وتقدم فرص تدريب وأكاديمية.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.linkedin.com/posts/si-vision_internshipopportunity-sivisioncompany-techinternship-activity-7206592106755198977-4q_7?utm_source=share&utm_medium=member_android", "type": "internship"}
+                ]
+              },
+              { 
+                "type": "internship", 
+                "author": "CND Internship (AUC/EJUST)", 
+                "note": "مركز تابع لجامعة عين شمس.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.aucegypt.edu/ar/centers/CND/electronics-professional-training", "type": "internship"}
+                ]
+              },
+              { 
+                "type": "internship", 
+                "author": "ITI Summer Code Camp", 
+                "note": "برنامج صيفي مكثف.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.facebook.com/story.php?story_fbid=466438379299685&id=100078005808564&mibextid=qi2Omg&rdid=MR8QCmxEWbXA2CIX&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fp%2F3r5yuWhTEq9v821K%2F%3Fmibextid%3Dqi2Omg#", "type": "internship"}
+                ]
+              },
+              { 
+                "type": "internship", 
+                "author": "NTI Summer Camp", 
+                "note": "برنامج صيفي آخر.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.facebook.com/100064869240758/posts/6021758904525860/?rdid=MNH87B3J2kMedh5i", "type": "internship"}
+                ]
+              },
+              { "type": "internship", "author": "Chipions Internship", "note": "", "links": [] },
+              { "type": "internship", "author": "Siemens Internship", "note": "", "links": [] },
+              { "type": "internship", "author": "STMicroelectronics Internship", "note": "", "links": [] },
+              { "type": "internship", "author": "Analog Devices (Digital Internship)", "note": "", "links": [] }
+            ],
+            "guidance": ["ابحث عن فرص تدريب أخرى، فالقائمة ليست حصرية."]
+          },
+          {
+            "title": "3.6: Important Links & Communities",
+            "time": "مستمر",
+            "topics": "مصادر مجمعة ومجتمعات للتواصل وتبادل الخبرات.",
+            "resources": [
+              { 
+                "type": "website", 
+                "author": "VLSI Community Drive (Yusuf Shiref)", 
+                "note": "درايف شامل يحتوي كل شيء تقريباً.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/drive/folders/1xybxKdevnhAntzfM2v-YcEjSUZLvNtxl?usp=sharing", "type": "website"}
+                ]
+              },
+              { 
+                "type": "website", 
+                "author": "ASIC Design Roadmap (Ahmed Abdelazeem)", 
+                "note": "خريطة طريق تفصيلية أخرى.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://github.com/abdelazeem201/ASIC-Design-Roadmap?tab=readme-ov-file#physical-design-flow-of-application-specific-integrated-circuits", "type": "website"}
+                ]
+              },
+              { 
+                "type": "website", 
+                "author": "ECE Knowledge Exchange Digital Post", 
+                "note": "منشور مجمع للمصادر الرقمية على فيسبوك.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://www.facebook.com/groups/ece.knowledge.exchange/permalink/4424247824292890/", "type": "website"}
+                ]
+              },
+              { 
+                "type": "website", 
+                "author": "Book Links for IC Design (Kareem Elhafi)", 
+                "note": "مجموعة درايفات للكتب.", 
+                "links": [
+                    {"title": "فتح المصدر", "link": "https://drive.google.com/drive/folders/10Wcfo6-M2aYeuTci_3LvGMjUGiz-2SZ6", "type": "website"}
+                ]
+              }
+            ],
+            "guidance": ["ابحث عن فرص تدريب أخرى، فالقائمة ليست حصرية."]
+          }
+        ]
+      }
+    ]
+  }
+]
