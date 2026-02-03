@@ -1,16 +1,19 @@
-import { db, auth, doc, getDoc, setDoc, addDoc, collection, query, where, getDocs, updateDoc, serverTimestamp } from './firebase-config.js';
+import { db, collection, addDoc, getDoc, doc, query, where, getDocs, serverTimestamp } from './firebase-config.js';
 
-// --- الثوابت ---
+// --- Constants ---
 const TEAMS_COLLECTION = "teams";
 const REQUESTS_COLLECTION = "team_requests";
 const USERS_COLLECTION = "users";
 
 /**
- * 1. إرسال طلب إنشاء فريق جديد
+ * 1. Submit a new team creation request
+ * @param {string} leaderUid - The User ID of the student creating the team
+ * @param {object} teamData - Object containing name, logo, uni, gov, etc.
+ * @returns {object} { success: boolean, message: string }
  */
 export async function submitTeamRequest(leaderUid, teamData) {
     try {
-        // التحقق أولاً: هل للمستخدم طلب معلق؟
+        // Step 1: Check if the user already has a pending request
         const q = query(collection(db, REQUESTS_COLLECTION), 
             where("leader_id", "==", leaderUid),
             where("status", "==", "Pending")
@@ -18,10 +21,10 @@ export async function submitTeamRequest(leaderUid, teamData) {
         const snapshot = await getDocs(q);
         
         if (!snapshot.empty) {
-            throw new Error("لديك طلب قيد المراجعة بالفعل.");
+            throw new Error("You already have a pending request under review.");
         }
 
-        // إنشاء الطلب
+        // Step 2: Prepare request data
         const requestData = {
             leader_id: leaderUid,
             team_name: teamData.name,
@@ -30,12 +33,14 @@ export async function submitTeamRequest(leaderUid, teamData) {
             governorate: teamData.governorate,
             reason: teamData.reason,
             expected_members: teamData.members_count,
-            status: "Pending", // يحتاج موافقة الأدمن
+            status: "Pending", // Requires admin approval
             submitted_at: serverTimestamp()
         };
 
+        // Step 3: Add to Firestore
         await addDoc(collection(db, REQUESTS_COLLECTION), requestData);
-        return { success: true, message: "تم إرسال طلبك بنجاح! سيتم مراجعته قريباً." };
+        
+        return { success: true, message: "Request submitted successfully! Waiting for admin approval." };
 
     } catch (error) {
         console.error("Error submitting request:", error);
@@ -44,21 +49,24 @@ export async function submitTeamRequest(leaderUid, teamData) {
 }
 
 /**
- * 2. جلب حالة المستخدم (هل هو ليدر؟ هل في فريق؟)
+ * 2. Check user's team status (Is he a leader? In a team? Pending?)
+ * @param {string} uid - User ID
+ * @returns {object|null} Status object or null if error
  */
 export async function getUserTeamStatus(uid) {
     try {
+        // Fetch user document
         const userDoc = await getDoc(doc(db, USERS_COLLECTION, uid));
         if (!userDoc.exists()) return null;
         
         const userData = userDoc.data();
         
-        // إذا كان عضواً في فريق
+        // Case A: User is already in a team
         if (userData.team_id) {
             return { inTeam: true, role: userData.role || 'Student', teamId: userData.team_id };
         }
 
-        // إذا لم يكن في فريق، نفحص هل لديه طلب معلق
+        // Case B: User is not in a team, check for pending requests
         const q = query(collection(db, REQUESTS_COLLECTION), 
             where("leader_id", "==", uid),
             where("status", "==", "Pending")
@@ -69,6 +77,7 @@ export async function getUserTeamStatus(uid) {
             return { inTeam: false, hasPendingRequest: true };
         }
 
+        // Case C: User is free
         return { inTeam: false, hasPendingRequest: false };
 
     } catch (error) {
@@ -78,7 +87,9 @@ export async function getUserTeamStatus(uid) {
 }
 
 /**
- * 3. جلب بيانات الفريق (لليدر والأعضاء)
+ * 3. Fetch team details
+ * @param {string} teamId 
+ * @returns {object|null} Team data
  */
 export async function getTeamData(teamId) {
     try {

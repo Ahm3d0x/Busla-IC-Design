@@ -3,127 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>غرفة القيادة | بوصلة</title>
+    <title>Leader Dashboard | Busla</title>
     <link rel="icon" type="image/jpg" href="../assets/icons/icon.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script>
         tailwind.config = {
             theme: {
-                extend: { colors: { 'b-bg': '#000000', 'b-primary': '#006A67', 'b-hl': '#22C45D' }, fontFamily: { 'cairo': ['Cairo'] } }
+                extend: {
+                    colors: { 'b-bg': '#000000', 'b-surface': '#111111', 'b-primary': '#006A67', 'b-hl-light': '#22C45D' },
+                    fontFamily: { 'cairo': ['Cairo', 'sans-serif'] },
+                    animation: {
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'fade-out': 'fadeOut 0.3s ease-in forwards'
+                    },
+                    keyframes: {
+                        slideIn: { '0%': { transform: 'translateY(10px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+                        fadeOut: { '0%': { opacity: '1' }, '100%': { opacity: '0' } }
+                    }
+                }
             }
         }
     </script>
-    <style>body { background-color: #000; color: white; font-family: 'Cairo'; }</style>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #000; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: slide-in 0.4s ease-out; }
+    </style>
 </head>
-<body class="bg-b-bg min-h-screen">
+<body class="bg-b-bg text-white min-h-screen flex overflow-hidden">
 
-    <nav class="bg-gray-900 border-b border-gray-800 p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="bg-purple-600 text-white px-2 py-1 rounded text-xs font-bold">LEADER</div>
-                <h1 class="font-bold text-xl">لوحة القيادة</h1>
+    <aside class="w-64 bg-b-surface border-l border-white/10 hidden md:flex flex-col h-screen z-50">
+        <div class="p-6 flex items-center gap-3 border-b border-white/10">
+            <div class="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <i class="fas fa-crown text-white text-xl"></i>
             </div>
-            <div class="flex items-center gap-4">
-                <span id="leader-name" class="text-gray-300 text-sm">القائد ...</span>
-                <button id="logout-btn" class="text-red-400 hover:text-red-300"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
-        </div>
-    </nav>
-
-    <main class="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <div class="lg:col-span-3 bg-gray-900 rounded-2xl p-6 border border-gray-800">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h2 class="text-2xl font-bold mb-1" id="team-name">اسم الفريق...</h2>
-                    <p class="text-gray-400 text-sm">جامعة <span id="team-uni">...</span></p>
-                </div>
-                <div class="bg-b-primary/20 text-b-primary px-4 py-2 rounded-xl text-center">
-                    <span class="block text-xs text-gray-400">نقاط الفريق</span>
-                    <span class="text-2xl font-bold" id="team-points">0</span>
-                </div>
+            <div>
+                <h1 class="font-bold text-lg tracking-wide">غرفة القيادة</h1>
+                <p class="text-xs text-gray-400">Leader Access</p>
             </div>
         </div>
 
-        <div class="lg:col-span-2 bg-gray-900 rounded-2xl p-6 border border-gray-800">
-            <h3 class="font-bold mb-4 flex items-center gap-2">
-                <i class="fas fa-clipboard-check text-yellow-500"></i> مراجعة المهام
-            </h3>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-right text-gray-400">
-                    <thead class="bg-black/50 text-xs uppercase text-gray-200">
-                        <tr>
-                            <th class="px-4 py-3">العضو</th>
-                            <th class="px-4 py-3">المهمة</th>
-                            <th class="px-4 py-3">الرابط</th>
-                            <th class="px-4 py-3">الإجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reviews-table">
-                        <tr class="border-b border-gray-800 hover:bg-white/5">
-                            <td class="px-4 py-3 text-white">محمد أحمد</td>
-                            <td class="px-4 py-3">تصميم Logic Gates</td>
-                            <td class="px-4 py-3"><a href="#" class="text-blue-400 underline">Github</a></td>
-                            <td class="px-4 py-3 flex gap-2">
-                                <button class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-500">قبول</button>
-                                <button class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-500">رفض</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="switchTab('overview')" id="btn-overview" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl bg-purple-600/10 text-purple-400 font-bold border border-purple-600/20 transition-all">
+                <i class="fas fa-user-graduate"></i> <span>مساحتي (طالب)</span>
+            </button>
+            <button onclick="switchTab('squad')" id="btn-squad" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
+                <i class="fas fa-users"></i> <span>إدارة الفريق</span>
+            </button>
+            <button onclick="switchTab('curriculum')" id="btn-curriculum" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
+                <i class="fas fa-map-signs"></i> <span>المنهج والمهام</span>
+            </button>
+            <button onclick="switchTab('grading')" id="btn-grading" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all relative">
+                <i class="fas fa-clipboard-check"></i> <span>التصحيح</span>
+                <span id="pending-badge" class="hidden absolute left-3 top-3 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">0</span>
+            </button>
+        </nav>
 
-        <div class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-            <h3 class="font-bold mb-4 flex items-center gap-2">
-                <i class="fas fa-users text-blue-500"></i> الأعضاء
-            </h3>
-            <ul class="space-y-3" id="members-list">
-                <li class="flex items-center gap-3 bg-black/20 p-3 rounded-lg">
-                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">م</div>
-                    <div class="flex-1">
-                        <p class="text-sm font-bold text-white">محمد أحمد</p>
-                        <p class="text-xs text-gray-500">Member</p>
-                    </div>
-                </li>
-            </ul>
-            <button class="w-full mt-4 py-2 bg-white/5 hover:bg-white/10 text-gray-300 rounded-lg text-sm border border-gray-700 border-dashed">
-                + دعوة عضو جديد
+        <div class="p-4 border-t border-white/10">
+            <button id="logout-btn" class="w-full flex items-center gap-3 p-3 rounded-xl text-red-400 hover:bg-red-500/10 transition-all">
+                <i class="fas fa-sign-out-alt"></i> <span>تسجيل خروج</span>
             </button>
         </div>
+    </aside>
 
+    <main class="flex-1 h-screen overflow-y-auto p-4 md:p-8 relative">
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-2xl font-bold">أهلاً يا ليدر، <span id="leader-name" class="text-purple-400">...</span> 👋</h2>
+                <p class="text-sm text-gray-400 mt-1">فريق: <span id="team-name-display" class="text-white font-bold">...</span></p>
+            </div>
+            <div class="bg-white/5 px-4 py-2 rounded-xl border border-white/10 flex items-center gap-3">
+                <div class="text-right">
+                    <p class="text-xs text-gray-400">نقاطي</p>
+                    <p id="my-points" class="font-bold text-b-hl-light font-mono text-lg">0</p>
+                </div>
+                <div class="w-10 h-10 bg-b-hl-light/20 rounded-full flex items-center justify-center text-b-hl-light">
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+        </header>
+
+        <section id="overview" class="tab-content active space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-b-surface p-6 rounded-2xl border border-white/5">
+                    <div class="text-gray-400 text-sm mb-1">نقاط الفريق</div>
+                    <div class="text-3xl font-bold text-yellow-400" id="stat-team-score">0</div>
+                </div>
+                <div class="bg-b-surface p-6 rounded-2xl border border-white/5">
+                    <div class="text-gray-400 text-sm mb-1">الأعضاء</div>
+                    <div class="text-3xl font-bold text-white" id="stat-members-count">- / 5</div>
+                </div>
+                <div class="bg-b-surface p-6 rounded-2xl border border-white/5">
+                    <div class="text-gray-400 text-sm mb-1">مهام نشطة</div>
+                    <div class="text-3xl font-bold text-b-primary" id="stat-active-tasks">0</div>
+                </div>
+            </div>
+
+            <div class="bg-b-surface rounded-2xl border border-white/10 p-6">
+                <h3 class="font-bold text-xl mb-6 border-r-4 border-b-primary pr-3 flex items-center gap-2">
+                    <i class="fas fa-tasks text-b-primary"></i> مهامي الدراسية
+                </h3>
+                <div id="my-tasks-list" class="space-y-3">
+                    <div class="text-center text-gray-500 py-10">
+                        <i class="fas fa-spinner fa-spin mb-2"></i> جاري التحميل...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="squad" class="tab-content space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-xl">أعضاء الفريق</h3>
+                <button onclick="openAddMemberModal()" class="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-lg text-sm font-bold border border-white/10 transition-all">
+                    <i class="fas fa-user-plus ml-2"></i> دعوة عضو
+                </button>
+            </div>
+
+            <div class="bg-b-surface rounded-2xl border border-white/10 overflow-hidden">
+                <div id="members-list" class="divide-y divide-white/5">
+                    </div>
+            </div>
+        </section>
+
+        <section id="curriculum" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[calc(100vh-200px)]">
+                <div class="bg-b-surface rounded-2xl border border-white/10 flex flex-col h-full overflow-hidden">
+                    <div class="p-4 border-b border-white/10 bg-black/20">
+                        <h3 class="font-bold text-purple-400"><i class="fas fa-map ml-2"></i> خارطة الطريق</h3>
+                        <p class="text-xs text-gray-500">حدد الكورسات التي سيدرسها الفريق</p>
+                    </div>
+                    <div id="roadmap-tree" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scroll">
+                        </div>
+                </div>
+
+                <div class="bg-b-surface rounded-2xl border border-white/10 flex flex-col h-full overflow-hidden">
+                    <div class="p-4 border-b border-white/10 bg-black/20 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-green-400"><i class="fas fa-list-check ml-2"></i> تعيين المهام</h3>
+                            <p class="text-xs text-gray-500">اختر كورس من اليسار لعرض دروسه</p>
+                        </div>
+                        <button onclick="openCustomTaskModal()" class="text-xs bg-white/5 hover:bg-white/10 px-3 py-1 rounded border border-white/10">
+                            + مهمة خاصة
+                        </button>
+                    </div>
+                    <div id="task-assigner" class="flex-1 overflow-y-auto p-4 custom-scroll">
+                        <div class="h-full flex flex-col items-center justify-center text-gray-600">
+                            <i class="fas fa-hand-point-right text-3xl mb-4"></i>
+                            <p>اختر كورس لعرض محتواه</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="grading" class="tab-content space-y-6">
+            <h3 class="font-bold text-xl">المشاريع بانتظار المراجعة</h3>
+            <div id="submissions-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                </div>
+        </section>
     </main>
 
-    <script type="module">
-        import { auth, db, doc, getDoc, signOut } from '../js/firebase-config.js';
-        
-        // التحقق من الليدر عند التحميل
-        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+    <div id="grading-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-b-surface w-full max-w-md rounded-2xl border border-white/10 shadow-2xl p-6 relative animate-slide-in">
+            <button onclick="closeModal('grading-modal')" class="absolute top-4 left-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-lg font-bold mb-4 border-r-4 border-purple-500 pr-3">تقييم المشروع</h3>
+            <form id="grading-form" class="space-y-4">
+                <input type="hidden" id="grade-sub-id">
+                <input type="hidden" id="grade-student-id">
+                <input type="hidden" id="grade-project-id">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">الدرجة (من 100)</label>
+                    <input type="number" id="grade-input" max="100" min="0" required class="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-white focus:border-purple-500">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">ملاحظات</label>
+                    <textarea id="feedback-input" rows="3" class="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-white focus:border-purple-500"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold">اعتماد الدرجة</button>
+            </form>
+        </div>
+    </div>
 
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) window.location.href = "auth.html";
+    <div id="verify-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-b-surface w-full max-w-md rounded-2xl border border-white/10 shadow-2xl p-6 relative h-[80vh] flex flex-col animate-slide-in">
+            <button onclick="closeModal('verify-modal')" class="absolute top-4 left-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-lg font-bold mb-2 text-green-400">التصديق اليدوي (Offline)</h3>
+            <p class="text-xs text-gray-400 mb-4">حدد المهام التي أتمها <span id="verify-student-name" class="text-white font-bold"></span>.</p>
             
-            // التأكد إنه ليدر فعلاً
-            const snap = await getDoc(doc(db, "users", user.uid));
-            if (snap.exists()) {
-                const data = snap.data();
-                if (data.system_info.role !== 'Leader') {
-                    alert("غير مصرح لك بدخول غرفة القيادة!");
-                    window.location.href = "student-dash.html";
-                }
-                
-                // عرض البيانات
-                document.getElementById('leader-name').innerText = data.personal_info.full_name;
-                // هنا ممكن نجيب بيانات التيم لو عنده تيم
-            }
-        });
+            <div id="verify-list" class="flex-1 overflow-y-auto space-y-2 pr-2 custom-scroll">
+                </div>
 
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => window.location.href = "../index.html");
-        });
+            <button onclick="submitVerification()" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold shadow-lg">
+                حفظ وتحديث النقاط
+            </button>
+        </div>
+    </div>
+
+    <div id="add-member-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-b-surface w-full max-w-md rounded-2xl border border-white/10 shadow-2xl p-6 relative animate-slide-in">
+            <button onclick="closeModal('add-member-modal')" class="absolute top-4 left-4 text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            <h3 class="text-lg font-bold mb-4">إضافة عضو جديد</h3>
+            <p class="text-sm text-gray-400 mb-4">أدخل البريد الإلكتروني للطالب لإرسال دعوة.</p>
+            <input type="email" id="new-member-email" placeholder="example@email.com" class="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-white mb-4 focus:border-b-primary">
+            <button onclick="inviteMember()" class="w-full bg-b-primary hover:bg-teal-700 text-white py-3 rounded-xl font-bold">إرسال الدعوة</button>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-6 left-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
+
+    <script type="module" src="../js/leader-dash.js"></script>
+    <script>
+        // Simple UI Logic for Tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600/10', 'text-purple-400', 'border-purple-600/20');
+                btn.classList.add('text-gray-400');
+            });
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-gray-400');
+            activeBtn.classList.add('bg-purple-600/10', 'text-purple-400', 'border-purple-600/20');
+        }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        // Expose open modal functions to window for onclick in HTML
+        window.openAddMemberModal = () => document.getElementById('add-member-modal').classList.remove('hidden');
+        window.openCustomTaskModal = () => {
+            const task = prompt("أدخل نص المهمة:");
+            if(task) showToast("تم إضافة المهمة (تجريبي)", "success"); 
+        };
+        // Toast helper for inline script
+        function showToast(msg, type='info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const color = type === 'success' ? 'border-green-500' : (type === 'error' ? 'border-red-500' : 'border-blue-500');
+            toast.className = `bg-gray-900/90 text-white px-6 py-4 rounded-xl border-l-4 ${color} shadow-2xl backdrop-blur flex items-center gap-3 animate-slide-in pointer-events-auto`;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle text-green-400' : 'info-circle text-blue-400'}"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
     </script>
 </body>
 </html>

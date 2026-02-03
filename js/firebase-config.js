@@ -4,10 +4,14 @@ import {
     getFirestore, 
     collection, 
     doc, 
+    addDoc,      // Added for creating new documents (like team requests)
     setDoc, 
     getDoc, 
+    getDocs,     // Added for querying collections
     updateDoc, 
-    arrayUnion, // 👈 تم إضافة استيراد الدالة هنا
+    query,       // Added for filtering
+    where,       // Added for filtering conditions
+    arrayUnion, 
     serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
@@ -19,7 +23,7 @@ import {
     signOut 
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-// إعدادات مشروعك
+// Your web app's Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyAsN0YsS3PFIbi-vRp1GK5SiqPqXGeUkG4",
     authDomain: "busla-digital-ic.firebaseapp.com",
@@ -29,21 +33,25 @@ const firebaseConfig = {
     appId: "1:1052649073663:web:92dc69e9fe2046936155ca"
 };
 
-// تهيئة التطبيق
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// تصدير الأدوات لباقي الملفات
+// Export all necessary functions for other modules
 export { 
     db, 
     auth, 
     collection, 
     doc, 
+    addDoc, 
     setDoc, 
     getDoc, 
+    getDocs, 
     updateDoc, 
-    arrayUnion, // 👈 تم إضافة تصدير الدالة هنا لتستخدمها في الملفات الأخرى
+    query, 
+    where, 
+    arrayUnion, 
     serverTimestamp, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
