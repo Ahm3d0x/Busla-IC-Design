@@ -29,26 +29,27 @@
 
 **وصف:** يحتوي على معلومات الدورات التعليمية.
 
-| Column Name         | Data Type | Description                       |
-| ------------------- | --------- | --------------------------------- |
-| course_id           |           | معرف الدورة                       |
-| phase_id            |           | معرف المرحلة التابعة لها          |
-| title               |           | عنوان الدورة                      |
-| playlist_id         |           | معرف قائمة التشغيل (إن وجدت)      |
-| type                |           | نوع المحتوى (مثل Course, Section) |
-| related_with        |           | معرّف المحتوى المرتبط             |
-| Module Time         |           | المدة المتوقعة                    |
-| Note                |           | ملاحظات إضافية                    |
-| description         |           | وصف تفصيلي                        |
-| prerequisites       |           | المتطلبات المسبقة                 |
-| what_you_will_learn |           | ما سوف تتعلمه                     |
-| tools_required      |           | الأدوات المطلوبة                  |
-| image_url           |           | رابط صورة الدورة                  |
-| is_active           |           | حالة التنشيط                      |
-| created_by          |           | منشئ السجل                        |
-| created_at          |           | تاريخ الإنشاء                     |
-| last_modified_by    |           | آخر معدل                          |
-| last_modified_at    |           | تاريخ آخر تعديل                   |
+| Column Name         | Data Type | Description                               |
+| ------------------- | --------- | ----------------------------------------- |
+| course_id           |           | معرف الدورة                               |
+| phase_id            |           | معرف المرحلة التابعة لها                  |
+| title               |           | عنوان الدورة                              |
+| playlist_id         |           | معرف قائمة التشغيل (إن وجدت)              |
+| auto_sync           |           | تطابق التحديثات تلقائيا (مثل True, False) |
+| type                |           | نوع المحتوى (مثل Course, Section)         |
+| related_with        |           | معرّف المحتوى المرتبط                     |
+| Module Time         |           | المدة المتوقعة                            |
+| Note                |           | ملاحظات إضافية                            |
+| description         |           | وصف تفصيلي                                |
+| prerequisites       |           | المتطلبات المسبقة                         |
+| what_you_will_learn |           | ما سوف تتعلمه                             |
+| tools_required      |           | الأدوات المطلوبة                          |
+| image_url           |           | رابط صورة الدورة                          |
+| is_active           |           | حالة التنشيط                              |
+| created_by          |           | منشئ السجل                                |
+| created_at          |           | تاريخ الإنشاء                             |
+| last_modified_by    |           | آخر معدل                                  |
+| last_modified_at    |           | تاريخ آخر تعديل                           |
 
 ---
 

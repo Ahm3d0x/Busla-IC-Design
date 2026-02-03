@@ -27,7 +27,7 @@ function doGet(e) {
     if (action === "getCourseContent") return getCourseContent(p.course_id);
     if (action === "getQuizData") return getQuizRandomized(p.quiz_id);
     if (action === "getProjectDetails") return getProject(p.project_id);
-
+ if (action === "getFullCurriculum") return getFullCurriculum();
     // Write Actions
     if (action === "syncCourseContent") return syncSingleCourse(p.course_id);
     if (action === "syncAllCourses") return syncAllCourses();
@@ -342,4 +342,63 @@ function sendJSON(d) {
 function testSyncManually() {
   // جرب برقم كورس حقيقي عندك
   console.log(syncSingleCourse(3));
+}
+
+/* ==========================================================
+   NEW ENDPOINT: GET FULL CURRICULUM TREE (Optimized)
+   Author: AI Assistant
+   Purpose: Returns a nested structure (Phase -> Courses -> Sections)
+   Optimization: Sends minimal data for structure, reduces client-side processing.
+========================================================== */
+
+function getFullCurriculum() {
+  var ss = SpreadsheetApp.getActive();
+  
+  // 1. Read Raw Data (Active Only)
+  var phases = readSheet(ss, "phase").filter(function(x) { return x.is_active == true || x.is_active == "True"; });
+  var courses = readSheet(ss, "Courses").filter(function(x) { return x.is_active == true || x.is_active == "True"; });
+  
+  // 2. Build the Tree
+  // تحويل البيانات إلى هيكل شجري لتسهيل العرض وتقليل حجم البيانات المرسلة
+  var tree = phases.map(function(phase) {
+    
+    // أ. جلب الكورسات التابعة لهذه المرحلة
+    var phaseCourses = courses.filter(function(c) { 
+      return String(c.phase_id) === String(phase.phase_id) && (c.type === "Course" || c.type === "genral" || !c.type); 
+    });
+
+    // ب. لكل كورس، جلب السكاشن التابعة له
+    var coursesWithSections = phaseCourses.map(function(course) {
+      var sections = courses.filter(function(s) { 
+        return String(s.related_with) === String(course.course_id) && s.type === "Section"; 
+      });
+      
+      // نرجع الكورس مع سكاشنه (بيانات خفيفة للعرض فقط)
+      return {
+        id: String(course.course_id),
+        title: course.title,
+        desc: course.description,
+        img: course.image_url,
+        time: course["Module Time"], // استخدام الاسم الدقيق للعمود
+        sections: sections.map(function(sec) {
+          return {
+            id: String(sec.course_id),
+            title: sec.title,
+            type: "section"
+          };
+        })
+      };
+    });
+
+    // ج. إرجاع المرحلة كاملة
+    return {
+      id: String(phase.phase_id),
+      title: phase.title,
+      desc: phase.description,
+      note: phase.Note,
+      items: coursesWithSections
+    };
+  });
+
+  return sendJSON({ status: "success", tree: tree });
 }

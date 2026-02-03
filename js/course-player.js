@@ -1,6 +1,6 @@
 import { auth, db, doc, getDoc, setDoc, updateDoc, arrayUnion, onAuthStateChanged } from './firebase-config.js';
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUQ4z75E9mSQ24xG0KP7Y9TVSM8SKj9p9rAC6heMWO1TEgnANThOqFxYLL3VFu3Psy/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwTZcXVXAqpu2H7Int1omEeJrfS8bfiSmhhWayX-wjOJsbaHH4-LX39K4RhVKmzrUOL/exec';
 
 let currentCourseId = null;
 let courseModules = [];
