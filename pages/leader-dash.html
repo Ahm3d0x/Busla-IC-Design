@@ -57,6 +57,9 @@
                 <i class="fas fa-check-double"></i> <span>التصحيح</span>
                 <span id="pending-badge" class="hidden absolute left-3 top-3 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">0</span>
             </button>
+            <button onclick="switchTab('calendar')" id="btn-calendar" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
+                <i class="fas fa-calendar-alt"></i> <span>التقويم</span>
+            </button>
         </nav>
 
         <div class="p-4 border-t border-white/10">
@@ -108,6 +111,7 @@
         <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-4">
             <i class="fas fa-tasks ml-2 text-b-primary"></i> أحدث المهام
         </h3>
+        <div id="week-header-info"></div>
         
         <div id="overview-container" class="space-y-4 min-h-[100px]">
             <div class="text-center py-8 text-gray-500">
@@ -243,9 +247,89 @@
             <h3 class="font-bold text-xl">المشاريع المستلمة</h3>
             <div id="submissions-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </section>
+<section id="calendar" class="tab-content space-y-6">
+    <div class="bg-b-surface p-6 rounded-2xl border border-white/10 min-h-[500px]">
+        <div class="flex justify-between items-center mb-8 pb-6 border-b border-white/5">
+            <div>
+                <h3 class="font-bold text-2xl text-white mb-1">التقويم الأسبوعي</h3>
+                <p class="text-xs text-gray-400">استعرض مهام الفريق موزعة بالأسابيع</p>
+            </div>
+            <div class="flex items-center gap-3 bg-black/40 p-1.5 rounded-xl border border-white/5">
+                <button onclick="changeMonth(-1)" class="w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center text-gray-400 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <span id="calendar-month-title" class="font-bold text-b-primary min-w-[140px] text-center text-lg select-none">...</span>
+                <button onclick="changeMonth(1)" class="w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center text-gray-400 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+        </div>
 
+        <div id="calendar-weeks-container" class="space-y-4">
+            </div>
+    </div>
+</section>
     </main>
+<div id="week-details-modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-b-surface w-full max-w-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[85vh]">
+        
+        <div class="p-6 border-b border-white/10 flex justify-between items-center bg-gradient-to-r from-b-primary/10 to-transparent">
+            <div>
+                <h3 id="week-modal-title" class="text-xl font-bold text-white">تفاصيل الأسبوع</h3>
+                <p class="text-sm text-gray-400 mt-1">إجمالي نقاط الأسبوع: <span id="week-modal-points" class="text-yellow-400 font-bold">0</span> نقطة</p>
+            </div>
+            <button onclick="closeWeekModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
 
+        <div id="week-modal-tasks" class="p-6 space-y-3 overflow-y-auto custom-scroll flex-1">
+            </div>
+
+        <div class="p-4 border-t border-white/10 bg-black/20 text-center">
+            <button onclick="closeWeekModal()" class="text-gray-400 hover:text-white text-sm">إغلاق النافذة</button>
+        </div>
+    </div>
+</div>
+<div id="task-details-modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-b-surface w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl transform scale-100 transition-all">
+        <div class="p-6">
+            <div class="flex justify-between items-start mb-4 border-b border-white/10 pb-4">
+                <h3 id="modal-task-title" class="text-xl font-bold text-white leading-relaxed"></h3>
+                <button onclick="document.getElementById('task-details-modal').classList.add('hidden')" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="bg-black/30 p-4 rounded-xl border border-white/5">
+                    <p class="text-xs text-gray-500 mb-1">الوصف / المحتوى</p>
+                    <p id="modal-task-desc" class="text-gray-300 text-sm leading-relaxed"></p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <p class="text-xs text-gray-500">المدة</p>
+                        <p id="modal-task-duration" class="text-b-primary font-bold"></p>
+                    </div>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <p class="text-xs text-gray-500">النوع</p>
+                        <p class="text-white font-bold"><i class="fab fa-youtube text-red-500 mr-1"></i> فيديو</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+                <a id="modal-task-link" href="#" class="flex-1 bg-b-primary hover:bg-teal-700 text-white py-3 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-play"></i> بدء المهمة
+                </a>
+                <button onclick="document.getElementById('task-details-modal').classList.add('hidden')" class="px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 transition-colors">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
     <div id="broadcast-modal" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-4">
         <div class="bg-b-surface w-full max-w-md p-6 rounded-2xl border border-white/10">
             <h3 class="font-bold mb-4">إرسال إشعار للفريق</h3>
@@ -281,9 +365,37 @@
             </div>
         </div>
     </div>
-
+<div id="confirm-modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300">
+    <div class="bg-b-surface w-full max-w-sm p-6 rounded-2xl border border-red-500/30 shadow-2xl transform scale-100 transition-transform duration-300">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-trash-alt text-2xl text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">تأكيد الحذف</h3>
+            <p id="confirm-msg" class="text-gray-400 text-sm mb-6 leading-relaxed">هل أنت متأكد من حذف هذا العنصر؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            
+            <div class="flex gap-3">
+                <button id="btn-confirm-yes" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl font-bold transition-colors shadow-lg shadow-red-900/20">
+                    نعم، احذف
+                </button>
+                <button onclick="closeConfirmModal()" class="flex-1 bg-white/5 hover:bg-white/10 text-white py-2.5 rounded-xl font-bold border border-white/10 transition-colors">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
     <div id="toast-container" class="fixed bottom-6 left-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
-
+<div id="day-details-modal" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-4">
+    <div class="bg-b-surface w-full max-w-sm p-6 rounded-2xl border border-white/10 shadow-2xl">
+        <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
+            <h3 id="day-modal-title" class="font-bold text-white">تفاصيل اليوم</h3>
+            <button onclick="closeDayModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="day-modal-content" class="max-h-[300px] overflow-y-auto custom-scroll">
+            </div>
+    </div>
+</div>
     <script type="module" src="../js/leader-dash.js"></script>
     <script>
         function switchTab(id) {

@@ -10,6 +10,7 @@ const CACHE_KEY = 'busla_lms_v5_final';
 // --- State Management ---
 let currentUser = null;
 let currentTeam = null;
+let currentUserData = null;
 let allData = { phases: [], courses: [], tree: [] };
 let selectedAssignCourse = null;
 let expandedNodes = new Set(); // Persist expanded tree nodes
@@ -34,16 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/**
- * Main Dashboard Initialization
- * Strategy: Load from Cache immediately -> Render -> Fetch from Server -> Re-render
- */
 async function initDashboard(uid) {
     try {
-        // 1. Fetch User (Required for security/role check)
         const userDoc = await getDoc(doc(db, "users", uid));
         if (!userDoc.exists()) throw new Error("User profile not found");
-        const userData = userDoc.data();
+        
+        // 👇 حفظ البيانات عالمياً
+        currentUserData = userDoc.data(); // هذا السطر مهم جداً
+        const userData = currentUserData;
 
         const role = userData.role || (userData.system_info?.role);
         const teamId = userData.team_id || (userData.system_info?.team_id);
@@ -52,23 +51,17 @@ async function initDashboard(uid) {
             window.location.href = "student-dash.html";
             return;
         }
-
-        // 2. Fetch Team Data
+        if(document.getElementById('calendar')) renderCalendarTab();
         currentTeam = await getTeamData(teamId);
         if (!currentTeam) throw new Error("Team not found");
         currentTeam.team_id = teamId;
 
-        // 3. Update Header UI
         updateHeaderInfo(userData, currentTeam);
-
-        // 4. Initial Render (Cache)
         loadFromCache();
         renderAllTabs();
 
-        // 5. Background Sync
         fetchDataFromServer().then(() => {
             renderAllTabs();
-            console.log("Data synced with server");
         }).catch(err => console.error("Background sync failed:", err));
 
     } catch (e) {
@@ -76,9 +69,101 @@ async function initDashboard(uid) {
         showToast("Error loading dashboard", "error");
     }
 }
-/**
- * حساب بيانات الأسبوع الحالي بناءً على منطق: السبت -> الجمعة
- */
+
+function getSafeDate(dateVal) {
+    if (!dateVal) return new Date(); // لو فارغ هات تاريخ دلوقتي
+    if (typeof dateVal.toDate === 'function') {
+        return dateVal.toDate(); // لو جاي من Firebase Timestamp
+    }
+    return new Date(dateVal); // لو جاي String أو Date عادي
+}
+// إضافة دالة مساعدة لفتح المودال الجديد
+window.openTaskDetailsModal = (taskId) => {
+    // البحث عن المهمة في البيانات المحلية
+    const task = currentTeam.weekly_tasks.find(t => t.task_id === taskId);
+    if (!task) return;
+
+    document.getElementById('modal-task-title').innerText = task.title || 'بدون عنوان';
+    document.getElementById('modal-task-desc').innerText = task.description || 'لا يوجد وصف متاح.';
+    document.getElementById('modal-task-duration').innerText = formatDuration(task.duration) || '--:--';
+    
+    // رابط المشغل
+    const playerLink = `course-player.html?id=${task.course_id}&content=${task.content_id}&task_id=${task.task_id}`;
+    document.getElementById('modal-task-link').href = playerLink;
+
+    document.getElementById('task-details-modal').classList.remove('hidden');
+};
+
+// تحديث دالة الرسم
+async function renderTeamOverview(tasks) {
+    const container = document.getElementById('overview-container');
+    container.innerHTML = '';
+
+    if (!tasks || tasks.length === 0) {
+        container.innerHTML = `<div class="text-center py-10 text-gray-500"><p>لا توجد مهام نشطة حالياً</p></div>`;
+        return;
+    }
+
+    const currentWeek = getCurrentWeekCycle();
+    // ترتيب المهام الأحدث أولاً
+    tasks.sort((a, b) => getSafeDate(b.created_at) - getSafeDate(a.created_at));
+
+    const currentWeekTasks = tasks.filter(t => t.week_id === currentWeek.id);
+    const historyTasks = tasks.filter(t => t.week_id !== currentWeek.id);
+
+    const createTaskCard = (task, isHistory = false) => {
+        const canDelete = (task.week_id === currentWeek.id) && (task.stats?.started_count === 0);
+        
+        return `
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex justify-between items-center group hover:border-b-primary transition-all relative">
+                <div class="flex items-center gap-4 flex-1 cursor-pointer" onclick="openTaskDetailsModal('${task.task_id}')">
+                    <div class="w-12 h-12 rounded-lg bg-b-primary/20 flex items-center justify-center text-b-primary text-xl relative overflow-hidden group-hover:scale-105 transition-transform">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-base group-hover:text-b-primary transition-colors line-clamp-1">
+                            ${task.title || 'مهمة بدون عنوان'}
+                        </h4>
+                        <div class="flex items-center gap-3 mt-1.5">
+                            <span class="text-xs text-gray-400 flex items-center gap-1">
+                                <i class="far fa-clock"></i> ${formatDuration(task.duration) || '--:--'}
+                            </span>
+                            ${!isHistory ? '<span class="px-2 py-0.5 bg-green-900/50 text-green-400 text-[10px] rounded border border-green-700">نشط</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 z-10">
+                     <a href="course-player.html?id=${task.course_id}&content=${task.content_id}&task_id=${task.task_id}" 
+                        class="w-9 h-9 rounded-lg bg-b-primary text-white flex items-center justify-center hover:bg-teal-700 transition-colors shadow-lg"
+                        title="ابدأ المهمة">
+                        <i class="fas fa-external-link-alt text-sm"></i>
+                    </a>
+                    
+                    ${canDelete ? `
+                        <button onclick="deleteTask('${task.task_id}', '${task.week_id}')" 
+                                class="w-9 h-9 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center">
+                            <i class="fas fa-trash-alt text-sm"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    };
+
+    let html = '';
+    renderWeekInfo(); // تحديث الهيدر
+
+    if (currentWeekTasks.length > 0) {
+        html += `<h3 class="text-b-hl-light font-bold mb-4 flex items-center gap-2"><i class="fas fa-calendar-week"></i> الأسبوع الحالي</h3>
+                 <div class="space-y-3 mb-8">${currentWeekTasks.map(t => createTaskCard(t)).join('')}</div>`;
+    }
+    if (historyTasks.length > 0) {
+        html += `<h3 class="text-gray-400 font-bold mb-4 pt-4 border-t border-white/10 flex items-center gap-2"><i class="fas fa-history"></i> الأرشيف</h3>
+                 <div class="space-y-3 opacity-60">${historyTasks.map(t => createTaskCard(t, true)).join('')}</div>`;
+    }
+    container.innerHTML = html;
+}
 function getCurrentWeekCycle() {
     const now = new Date();
     const dayOfWeek = now.getDay(); // 0 (Sun) -> 6 (Sat)
@@ -182,64 +267,21 @@ function renderAllTabs() {
     renderGrading();
 }
 
-// ==========================================
-// 1. Overview Tab
-// ==========================================
 function renderOverview() {
-    const list = document.getElementById('overview-courses-list');
-    const taskList = document.getElementById('student-tasks-list');
+    // 1. استدعاء دالة رسم الهيدر الجديدة 👇
+    renderWeekInfo();
 
-    const activeIds = currentTeam.courses_plan || [];
-    const tasks = (currentTeam.weekly_tasks || []).filter(t => t.title);
+    const activeIds = (currentTeam && currentTeam.courses_plan) ? currentTeam.courses_plan : [];
+    const tasks = (currentTeam && currentTeam.weekly_tasks) ? currentTeam.weekly_tasks : [];
 
-    document.getElementById('stat-active-courses').innerText = activeIds.length;
-    document.getElementById('stat-active-tasks').innerText = tasks.length;
+    const statCourses = document.getElementById('stat-active-courses');
+    const statTasks = document.getElementById('stat-active-tasks');
 
-    // Active Courses List
-    const activeCourses = allData.courses.filter(c =>
-        activeIds.includes(String(c.course_id || c.id)) &&
-        (!c.type || c.type.toLowerCase() !== 'section')
-    );
+    if (statCourses) statCourses.innerText = activeIds.length;
+    if (statTasks) statTasks.innerText = tasks.length;
 
-    if (activeCourses.length === 0) {
-        list.innerHTML = `<p class="col-span-full text-center text-gray-500 py-6">No active courses.</p>`;
-    } else {
-        list.innerHTML = activeCourses.map(c => `
-            <div class="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-b-primary/50 transition-all flex gap-4 items-start group">
-                <div class="w-12 h-12 rounded-lg bg-gray-800 shrink-0 overflow-hidden">
-                    <img src="${c.image_url || '../assets/images/1.jpg'}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                </div>
-                <div class="flex-1 min-w-0">
-                    <h4 class="font-bold text-white text-sm truncate">${c.title}</h4>
-                    <span class="text-[10px] text-gray-400 block mt-1"><i class="far fa-clock"></i> ${c.real_total_duration || c['Module Time'] || 'N/A'}</span>
-                    <a href="course-player.html?id=${c.course_id || c.id}" class="inline-block mt-2 text-[10px] bg-b-primary hover:bg-teal-700 text-white px-3 py-1 rounded font-bold transition-colors">Start</a>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Active Tasks List
-    if (tasks.length === 0) {
-        taskList.innerHTML = `<p class="text-gray-500 text-center py-4 text-xs">No active tasks.</p>`;
-    } else {
-        taskList.innerHTML = tasks.map(t => `
-            <div class="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5 hover:bg-white/10 transition-colors">
-                <div class="flex items-center gap-3">
-                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                    <div>
-                        <h4 class="font-bold text-sm text-gray-200">${t.title}</h4>
-                        <span class="text-[10px] text-gray-500">${t.type || 'task'}</span>
-                    </div>
-                </div>
-                <a href="course-player.html?id=${t.course_id || ''}" class="text-xs text-green-400 hover:text-white font-bold">Go</a>
-            </div>
-        `).join('');
-    }
+    renderTeamOverview(tasks);
 }
-
-// ==========================================
-// 2. Roadmap Tree (Logic & Rendering)
-// ==========================================
 function renderRoadmapTree() {
     const container = document.getElementById('roadmap-tree-container');
     container.innerHTML = '';
@@ -414,7 +456,6 @@ function renderAssignments() {
         </div>
     `}).join('');
 }
-
 window.loadAssignContent = async (cid) => {
     selectedAssignCourse = cid;
     const cont = document.getElementById('assign-content-list');
@@ -423,57 +464,49 @@ window.loadAssignContent = async (cid) => {
     try {
         const res = await fetch(`${APPS_SCRIPT_URL}?action=getCourseContent&course_id=${cid}`);
         const json = await res.json();
-        const assignedIds = (currentTeam.weekly_tasks || []).map(t => String(t.content_id));
+        
+        // جلب المهام المعينة مسبقاً
+        if (!currentTeam.weekly_tasks) currentTeam.weekly_tasks = [];
+        const assignedIds = currentTeam.weekly_tasks.map(t => String(t.content_id));
 
         if (json.data && json.data.length > 0) {
             cont.innerHTML = json.data.map(m => {
                 const isAssigned = assignedIds.includes(String(m.content_id));
                 
-                // 🔥🔥 هنا التعديل: استخدام دالة التنسيق الجديدة 🔥🔥
-                let rawDur = m.Duration || m.duration || '';
-                const cleanDuration = formatDuration(rawDur); 
-                
-                const durationBadge = cleanDuration ? 
-                    `<span class="text-[10px] text-blue-300 bg-blue-900/20 px-1.5 rounded border border-blue-500/20 flex items-center gap-1">
-                        <i class="far fa-clock"></i> ${cleanDuration}
-                     </span>` : '';
-
-                const note = m.Note || m.note || '';
-                const points = m.base_points || m.Base_Points || '';
+                // معالجة البيانات للتأكد من وجودها
+                const title = m.title || m.Title || 'بدون عنوان';
+                const desc = m.desc || m.Description || 'لا يوجد وصف متاح';
+                const duration = formatDuration(m.Duration || m.time || m.duration);
+                const rawDuration = m.Duration || m.time || m.duration || '';
 
                 return `
                 <label class="flex items-start gap-3 p-3 border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors group ${isAssigned ? 'bg-green-900/10 border-l-2 border-l-green-500' : ''}">
                     <div class="pt-1">
-                        <input type="checkbox" value="${m.content_id}" 
+                        <input type="checkbox" 
+                               value="${m.content_id}" 
+                               data-title="${title}"
+                               data-desc="${desc}"
+                               data-duration="${rawDuration}"
+                               data-course-id="${cid}"
                                class="task-check w-4 h-4 accent-b-primary bg-gray-700 border-gray-600 rounded"
-                               ${isAssigned ? 'checked' : ''}>
+                               ${isAssigned ? 'checked disabled' : ''}>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex justify-between items-start">
                             <span class="text-sm font-medium ${isAssigned ? 'text-green-300' : 'text-gray-300'} group-hover:text-white transition-colors truncate">
-                                ${m.title}
+                                ${title}
                             </span>
-                            <div class="flex flex-col items-end gap-1 ml-2">
-                                ${isAssigned ? '<span class="text-[9px] text-green-400 font-bold bg-green-900/20 px-1.5 py-0.5 rounded"><i class="fas fa-check"></i> تم النشر</span>' : ''}
-                                <span class="text-[9px] bg-white/10 px-1.5 py-0.5 rounded text-gray-400 uppercase border border-white/5">${m.type || 'Video'}</span>
-                            </div>
+                            ${isAssigned ? '<span class="text-[9px] text-green-400 bg-green-900/20 px-1.5 rounded">منشور</span>' : ''}
                         </div>
-                        
-                        <div class="flex flex-wrap items-center gap-3 mt-1.5">
-                            ${durationBadge}
-                            ${points ? `<span class="text-[10px] text-yellow-500"><i class="fas fa-star"></i> ${points} نقطة</span>` : ''}
+                        <div class="flex gap-2 mt-1">
+                             ${duration ? `<span class="text-[10px] text-blue-300 bg-blue-900/10 px-1 rounded"><i class="far fa-clock"></i> ${duration}</span>` : ''}
                         </div>
-                        
-                        ${note ? `<p class="text-[10px] text-gray-400 mt-2 bg-black/20 p-1.5 rounded border-r-2 border-yellow-500/50 italic"><i class="fas fa-info-circle text-yellow-500 mr-1"></i> ${note}</p>` : ''}
                     </div>
                 </label>
             `}).join('');
             
             const btn = document.getElementById('publish-btn');
-            if(btn) {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
+            if(btn) btn.disabled = false;
         } else {
             cont.innerHTML = `<p class="text-center text-gray-500 py-10">لا يوجد محتوى متاح.</p>`;
         }
@@ -483,223 +516,136 @@ window.loadAssignContent = async (cid) => {
     }
 };
 
-async function publishSelectedTasks() {
-    if (selectedVideos.size === 0) {
-        showToast("برجاء اختيار محتوى أولاً", "warning");
-        return;
-    }
+window.publishSelectedTasks = async function() {
+    const checkedBoxes = document.querySelectorAll('.task-check:checked:not(:disabled)');
+    if (checkedBoxes.length === 0) return showToast("اختر محتوى أولاً", "warning");
 
     const btn = document.getElementById('publish-btn');
     const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     btn.disabled = true;
 
     try {
         const teamId = currentUserData.system_info.team_id;
         const batch = writeBatch(db);
-        const weekCycle = getCurrentWeekCycle(); // 📅 1. حساب الأسبوع الحالي
-        
-        // تحويل الـ Set إلى Array للتكرار
-        Array.from(selectedVideos).forEach(video => {
-            // إنشاء ID مميز للمهمة (TeamID_ContentID) لمنع التكرار
-            const taskId = `${teamId}_${video.id}`;
+        const weekCycle = getCurrentWeekCycle();
+        const now = new Date();
+        const due = weekCycle.end.toISOString();
+
+        let count = 0;
+        const newTasksLocal = [];
+
+        checkedBoxes.forEach(box => {
+            // قراءة البيانات من الـ attributes
+            const contentId = box.value;
+            const title = box.getAttribute('data-title'); // سيأتي صحيحاً الآن
+            const desc = box.getAttribute('data-desc');
+            const duration = box.getAttribute('data-duration');
+            const courseId = box.getAttribute('data-course-id');
+            
+            const taskId = `${teamId}_${contentId}`;
             const taskRef = doc(db, "teams", teamId, "tasks", taskId);
 
             const taskData = {
                 task_id: taskId,
-                content_id: video.id,
-                course_id: video.course_id, // تأكد ان الاوبجكت video يحتوي عليه
-                title: video.title,
-                type: 'video', // أو حسب النوع
-                
-                // 📅 2. بيانات الوقت والأسبوع
+                content_id: contentId,
+                course_id: courseId,
+                title: title,       // ✅ الاسم الصحيح
+                description: desc,  // ✅ الوصف
+                duration: duration, // ✅ المدة
+                type: 'video',
                 week_id: weekCycle.id,
-                created_at: serverTimestamp(),
-                due_date: weekCycle.end.toISOString(),
-                
-                // 👤 3. بيانات المسؤول
-                assigned_by: currentUserData.uid,
+                created_at: now,
+                due_date: due,
+                assigned_by: currentUser.uid,
                 leader_name: currentUserData.personal_info.full_name,
-
-                // 📊 4. الإحصائيات (مهمة لقواعد الحذف)
-                status: 'active', // active, hidden, locked
-                stats: {
-                    total_students: 0, // سيتم تحديثه بناء على عدد أعضاء الفريق
-                    started_count: 0,  // عدد الطلاب الذين فتحوا المهمة
-                    completed_count: 0 // عدد الطلاب الذين أنهوها
-                }
+                status: 'active',
+                stats: { total_students: 0, started_count: 0, completed_count: 0 }
             };
 
             batch.set(taskRef, taskData);
+            
+            const teamRef = doc(db, "teams", teamId);
+            batch.update(teamRef, { weekly_tasks: arrayUnion(taskData) });
+
+            newTasksLocal.push(taskData);
+            count++;
         });
 
         await batch.commit();
 
-        showToast(`تم نشر ${selectedVideos.size} مهمة للأسبوع الحالي`, "success");
-        
-        // تنظيف الواجهة
-        selectedVideos.clear();
-        updateFloatingAction();
-        closeModal();
-        loadTeamOverview(); // تحديث القائمة فوراً
+        if (!currentTeam.weekly_tasks) currentTeam.weekly_tasks = [];
+        currentTeam.weekly_tasks.push(...newTasksLocal);
+
+        showToast(`تم نشر ${count} مهمة`, "success");
+        if(selectedAssignCourse) loadAssignContent(selectedAssignCourse);
+        renderOverview();
 
     } catch (error) {
-        console.error("Error publishing tasks:", error);
-        showToast("حدث خطأ أثناء النشر", "error");
+        console.error(error);
+        showToast("خطأ في النشر: " + error.message, "error");
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
     }
-}
-async function renderTeamOverview(tasks) {
-    const container = document.getElementById('overview-container'); // تأكد من الـ ID في HTML
-    container.innerHTML = '';
+};
 
-    if (tasks.length === 0) {
-        container.innerHTML = `
-            <div class="text-center py-10 text-gray-500">
-                <i class="fas fa-clipboard-list text-4xl mb-3"></i>
-                <p>لا توجد مهام نشطة حالياً</p>
-            </div>`;
-        return;
-    }
-
-    const currentWeek = getCurrentWeekCycle();
-
-    // فرز المهام: الأحدث أولاً
-    tasks.sort((a, b) => new Date(b.created_at?.toDate()) - new Date(a.created_at?.toDate()));
-
-    // تقسيم المهام
-    const currentWeekTasks = tasks.filter(t => t.week_id === currentWeek.id);
-    const historyTasks = tasks.filter(t => t.week_id !== currentWeek.id);
-
-    // دالة مساعدة لرسم الكارت
-    const createTaskCard = (task, isHistory = false) => {
-        // 🔒 قوانين التحكم (Rules Engine)
-        // 1. هل الأسبوع انتهى؟ (isHistory covers this mainly, but check strictly)
-        const isWeekActive = task.week_id === currentWeek.id;
+window.deleteTask = function(taskId, taskWeekId) {
+    // 1. استخدام النافذة المخصصة بدلاً من window.confirm
+    openConfirmModal("هل أنت متأكد تماماً من حذف هذه المهمة؟ سيتم إزالتها من سجلات الفريق ولن تظهر للطلاب.", async () => {
         
-        // 2. هل بدأ أي طالب في العمل؟ (Checking stats)
-        const hasEngagement = (task.stats?.started_count > 0 || task.stats?.completed_count > 0);
-        
-        // ✅ القرار النهائي: هل يمكن الحذف؟
-        const canDelete = isWeekActive && !hasEngagement;
-
-        // تحديد حالة الـ Badge
-        let statusBadge = '';
-        if (isHistory) {
-            statusBadge = `<span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded-md border border-gray-600">أرشيف</span>`;
-        } else if (hasEngagement) {
-            statusBadge = `<span class="px-2 py-1 bg-yellow-900/50 text-yellow-400 text-xs rounded-md border border-yellow-700"><i class="fas fa-lock ml-1"></i> قيد العمل</span>`;
-        } else {
-            statusBadge = `<span class="px-2 py-1 bg-green-900/50 text-green-400 text-xs rounded-md border border-green-700">نشط</span>`;
+        // 🔒 التحقق من الأسبوع (Client Side)
+        const currentWeek = getCurrentWeekCycle();
+        if (taskWeekId !== currentWeek.id) {
+            showToast("لا يمكن حذف مهام من أسابيع سابقة (الأرشفة فقط)", "error");
+            return;
         }
 
-        return `
-            <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex justify-between items-center group hover:border-b-primary transition-all">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-b-primary/20 flex items-center justify-center text-b-primary">
-                        <i class="fas ${task.type === 'quiz' ? 'fa-question' : 'fa-play'}"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-white text-sm md:text-base">${task.title}</h4>
-                        <div class="flex items-center gap-3 mt-1">
-                            <span class="text-xs text-gray-400 flex items-center gap-1">
-                                <i class="far fa-calendar-alt"></i> ${new Date(task.due_date).toLocaleDateString('ar-EG')}
-                            </span>
-                            ${statusBadge}
-                        </div>
-                    </div>
-                </div>
+        try {
+            const teamId = currentUserData.system_info.team_id;
+            const taskRef = doc(db, "teams", teamId, "tasks", taskId);
+            const teamRef = doc(db, "teams", teamId);
 
-                <div class="flex items-center gap-4">
-                    <div class="text-center px-4 border-l border-white/10 hidden md:block">
-                        <p class="text-xs text-gray-400">الإنجاز</p>
-                        <p class="font-bold text-white">
-                            <span class="text-green-400">${task.stats?.completed_count || 0}</span> / 
-                            <span class="text-gray-400">${task.stats?.total_students || 0}</span>
-                        </p>
-                    </div>
-
-                    ${canDelete ? `
-                        <button onclick="deleteTask('${task.task_id}', '${task.week_id}')" 
-                                class="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
-                                title="حذف المهمة">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    ` : `
-                        ${!isHistory ? '<i class="fas fa-lock text-gray-600" title="لا يمكن الحذف: بدأ العمل عليها"></i>' : ''}
-                    `}
-                </div>
-            </div>
-        `;
-    };
-
-    // الرسم في الحاوية
-    let html = '';
-    
-    // قسم الأسبوع الحالي
-    if (currentWeekTasks.length > 0) {
-        html += `<h3 class="text-b-hl-light font-bold mb-4 mt-2 flex items-center gap-2">
-                    <i class="fas fa-calendar-week"></i> الأسبوع الحالي
-                 </h3>
-                 <div class="space-y-3 mb-8">
-                    ${currentWeekTasks.map(t => createTaskCard(t)).join('')}
-                 </div>`;
-    }
-
-    // قسم الأرشيف (المهام السابقة)
-    if (historyTasks.length > 0) {
-        html += `<h3 class="text-gray-400 font-bold mb-4 mt-6 border-t border-white/10 pt-6 flex items-center gap-2">
-                    <i class="fas fa-history"></i> المهام السابقة
-                 </h3>
-                 <div class="space-y-3 opacity-75">
-                    ${historyTasks.map(t => createTaskCard(t, true)).join('')}
-                 </div>`;
-    }
-
-    container.innerHTML = html;
-}
-
-// إضافة هذه الدالة في النطاق العام (Global Scope) أو ربطها بالـ window
-
-window.deleteTask = async function(taskId, taskWeekId) {
-    if(!confirm("هل أنت متأكد من حذف هذه المهمة؟ لا يمكن التراجع عن هذا الإجراء.")) return;
-
-    // 🔒 Double Check Logic (Client Side immediate check)
-    const currentWeek = getCurrentWeekCycle();
-    if (taskWeekId !== currentWeek.id) {
-        showToast("لا يمكن حذف مهام من أسابيع سابقة", "error");
-        return;
-    }
-
-    try {
-        const teamId = currentUserData.system_info.team_id;
-        const taskRef = doc(db, "teams", teamId, "tasks", taskId);
-        
-        // 🛡️ يفضل هنا عمل get() وفحص الـ stats.started_count مرة أخرى قبل الحذف
-        // لضمان عدم بدء طالب في اللحظة بين العرض والضغط
-        const docSnap = await getDoc(taskRef);
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            if (data.stats && data.stats.started_count > 0) {
-                showToast("عذراً، قام أحد الطلاب ببدء المهمة للتو. لا يمكن الحذف.", "error");
-                loadTeamOverview(); // Refresh UI
-                return;
+            // أ. التحقق من التفاعل (Server Side)
+            const docSnap = await getDoc(taskRef);
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.stats && data.stats.started_count > 0) {
+                    showToast("عذراً، لا يمكن الحذف لأن الطلاب بدأوا العمل بالفعل.", "error");
+                    return;
+                }
             }
+
+            // ب. الحذف من الـ Sub-collection
+            await deleteDoc(taskRef);
+            
+            // ج. 🔥 الإصلاح الجذري: الحذف من المصفوفة الرئيسية لضمان عدم الرجوع 🔥
+            // نستخدم طريقة: جلب المصفوفة -> فلترة العنصر -> إعادة الحفظ
+            // لأن arrayRemove قد تفشل إذا اختلفت التوقيتات (Timestamps)
+            const teamDocSnap = await getDoc(teamRef);
+            if(teamDocSnap.exists()) {
+                const currentTasks = teamDocSnap.data().weekly_tasks || [];
+                const updatedTasks = currentTasks.filter(t => t.task_id !== taskId);
+                
+                await updateDoc(teamRef, {
+                    weekly_tasks: updatedTasks
+                });
+                
+                // تحديث النسخة المحلية فوراً
+                if (currentTeam) currentTeam.weekly_tasks = updatedTasks;
+            }
+
+            showToast("تم حذف المهمة نهائياً", "success");
+            
+            // تحديث الواجهة
+            renderOverview(); 
+
+        } catch (error) {
+            console.error("Error deleting task:", error);
+            showToast("فشل الحذف: " + error.message, "error");
         }
-
-        await deleteDoc(taskRef);
-        showToast("تم حذف المهمة بنجاح", "success");
-        
-        // إعادة تحميل القائمة
-        loadTeamOverview();
-
-    } catch (error) {
-        console.error("Error deleting task:", error);
-        showToast("فشل الحذف", "error");
-    }
-}
+    });
+};
 window.submitCustomTask = async () => {
     const t = document.getElementById('ct-title').value;
     const d = document.getElementById('ct-desc').value;
@@ -722,7 +668,42 @@ window.submitCustomTask = async () => {
         renderOverview();
     } catch (e) { showToast("Failed", "error"); }
 };
+function renderWeekInfo() {
+    const headerContainer = document.getElementById('week-header-info');
+    if (!headerContainer) return;
 
+    const week = getCurrentWeekCycle();
+    const now = new Date();
+    
+    // أسماء الأيام بالعربي
+    const daysAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    const currentDayName = daysAr[now.getDay()];
+
+    // تنسيق التاريخ
+    const options = { month: 'long', day: 'numeric' };
+    const startStr = week.start.toLocaleDateString('ar-EG', options);
+    const endStr = week.end.toLocaleDateString('ar-EG', options);
+
+    headerContainer.innerHTML = `
+        <div class="flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-b-primary/20 to-black/20 p-4 rounded-xl border border-b-primary/30 mb-6">
+            <div class="flex items-center gap-4 mb-2 md:mb-0">
+                <div class="w-12 h-12 rounded-full bg-b-primary flex items-center justify-center text-white text-xl">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-lg">الأسبوع الحالي</h3>
+                    <p class="text-sm text-gray-300">من <span class="text-b-hl-light font-bold">${startStr}</span> إلى <span class="text-b-hl-light font-bold">${endStr}</span></p>
+                </div>
+            </div>
+            <div class="text-center md:text-left">
+                <div class="bg-black/40 px-4 py-2 rounded-lg border border-white/5">
+                    <p class="text-xs text-gray-400">اليوم</p>
+                    <p class="font-bold text-white text-lg">${currentDayName}</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
 // ==========================================
 // 4. Global Interactions & Window Binding
 // ==========================================
@@ -996,3 +977,219 @@ function formatDuration(rawTime) {
     return str;
 }
 
+// ==========================================
+// 5. Calendar System (Strict Sat-Fri Logic)
+// ==========================================
+let calendarDate = new Date();
+
+function renderCalendarTab() {
+    const container = document.getElementById('calendar-weeks-container');
+    const monthTitle = document.getElementById('calendar-month-title');
+    if (!container) return;
+
+    container.innerHTML = '';
+    
+    // إعدادات الشهر
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+    const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+    monthTitle.innerText = `${monthNames[month]} ${year}`;
+
+    // 1️⃣ ضبط بداية التقويم (أول سبت يغطي بداية الشهر)
+    let currentDate = new Date(year, month, 1);
+    const dayOfWeek = currentDate.getDay(); // 0=Sun ... 6=Sat
+    // نريد الرجوع للسبت: (day + 1) % 7 يعطينا كم يوم نرجع
+    const offset = (dayOfWeek + 1) % 7; 
+    currentDate.setDate(currentDate.getDate() - offset);
+
+    const tasks = currentTeam.weekly_tasks || [];
+
+    // عرض 5 أسابيع
+    for (let i = 0; i < 5; i++) {
+        // حساب بداية ونهاية الأسبوع بدقة (السبت 00:00 -> الجمعة 23:59:59)
+        const weekStart = new Date(currentDate);
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const weekEnd = new Date(currentDate);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        weekEnd.setHours(23, 59, 59, 999);
+
+        // التواريخ للعرض
+        const startStr = weekStart.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+        const endStr = weekEnd.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+
+        // 🔥 الفلترة الذكية 🔥
+        // الشرط: تاريخ تسليم المهمة يقع داخل هذا النطاق
+        const weekTasks = tasks.filter(t => {
+            const taskDue = getSafeDate(t.due_date);
+            // تحويل الكل لـ timestamp للمقارنة الرقمية الدقيقة
+            return taskDue.getTime() >= weekStart.getTime() && taskDue.getTime() <= weekEnd.getTime();
+        });
+
+        // إنشاء HTML الكارت
+        const weekHTML = `
+            <div onclick="openWeekDetails('${weekStart.toISOString()}', '${weekEnd.toISOString()}')" 
+                 class="group bg-b-surface border border-white/10 rounded-xl p-5 hover:border-b-primary cursor-pointer transition-all relative overflow-hidden mb-3">
+                
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl ${weekTasks.length > 0 ? 'bg-b-primary text-white' : 'bg-white/5 text-gray-500'} flex flex-col items-center justify-center font-bold transition-colors">
+                            <span class="text-[10px]">أسبوع</span>
+                            <span class="text-lg">${i + 1}</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-lg">
+                                ${startStr} - ${endStr}
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-1 flex items-center gap-2">
+                                <span class="${weekTasks.length > 0 ? 'text-b-hl-light' : ''}">
+                                    <i class="fas fa-tasks ml-1"></i> ${weekTasks.length} مهام
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-left text-gray-600 group-hover:text-white transition-transform"></i>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML += weekHTML;
+        currentDate.setDate(currentDate.getDate() + 7); // الانتقال للأسبوع التالي
+    }
+}
+window.openWeekDetails = (startIso, endIso) => {
+    const modal = document.getElementById('week-details-modal');
+    const container = document.getElementById('week-modal-tasks');
+    const headerTitle = document.getElementById('week-modal-title');
+    const headerPoints = document.getElementById('week-modal-points');
+
+    const startDate = new Date(startIso);
+    const endDate = new Date(endIso);
+    
+    // تصفية المهام
+    const tasks = (currentTeam.weekly_tasks || []).filter(t => {
+        const d = getSafeDate(t.due_date);
+        return d >= startDate && d <= endDate;
+    });
+
+    // تحديث العناوين
+    headerTitle.innerText = `تفاصيل الأسبوع (${startDate.toLocaleDateString('ar-EG', {day:'numeric', month:'numeric'})} - ${endDate.toLocaleDateString('ar-EG', {day:'numeric', month:'numeric'})})`;
+    headerPoints.innerText = tasks.length * 10; // حسب منطق النقاط لديك
+
+    // رسم قائمة المهام
+    if (tasks.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-10 flex flex-col items-center justify-center text-gray-500">
+                <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-coffee text-2xl"></i>
+                </div>
+                <p>لا توجد مهام معينة في هذا الأسبوع</p>
+            </div>`;
+    } else {
+        container.innerHTML = tasks.map(t => `
+            <div class="flex items-center justify-between p-4 bg-black/20 border border-white/5 rounded-xl hover:bg-black/40 transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-lg ${t.stats?.completed_count > 0 ? 'bg-green-500/20 text-green-400' : 'bg-b-primary/20 text-b-primary'} flex items-center justify-center">
+                        <i class="fas ${t.type === 'quiz' ? 'fa-question' : 'fa-play'}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">${t.title || 'بدون عنوان'}</h4>
+                        <div class="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                            <span><i class="fas fa-eye ml-1"></i> ${t.stats?.started_count || 0} مشاهدة</span>
+                            <span><i class="fas fa-check-circle ml-1"></i> ${t.stats?.completed_count || 0} إنجاز</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                     ${t.stats?.completed_count > 0 ? 
+                        '<span class="text-green-400 text-xs font-bold bg-green-900/20 px-2 py-1 rounded">نشط</span>' : 
+                        '<span class="text-yellow-400 text-xs font-bold bg-yellow-900/20 px-2 py-1 rounded">قيد الانتظار</span>'}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    modal.classList.remove('hidden');
+};
+
+window.closeWeekModal = () => {
+    document.getElementById('week-details-modal').classList.add('hidden');
+};
+// دالة لفتح/غلق تفاصيل الأسبوع
+window.toggleWeekDetails = (id) => {
+    const content = document.getElementById(`content-${id}`);
+    const icon = document.getElementById(`icon-${id}`);
+    if (content) content.classList.toggle('hidden');
+    if (icon) icon.classList.toggle('rotate-180');
+};
+
+window.changeMonth = (offset) => {
+    calendarDate.setMonth(calendarDate.getMonth() + offset);
+    renderCalendarTab();
+};
+
+window.changeMonth = (offset) => {
+    calendarDate.setMonth(calendarDate.getMonth() + offset);
+    renderCalendarTab();
+};
+
+window.openDayModal = (dateStr) => {
+    const modal = document.getElementById('day-details-modal');
+    const content = document.getElementById('day-modal-content');
+    const title = document.getElementById('day-modal-title');
+    
+    // تصفية المهام لهذا اليوم
+    const tasks = (currentTeam.weekly_tasks || []).filter(t => t.due_date && t.due_date.startsWith(dateStr));
+
+    title.innerText = `مهام يوم ${dateStr}`;
+    
+    if (tasks.length === 0) {
+        content.innerHTML = `<p class="text-center text-gray-500 py-6">لا توجد مهام مستحقة في هذا اليوم.</p>`;
+    } else {
+        content.innerHTML = tasks.map(t => `
+            <div class="bg-black/30 p-3 rounded-lg border border-white/5 mb-2">
+                <h4 class="font-bold text-white text-sm">${t.title}</h4>
+                <div class="flex justify-between items-center mt-2 text-xs">
+                    <span class="text-gray-400">${t.type || 'Video'}</span>
+                    <span class="${t.stats?.completed_count > 0 ? 'text-green-400' : 'text-yellow-400'}">
+                        ${t.stats?.completed_count || 0} مكتمل
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    modal.classList.remove('hidden');
+};
+
+// إضافة دالة إغلاق المودال
+window.closeDayModal = () => {
+    document.getElementById('day-details-modal').classList.add('hidden');
+};
+// --- Modal Logic ---
+let confirmCallback = null;
+
+window.openConfirmModal = (message, callback) => {
+    const modal = document.getElementById('confirm-modal');
+    const msgEl = document.getElementById('confirm-msg');
+    const yesBtn = document.getElementById('btn-confirm-yes');
+    
+    if(msgEl) msgEl.innerText = message;
+    confirmCallback = callback;
+    
+    // إزالة أي مستمعين سابقين لتجنب التكرار
+    const newBtn = yesBtn.cloneNode(true);
+    yesBtn.parentNode.replaceChild(newBtn, yesBtn);
+    
+    newBtn.addEventListener('click', () => {
+        if (confirmCallback) confirmCallback();
+        closeConfirmModal();
+    });
+
+    modal.classList.remove('hidden');
+};
+
+window.closeConfirmModal = () => {
+    document.getElementById('confirm-modal').classList.add('hidden');
+    confirmCallback = null;
+};
