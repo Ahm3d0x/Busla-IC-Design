@@ -2,7 +2,7 @@ import { auth, db, doc, getDoc, signOut, onAuthStateChanged } from './firebase-c
 import { getUserTeamStatus } from './team-system.js'; // 👈 1. استدعاء دالة فحص الفريق
 
 // رابط الـ API
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwTZcXVXAqpu2H7Int1omEeJrfS8bfiSmhhWayX-wjOJsbaHH4-LX39K4RhVKmzrUOL/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwWIy4rnM9Trlsq0zyZtBuV9OEO9MufAC4NpzcF4LBL4u2uPo5DgplmQg7qG1p0NRkr/exec';
 
 document.addEventListener('DOMContentLoaded', () => {
     initDashboard();

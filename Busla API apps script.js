@@ -316,9 +316,60 @@ function getHomeContent() {
 // Read functions wrappers
 function getPhases() { return sendJSON({status:"success", data: readSheet(SpreadsheetApp.getActive(), "phase").filter(x => x.is_active == true)}); }
 function getCourses(pid) { 
-  var d = readSheet(SpreadsheetApp.getActive(), "Courses").filter(x => x.is_active == true);
-  if(pid) d = d.filter(x => x.phase_id == pid);
-  return sendJSON({status:"success", data: d});
+  var ss = SpreadsheetApp.getActive();
+  var courses = readSheet(ss, "Courses").filter(function(x) { return x.is_active == true || x.is_active == "True"; });
+  var contents = readSheet(ss, "Course_Contents").filter(function(x) { return x.status != "removed"; });
+
+  var stats = {};
+  
+  // Calculate statistics
+  for (var i = 0; i < contents.length; i++) {
+    var c = contents[i];
+    var cid = String(c.course_id);
+    
+    if (!stats[cid]) stats[cid] = { count: 0, seconds: 0 };
+    stats[cid].count++;
+    
+    // --- FIX: Robust Time Parsing (Handles Date Objects & Strings) ---
+    var val = c.Duration;
+    var secs = 0;
+
+    if (val instanceof Date) {
+      // Handle Google Sheets Date Object (1899...)
+      secs = val.getHours() * 3600 + val.getMinutes() * 60 + val.getSeconds();
+    } else {
+      // Handle String format "HH:MM:SS" or "MM:SS"
+      var parts = String(val || "0:0").split(":").map(Number);
+      if (parts.length === 3) {
+        secs = parts[0] * 3600 + parts[1] * 60 + parts[2];
+      } else if (parts.length === 2) {
+        secs = parts[0] * 60 + parts[1];
+      }
+    }
+    // -----------------------------------------------------------------
+    
+    stats[cid].seconds += secs;
+  }
+
+  var data = courses.map(function(course) {
+    var s = stats[String(course.course_id)] || { count: 0, seconds: 0 };
+    
+    // Convert Total Seconds back to readable String
+    var h = Math.floor(s.seconds / 3600);
+    var m = Math.floor((s.seconds % 3600) / 60);
+    var timeStr = "";
+    if (h > 0) timeStr += h + "h ";
+    if (m > 0 || h > 0) timeStr += m + "m";
+    if (timeStr === "") timeStr = "0m";
+
+    course.real_video_count = s.count;
+    course.real_total_duration = timeStr;
+    
+    return course;
+  });
+
+  if(pid) data = data.filter(function(x) { return x.phase_id == pid; });
+  return sendJSON({status:"success", data: data});
 }
 function getCourseContent(cid) {
   var d = readSheet(SpreadsheetApp.getActive(), "Course_Contents").filter(x => x.course_id == cid && x.status != "removed");
