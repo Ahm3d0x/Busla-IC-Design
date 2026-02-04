@@ -1,6 +1,8 @@
-import { auth, db, doc, getDoc, getDocs, updateDoc, arrayUnion, arrayRemove, query, where, collection, onAuthStateChanged, signOut, serverTimestamp } from './firebase-config.js';
+import { 
+    auth, db, doc, getDoc, getDocs, updateDoc, setDoc, deleteDoc, writeBatch, // 👈 تأكد من وجود دول
+    arrayUnion, arrayRemove, query, where, collection, onAuthStateChanged, signOut, serverTimestamp 
+} from './firebase-config.js';
 import { getTeamData } from './team-system.js';
-
 // --- Configuration ---
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzvJ8zpNLRY24HiRvsJqn2y-8ygijipiyFeJpxcv4bEXSg-Mx_n52aXywx1uYqy2KCi/exec';
 const CACHE_KEY = 'busla_lms_v5_final';
@@ -73,6 +75,39 @@ async function initDashboard(uid) {
         console.error("Init Error:", e);
         showToast("Error loading dashboard", "error");
     }
+}
+/**
+ * حساب بيانات الأسبوع الحالي بناءً على منطق: السبت -> الجمعة
+ */
+function getCurrentWeekCycle() {
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0 (Sun) -> 6 (Sat)
+    
+    // تحويل اليوم ليكون السبت هو 0، الأحد هو 1، ... الجمعة هو 6
+    // JS: Sun=0, Mon=1, ..., Sat=6
+    // Target: Sat=0, Sun=1, ..., Fri=6
+    // المعادلة: (day + 1) % 7
+    const daysSinceSaturday = (dayOfWeek + 1) % 7;
+    
+    // تاريخ بداية الأسبوع (السبت الماضي أو اليوم لو سبت)
+    const startDate = new Date(now);
+    startDate.setDate(now.getDate() - daysSinceSaturday);
+    startDate.setHours(0, 0, 0, 0);
+    
+    // تاريخ نهاية الأسبوع (الجمعة القادمة)
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + 6);
+    endDate.setHours(23, 59, 59, 999);
+    
+    // Week ID موحد بصيغة YYYY-MM-DD لأول يوم في الأسبوع
+    const weekId = startDate.toISOString().split('T')[0];
+
+    return {
+        id: weekId,
+        start: startDate,
+        end: endDate,
+        isExpired: (dateToCheck) => dateToCheck > endDate
+    };
 }
 
 function updateHeaderInfo(user, team) {
@@ -448,56 +483,223 @@ window.loadAssignContent = async (cid) => {
     }
 };
 
-window.publishSelectedTasks = async () => {
-    const checks = document.querySelectorAll('.task-check:checked');
-    // Allow zero selection if user wants to just see (but button implies action)
-    if (checks.length === 0) return showToast("Select content to publish", "error");
+async function publishSelectedTasks() {
+    if (selectedVideos.size === 0) {
+        showToast("برجاء اختيار محتوى أولاً", "warning");
+        return;
+    }
 
     const btn = document.getElementById('publish-btn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    
-    const newTasks = [];
-    checks.forEach(box => {
-        const row = box.closest('label');
-        // Prevent duplicate assignment of the exact same content ID
-        const alreadyExists = (currentTeam.weekly_tasks || []).some(t => String(t.content_id) === String(box.value));
-        
-        if (!alreadyExists) {
-            newTasks.push({
-                task_id: `T_${Date.now()}_${Math.random().toString(36).substr(2,5)}`,
-                course_id: selectedAssignCourse,
-                content_id: box.value,
-                title: row.querySelector('.text-sm').innerText.trim(),
-                type: 'video', // You might want to grab actual type from DOM if varying
-                assigned_at: new Date().toISOString()
-            });
-        }
-    });
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
+    btn.disabled = true;
 
-    if (newTasks.length === 0) {
-        btn.innerHTML = 'Publish Selected';
-        return showToast("Selected items already assigned.", "info");
+    try {
+        const teamId = currentUserData.system_info.team_id;
+        const batch = writeBatch(db);
+        const weekCycle = getCurrentWeekCycle(); // 📅 1. حساب الأسبوع الحالي
+        
+        // تحويل الـ Set إلى Array للتكرار
+        Array.from(selectedVideos).forEach(video => {
+            // إنشاء ID مميز للمهمة (TeamID_ContentID) لمنع التكرار
+            const taskId = `${teamId}_${video.id}`;
+            const taskRef = doc(db, "teams", teamId, "tasks", taskId);
+
+            const taskData = {
+                task_id: taskId,
+                content_id: video.id,
+                course_id: video.course_id, // تأكد ان الاوبجكت video يحتوي عليه
+                title: video.title,
+                type: 'video', // أو حسب النوع
+                
+                // 📅 2. بيانات الوقت والأسبوع
+                week_id: weekCycle.id,
+                created_at: serverTimestamp(),
+                due_date: weekCycle.end.toISOString(),
+                
+                // 👤 3. بيانات المسؤول
+                assigned_by: currentUserData.uid,
+                leader_name: currentUserData.personal_info.full_name,
+
+                // 📊 4. الإحصائيات (مهمة لقواعد الحذف)
+                status: 'active', // active, hidden, locked
+                stats: {
+                    total_students: 0, // سيتم تحديثه بناء على عدد أعضاء الفريق
+                    started_count: 0,  // عدد الطلاب الذين فتحوا المهمة
+                    completed_count: 0 // عدد الطلاب الذين أنهوها
+                }
+            };
+
+            batch.set(taskRef, taskData);
+        });
+
+        await batch.commit();
+
+        showToast(`تم نشر ${selectedVideos.size} مهمة للأسبوع الحالي`, "success");
+        
+        // تنظيف الواجهة
+        selectedVideos.clear();
+        updateFloatingAction();
+        closeModal();
+        loadTeamOverview(); // تحديث القائمة فوراً
+
+    } catch (error) {
+        console.error("Error publishing tasks:", error);
+        showToast("حدث خطأ أثناء النشر", "error");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+async function renderTeamOverview(tasks) {
+    const container = document.getElementById('overview-container'); // تأكد من الـ ID في HTML
+    container.innerHTML = '';
+
+    if (tasks.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-10 text-gray-500">
+                <i class="fas fa-clipboard-list text-4xl mb-3"></i>
+                <p>لا توجد مهام نشطة حالياً</p>
+            </div>`;
+        return;
+    }
+
+    const currentWeek = getCurrentWeekCycle();
+
+    // فرز المهام: الأحدث أولاً
+    tasks.sort((a, b) => new Date(b.created_at?.toDate()) - new Date(a.created_at?.toDate()));
+
+    // تقسيم المهام
+    const currentWeekTasks = tasks.filter(t => t.week_id === currentWeek.id);
+    const historyTasks = tasks.filter(t => t.week_id !== currentWeek.id);
+
+    // دالة مساعدة لرسم الكارت
+    const createTaskCard = (task, isHistory = false) => {
+        // 🔒 قوانين التحكم (Rules Engine)
+        // 1. هل الأسبوع انتهى؟ (isHistory covers this mainly, but check strictly)
+        const isWeekActive = task.week_id === currentWeek.id;
+        
+        // 2. هل بدأ أي طالب في العمل؟ (Checking stats)
+        const hasEngagement = (task.stats?.started_count > 0 || task.stats?.completed_count > 0);
+        
+        // ✅ القرار النهائي: هل يمكن الحذف؟
+        const canDelete = isWeekActive && !hasEngagement;
+
+        // تحديد حالة الـ Badge
+        let statusBadge = '';
+        if (isHistory) {
+            statusBadge = `<span class="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded-md border border-gray-600">أرشيف</span>`;
+        } else if (hasEngagement) {
+            statusBadge = `<span class="px-2 py-1 bg-yellow-900/50 text-yellow-400 text-xs rounded-md border border-yellow-700"><i class="fas fa-lock ml-1"></i> قيد العمل</span>`;
+        } else {
+            statusBadge = `<span class="px-2 py-1 bg-green-900/50 text-green-400 text-xs rounded-md border border-green-700">نشط</span>`;
+        }
+
+        return `
+            <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex justify-between items-center group hover:border-b-primary transition-all">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full bg-b-primary/20 flex items-center justify-center text-b-primary">
+                        <i class="fas ${task.type === 'quiz' ? 'fa-question' : 'fa-play'}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-sm md:text-base">${task.title}</h4>
+                        <div class="flex items-center gap-3 mt-1">
+                            <span class="text-xs text-gray-400 flex items-center gap-1">
+                                <i class="far fa-calendar-alt"></i> ${new Date(task.due_date).toLocaleDateString('ar-EG')}
+                            </span>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="text-center px-4 border-l border-white/10 hidden md:block">
+                        <p class="text-xs text-gray-400">الإنجاز</p>
+                        <p class="font-bold text-white">
+                            <span class="text-green-400">${task.stats?.completed_count || 0}</span> / 
+                            <span class="text-gray-400">${task.stats?.total_students || 0}</span>
+                        </p>
+                    </div>
+
+                    ${canDelete ? `
+                        <button onclick="deleteTask('${task.task_id}', '${task.week_id}')" 
+                                class="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+                                title="حذف المهمة">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    ` : `
+                        ${!isHistory ? '<i class="fas fa-lock text-gray-600" title="لا يمكن الحذف: بدأ العمل عليها"></i>' : ''}
+                    `}
+                </div>
+            </div>
+        `;
+    };
+
+    // الرسم في الحاوية
+    let html = '';
+    
+    // قسم الأسبوع الحالي
+    if (currentWeekTasks.length > 0) {
+        html += `<h3 class="text-b-hl-light font-bold mb-4 mt-2 flex items-center gap-2">
+                    <i class="fas fa-calendar-week"></i> الأسبوع الحالي
+                 </h3>
+                 <div class="space-y-3 mb-8">
+                    ${currentWeekTasks.map(t => createTaskCard(t)).join('')}
+                 </div>`;
+    }
+
+    // قسم الأرشيف (المهام السابقة)
+    if (historyTasks.length > 0) {
+        html += `<h3 class="text-gray-400 font-bold mb-4 mt-6 border-t border-white/10 pt-6 flex items-center gap-2">
+                    <i class="fas fa-history"></i> المهام السابقة
+                 </h3>
+                 <div class="space-y-3 opacity-75">
+                    ${historyTasks.map(t => createTaskCard(t, true)).join('')}
+                 </div>`;
+    }
+
+    container.innerHTML = html;
+}
+
+// إضافة هذه الدالة في النطاق العام (Global Scope) أو ربطها بالـ window
+
+window.deleteTask = async function(taskId, taskWeekId) {
+    if(!confirm("هل أنت متأكد من حذف هذه المهمة؟ لا يمكن التراجع عن هذا الإجراء.")) return;
+
+    // 🔒 Double Check Logic (Client Side immediate check)
+    const currentWeek = getCurrentWeekCycle();
+    if (taskWeekId !== currentWeek.id) {
+        showToast("لا يمكن حذف مهام من أسابيع سابقة", "error");
+        return;
     }
 
     try {
-        await updateDoc(doc(db, "teams", currentTeam.team_id), {
-            weekly_tasks: arrayUnion(...newTasks)
-        });
+        const teamId = currentUserData.system_info.team_id;
+        const taskRef = doc(db, "teams", teamId, "tasks", taskId);
         
-        if(!currentTeam.weekly_tasks) currentTeam.weekly_tasks = [];
-        currentTeam.weekly_tasks.push(...newTasks);
-        
-        showToast(`Published ${newTasks.length} tasks!`, "success");
-        renderOverview();
-        // Refresh list to update badges
-        loadAssignContent(selectedAssignCourse);
-    } catch (e) {
-        showToast("Publish Failed", "error");
-    } finally {
-        btn.innerHTML = 'Publish Selected';
-    }
-};
+        // 🛡️ يفضل هنا عمل get() وفحص الـ stats.started_count مرة أخرى قبل الحذف
+        // لضمان عدم بدء طالب في اللحظة بين العرض والضغط
+        const docSnap = await getDoc(taskRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.stats && data.stats.started_count > 0) {
+                showToast("عذراً، قام أحد الطلاب ببدء المهمة للتو. لا يمكن الحذف.", "error");
+                loadTeamOverview(); // Refresh UI
+                return;
+            }
+        }
 
+        await deleteDoc(taskRef);
+        showToast("تم حذف المهمة بنجاح", "success");
+        
+        // إعادة تحميل القائمة
+        loadTeamOverview();
+
+    } catch (error) {
+        console.error("Error deleting task:", error);
+        showToast("فشل الحذف", "error");
+    }
+}
 window.submitCustomTask = async () => {
     const t = document.getElementById('ct-title').value;
     const d = document.getElementById('ct-desc').value;

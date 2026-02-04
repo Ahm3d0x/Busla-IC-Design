@@ -9,11 +9,14 @@ import {
     getDoc, 
     getDocs,
     updateDoc, 
+    deleteDoc,      // 👈 تم الإضافة: للحذف
+    writeBatch,     // 👈 تم الإضافة: للنشر الجماعي
     query,
     where,
     arrayUnion,
-    arrayRemove, // 👈 تمت الإضافة هنا
-    serverTimestamp 
+    arrayRemove, 
+    serverTimestamp,
+    increment       // 👈 تم الإضافة: للعدادات
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 import { 
@@ -24,25 +27,22 @@ import {
     signOut 
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-// إعدادات مشروعك (كما هي)
 const firebaseConfig = {
     apiKey: "AIzaSyAsN0YsS3PFIbi-vRp1GK5SiqPqXGeUkG4",
     authDomain: "busla-digital-ic.firebaseapp.com",
     projectId: "busla-digital-ic",
     storageBucket: "busla-digital-ic.firebasestorage.app",
     messagingSenderId: "1052649073663",
-    appId: "1:1052649073663:web:92dc69e9fe2046936155ca"
+    appId: "1:1052649073663"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Export all functions (بما فيها arrayRemove)
 export { 
-    db, 
     auth, 
+    db, 
     collection, 
     doc, 
     addDoc, 
@@ -50,11 +50,14 @@ export {
     getDoc, 
     getDocs, 
     updateDoc, 
+    deleteDoc,    // 👈 تأكد من تصديرها
+    writeBatch,   // 👈 تأكد من تصديرها
     query, 
     where, 
     arrayUnion, 
-    arrayRemove,
-    serverTimestamp, 
+    arrayRemove, 
+    serverTimestamp,
+    increment,
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     onAuthStateChanged, 

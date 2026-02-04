@@ -1,4 +1,4 @@
-import { auth, db, doc, getDoc, setDoc, updateDoc, arrayUnion, onAuthStateChanged } from './firebase-config.js';
+import { auth, db, doc, getDoc, setDoc, updateDoc, arrayUnion, onAuthStateChanged, increment } from './firebase-config.js';
 
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwTZcXVXAqpu2H7Int1omEeJrfS8bfiSmhhWayX-wjOJsbaHH4-LX39K4RhVKmzrUOL/exec';
 
@@ -10,7 +10,7 @@ let userUid = null;
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     currentCourseId = urlParams.get('id');
-
+trackTaskStart(currentCourseId, currentModuleIndex);
     if (!currentCourseId) {
         alert("لم يتم تحديد كورس!");
         window.location.href = "student-dash.html";
@@ -31,7 +31,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if(openBtn) openBtn.onclick = () => document.getElementById('sidebar').classList.remove('translate-x-full');
     if(closeBtn) closeBtn.onclick = () => document.getElementById('sidebar').classList.add('translate-x-full');
 });
-
+// تُستدعى عندما يضغط الطالب "ابدأ الدرس" أو يفتح الصفحة
+async function trackTaskStart(teamId, taskId) {
+    // نحتاج للتأكد أن الطالب لم يبدأها من قبل (لتجنب العد المزدوج)
+    // يمكن التحقق من LocalStorage أو التقدم في Firebase
+    const hasStartedBefore = localStorage.getItem(`started_${taskId}`);
+    
+    if (!hasStartedBefore && teamId && taskId) {
+        try {
+            const taskRef = doc(db, "teams", teamId, "tasks", taskId);
+            await updateDoc(taskRef, {
+                "stats.started_count": increment(1)
+            });
+            localStorage.setItem(`started_${taskId}`, 'true');
+        } catch (e) {
+            console.error("Failed to update task stats", e);
+        }
+    }
+}
+async function trackTaskCompletion(teamId, taskId) {
+    if (teamId && taskId) {
+        try {
+            const taskRef = doc(db, "teams", teamId, "tasks", taskId);
+            await updateDoc(taskRef, {
+                "stats.completed_count": increment(1)
+            });
+        } catch (e) { console.error(e); }
+    }
+}
 async function initPlayer() {
     try {
         // إضافة Timestamp لمنع الكاش نهائياً
