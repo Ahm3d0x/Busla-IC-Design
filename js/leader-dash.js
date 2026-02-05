@@ -5,6 +5,8 @@ import {
 import { getTeamData } from './team-system.js';
 import { initSettingsModal, openSettings } from './settings-handler.js';
 import { initBadgesSystem } from './badges-handler.js';
+import { initTeamBadgesSystem } from './team-badges-handler.js';
+import { initLeaderboard } from './leaderboard-handler.js';
 document.addEventListener('DOMContentLoaded', () => {
     // 1. تشغيل المودال
     initSettingsModal();
@@ -1478,6 +1480,12 @@ window.switchTab = function(id) {
     }
     if (id === 'rank') {
         initBadgesSystem();
+    }
+    if (id === 'team-rank') {
+        initTeamBadgesSystem();
+    }
+    if (id === 'leaderboard') {
+        initLeaderboard();
     }
 };
 window.closeModal = (id) => document.getElementById(id).classList.add('hidden');

@@ -180,7 +180,7 @@ function renderCinematicPage(container, currentRank, nextRank, points, currentIn
                     <div id="hero-badge" class="relative w-64 h-64 mb-8 transition-transform duration-200 ease-out cursor-pointer" style="animation: float-slow 6s ease-in-out infinite;">
                         <div class="absolute inset-0 rounded-full bg-[${currentRank.stage_color}] blur-2xl opacity-40 animate-pulse"></div>
                         
-                        <div class="relative w-full h-full rounded-full overflow-hidden border-4 shadow-2xl" style="border-color: ${currentRank.stage_color}">
+                        <div class="relative w-full h-full rounded-[12%] overflow-hidden border-4 shadow-2xl" style="border-color: ${currentRank.stage_color}">
                             <img src="${currentImgUrl}" 
                                  class="w-full h-full object-cover"
                                  alt="${currentRank.title}"
@@ -275,7 +275,7 @@ function renderCinematicPage(container, currentRank, nextRank, points, currentIn
 
                         <div class="absolute right-6 md:right-1/2 translate-x-1/2 -translate-y-1/2 top-1/2 w-24 h-24 flex items-center justify-center z-30 transition-all duration-700 ease-out group-hover:scale-125 ${scale}">
                             
-                            <div class="w-full h-full rounded-full overflow-hidden border-2 shadow-lg relative bg-black" style="border-color: ${isUnlocked ? rank.stage_color : '#333'}">
+                            <div class="w-full h-full rounded-[12%] overflow-hidden border-2 shadow-lg relative bg-black" style="border-color: ${isUnlocked ? rank.stage_color : '#333'}">
                                 <img src="${badgeUrl}" 
                                      class="w-full h-full object-cover transition-all duration-500"
                                      style="filter: ${imgFilter} ${badgeGlow}; transform: translateZ(20px);"

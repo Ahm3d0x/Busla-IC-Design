@@ -201,24 +201,11 @@ export async function openSettings() {
 
         if (docSnap.exists()) {
             const data = docSnap.data();
-            console.log("📥 Firestore Data Loaded:", data); // للتحقق من البيانات
 
-            // --- [أهم جزء] معالجة البيانات الناقصة ---
-            
-            // أ. الاسم: الأولوية لـ (personal_info) ثم (Auth)
-            // استخدام trim() للتأكد إنه مش مسافة فاضية
-            // user.personal_info?.full_name || user.full_name
-            console.log(user);
-            console.log(data);
             const dbName = data.personal_info?.full_name?.trim() || user.displayName;
             if(dbName) nameInput.value = dbName;
-
-            // ب. الصورة: فحص المكانين (personal_info و Root)
-            // البيانات اللي بعتها بتقول إن الصورة موجودة في الـ Root
             const dbPhoto = data.photo_url || data.personal_info?.photo_url || user.photoURL;
             if(dbPhoto) photoInput.value = dbPhoto;
-
-            // ج. باقي البيانات (المحافظة، الجامعة، إلخ)
             if(data.personal_info?.governorate) govInput.value = data.personal_info.governorate;
 
             if(data.academic_info) {
@@ -227,11 +214,7 @@ export async function openSettings() {
                 if(data.academic_info.faculty) facultyInput.value = data.academic_info.faculty;
                 if(data.academic_info.department) deptInput.value = data.academic_info.department;
             }
-
-            // تحديث المعاينة بعد تحميل البيانات الأكيدة
             updatePreviewUI();
-            
-            // تحديث الرتبة
             const role = data.system_info?.role || 'Student';
             const roleEl = document.getElementById('display-role-preview');
             if(roleEl) roleEl.textContent = role;

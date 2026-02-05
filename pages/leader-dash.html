@@ -87,6 +87,12 @@
                 <i class="fas fa-medal w-5"></i>
                 <span class="font-bold">رحلة الصعود</span>
             </button>
+            <button onclick="switchTab('team-rank')" id="btn-team-rank" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                <i class="fas fa-chess-rook w-5"></i> <span class="font-bold">رحلة الفريق</span>
+            </button>
+            <button onclick="switchTab('leaderboard')" id="btn-leaderboard" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
+                <i class="fas fa-trophy"></i> <span>ساحة المنافسة</span>
+            </button>
             <button id="open-settings-btn" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-cog"></i> <span>إعدادات الحساب</span>
             </button>
@@ -411,6 +417,95 @@
     </header>
 
     <div id="rank-container" class="max-w-5xl mx-auto"></div>
+</section>
+<section id="team-rank" class="tab-content hidden animate-fade-in">
+    <div id="team-rank-container" class="max-w-7xl mx-auto"></div>
+</section>
+<section id="leaderboard" class="tab-content hidden animate-fade-in relative min-h-screen pb-20">
+    
+    <div class="relative w-full h-48 rounded-2xl overflow-hidden mb-8 border border-white/10 group shadow-2xl bg-[#050505]">
+        <div class="absolute inset-0 bg-gradient-to-r from-black via-[#0a0a0a] to-[#111]"></div>
+        <div class="absolute inset-0 bg-b-primary/5 mix-blend-overlay"></div>
+        
+        <div class="relative z-10 h-full grid grid-cols-2 divide-x divide-white/5 divide-x-reverse">
+            
+            <div class="flex flex-col items-center justify-center p-4 relative">
+                <span class="text-xs font-bold text-gray-400 tracking-wider uppercase mb-1">ترتيبك العالمي</span>
+                <h2 id="hero-student-rank" class="text-6xl font-black text-white tracking-tight drop-shadow-lg mb-2">--</h2>
+                
+                <div class="flex items-center gap-3 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
+                    <span id="hero-student-badge" class="text-green-400 text-sm font-bold uppercase">RECRUIT</span>
+                    <span class="text-white/20 text-xs">|</span>
+                    <span id="hero-student-points" class="text-white text-sm font-mono font-bold">0 XP</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center justify-center p-4 relative bg-white/[0.02]">
+                <span class="text-xs font-bold text-b-primary tracking-wider uppercase mb-1">ترتيب الفريق</span>
+                <h2 id="hero-team-rank" class="text-6xl font-black text-white tracking-tight drop-shadow-lg mb-2">--</h2>
+                
+                <div class="flex items-center gap-3 bg-b-primary/10 px-4 py-1.5 rounded-full border border-b-primary/20">
+                    <span id="hero-team-badge" class="text-b-primary text-sm font-bold uppercase">SQUAD</span>
+                    <span class="text-white/20 text-xs">|</span>
+                    <span id="hero-team-points" class="text-white text-sm font-mono font-bold">0 XP</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 sticky top-4 z-40 bg-b-bg/95 backdrop-blur-xl p-3 rounded-xl border border-white/10 shadow-lg">
+        
+        <div class="flex bg-black p-1 rounded-lg border border-white/10">
+            <button onclick="switchLeaderboardType('students')" id="tab-students" class="px-8 py-2.5 rounded-md text-sm font-bold transition-all bg-white text-black shadow-lg">
+                الطلاب
+            </button>
+            <button onclick="switchLeaderboardType('teams')" id="tab-teams" class="px-8 py-2.5 rounded-md text-sm font-bold text-gray-500 hover:text-white transition-all">
+                الفرق
+            </button>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="switchLeaderboardScope('global')" id="scope-global" class="scope-btn px-4 py-2 rounded-lg text-xs font-bold bg-white/10 text-white border border-white/20">
+                عالمي 🌍
+            </button>
+            <button onclick="switchLeaderboardScope('university')" id="scope-university" class="scope-btn px-4 py-2 rounded-lg text-xs font-bold text-gray-500 hover:bg-white/5 border border-transparent">
+                جامعتي 🎓
+            </button>
+            <button onclick="switchLeaderboardScope('governorate')" id="scope-governorate" class="scope-btn px-4 py-2 rounded-lg text-xs font-bold text-gray-500 hover:bg-white/5 border border-transparent">
+                محافظتي 📍
+            </button>
+        </div>
+    </div>
+
+    <div id="podium-container" class="flex justify-center items-end gap-6 mb-12 min-h-[220px] pt-4"></div>
+
+    <div class="bg-b-surface rounded-2xl border border-white/10 overflow-hidden relative min-h-[400px]">
+        
+        <div class="grid grid-cols-12 gap-4 p-5 border-b border-white/10 bg-black/40 text-xs uppercase tracking-widest text-gray-400 font-bold">
+            <div class="col-span-1 text-center">#</div>
+            <div class="col-span-3 text-right pr-2">المنافس</div>
+            <div class="col-span-2 text-center">الرتبة الحالية</div> <div class="col-span-3 text-center" id="col-header-context">الفريق / القائد</div> <div class="col-span-2 text-center">النقاط</div>
+            <div class="col-span-1 text-center">التفاصيل</div>
+        </div>
+
+        <div id="leaderboard-list" class="divide-y divide-white/5 font-mono">
+            <div class="text-center py-20 text-gray-500 animate-pulse text-lg">جاري تحميل البيانات...</div>
+        </div>
+    </div>
+
+    <div id="sticky-user-rank" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-4xl bg-gradient-to-r from-b-primary to-black border border-t-2 border-white/20 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] p-4 flex items-center justify-between z-50 transform translate-y-[200%] transition-transform duration-500">
+        <div class="flex items-center gap-6">
+            <span class="text-3xl font-black text-white font-mono" id="sticky-rank-num">#--</span>
+            <div>
+                <h4 class="text-white font-bold text-base">موقعك الحالي</h4>
+                <p class="text-xs text-gray-300" id="sticky-diff-text">استمر في الصعود!</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <span class="block text-2xl font-bold text-white font-mono" id="sticky-points">0 XP</span>
+        </div>
+    </div>
+
 </section>
 <div id="settings-modal" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-md items-center justify-center p-4 animate-fade-in flex">
     <div class="bg-b-surface border border-b-border w-full max-w-4xl rounded-3xl shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
