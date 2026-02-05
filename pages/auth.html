@@ -139,8 +139,8 @@
             <div class="hidden lg:block space-y-8 animate-fade-in-up">
                 <div class=" bg-black/[0.66] border-r-4 border-r-b-primary p-10 rounded-2xl  text-right">
                     <div class="inline-flex items-center gap-4 mb-4">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-b-primary to-b-hl-light flex items-center justify-center shadow-lg animate-float">
-                            <i class="fas fa-microchip text-3xl text-white"></i>
+                        <div class="w-16 h-16 rounded-2xl shadow-lg animate-float overflow-hidden border-2 border-b-primary/50">
+                            <img src="../assets/icons/icon.jpg" alt="Logo" class="w-full h-full object-cover">
                         </div>
                         <h1 class="text-6xl font-black p-10 gradient-text">بوصلة</h1>
                     </div>
@@ -320,7 +320,17 @@
                                 </select>
                             </div>
                         </div>
-
+                        <div class="mb-4">
+                            <label class="block text-xs text-gray-400 mb-1 mr-1">رابط الصورة (اختياري)</label>
+                            <div class="relative">
+                                <input type="url" id="signup-photo" placeholder="رابط Google Drive للصورة" 
+                                class="w-full px-3 py-2 rounded-xl text-white text-sm outline-none input-glow pl-8">
+                                <i class="fab fa-google-drive absolute left-3 top-2.5 text-gray-500"></i>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mt-1 mr-1">
+                                <i class="fas fa-info-circle"></i> ارفع صورتك على Drive، تأكد أن المشاركة "Anyone with link"، وانسخ الرابط هنا.
+                            </p>
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-xs text-gray-400 mb-1 mr-1">الكلية</label>
@@ -370,143 +380,189 @@
             </div>
         </div>
     </div>
-
-<script type="module">
-    import { loginUser, registerUser } from '../js/auth-handler.js';
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // التعريفات
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const loginTab = document.getElementById('login-tab');
-        const signupTab = document.getElementById('signup-tab');
-        const toggleBtns = document.querySelectorAll('.toggle-auth');
-
-        // كلاسات التصميم (للتفعيل والتعطيل)
-        const activeClasses = ['bg-gradient-to-r', 'from-b-primary', 'to-b-hl-light', 'text-white', 'shadow-lg'];
-        const inactiveClasses = ['text-gray-400', 'hover:text-white'];
-
-        // --- دوال العرض والتبديل ---
+<div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-3 pointer-events-none">
+    </div>
+    <div id="success-modal" class="fixed inset-0 bg-black/90 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300">
+    <div class="bg-[#111] border border-[#22C45D] w-full max-w-md p-8 rounded-3xl shadow-[0_0_50px_rgba(34,196,93,0.2)] text-center relative transform scale-100 transition-transform">
         
-        function showLogin() {
+        <div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/30 animate-pulse">
+            <i class="fas fa-envelope-open-text text-5xl text-green-400"></i>
+        </div>
+
+        <h3 class="text-3xl font-bold text-white mb-2">تم إنشاء الحساب! 🚀</h3>
+        <p class="text-gray-400 text-sm mb-6">
+            أرسلنا رابط التفعيل إلى:<br>
+            <span id="success-email-display" class="text-[#22C45D] font-bold font-mono mt-2 block text-lg"></span>
+        </p>
+
+        <div class="bg-white/5 p-4 rounded-xl border border-white/10 text-right text-sm text-gray-300 space-y-2 mb-8">
+            <p>1. افتح بريدك الإلكتروني (Check Spam).</p>
+            <p>2. اضغط على زر "تفعيل الحساب".</p>
+            <p>3. ارجع هنا وسجل الدخول.</p>
+        </div>
+
+        <button onclick="location.reload()" class="w-full py-3.5 bg-gradient-to-r from-[#006A67] to-[#22C45D] text-white font-bold rounded-xl shadow-lg hover:shadow-green-500/20 transition-all hover:scale-[1.02]">
+            <i class="fas fa-check-circle ml-2"></i> فهمت، العودة للدخول
+        </button>
+    </div>
+</div>
+<script type="module">
+    import { registerUser, loginUser } from '../js/auth-handler.js';
+    import { doc, getDoc, db } from '../js/firebase-config.js';
+
+    // Toggle Tabs Logic
+    const loginTab = document.getElementById('login-tab');
+    const signupTab = document.getElementById('signup-tab');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+
+    function switchAuthMode(mode) {
+        if (mode === 'login') {
+            loginTab.classList.add('text-b-primary', 'border-b-2', 'border-b-primary');
+            loginTab.classList.remove('text-gray-400');
+            signupTab.classList.remove('text-b-primary', 'border-b-2', 'border-b-primary');
+            signupTab.classList.add('text-gray-400');
             loginForm.classList.remove('hidden');
             signupForm.classList.add('hidden');
-            updateTabsUI('login');
-        }
-
-        function showSignup() {
-            loginForm.classList.add('hidden');
-            signupForm.classList.remove('hidden');
-            updateTabsUI('signup');
-        }
-
-        // دالة لتغيير شكل التابات
-        function updateTabsUI(mode) {
-            // إزالة ستايل النشط من الاثنين أولاً
-            loginTab.classList.remove(...activeClasses);
-            signupTab.classList.remove(...activeClasses);
-            loginTab.classList.add(...inactiveClasses);
-            signupTab.classList.add(...inactiveClasses);
-
-            if (mode === 'login') {
-                loginTab.classList.add(...activeClasses);
-                loginTab.classList.remove(...inactiveClasses);
-            } else {
-                signupTab.classList.add(...activeClasses);
-                signupTab.classList.remove(...inactiveClasses);
-            }
-        }
-
-        // --- تفعيل الأزرار والتابات ---
-
-        if(loginTab) loginTab.addEventListener('click', showLogin);
-        if(signupTab) signupTab.addEventListener('click', showSignup);
-
-        // التعامل مع الرابط (URL Mode)
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('mode') === 'signup') {
-            showSignup();
         } else {
-            showLogin();
+            signupTab.classList.add('text-b-primary', 'border-b-2', 'border-b-primary');
+            signupTab.classList.remove('text-gray-400');
+            loginTab.classList.remove('text-b-primary', 'border-b-2', 'border-b-primary');
+            loginTab.classList.add('text-gray-400');
+            signupForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
         }
+    }
 
-        // أزرار التبديل الجانبية (مثل: ليس لديك حساب؟)
-        toggleBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (loginForm.classList.contains('hidden')) {
-                    showLogin();
-                } else {
-                    showSignup();
-                }
-            });
-        });
+    loginTab.addEventListener('click', () => switchAuthMode('login'));
+    signupTab.addEventListener('click', () => switchAuthMode('signup'));
 
-        // ==========================================
-        // نفس منطق تسجيل الدخول والتسجيل السابق...
-        // ==========================================
+    // ==========================================
+    // 1. منطق تسجيل الدخول
+    // ==========================================
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-login');
+        const err = document.getElementById('login-error');
+        const originalText = btn.innerHTML;
         
-        // 1. Login Logic
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-login');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
-            btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
+        btn.disabled = true;
+        err.classList.add('hidden');
 
-            try {
-                const { user, role } = await loginUser(
-                    document.getElementById('login-email').value,
-                    document.getElementById('login-password').value
-                );
-                
-                // التوجيه
-                setTimeout(() => {
-                    if (role === 'Admin') window.location.href = "admin-dash.html";
-                    else if (role === 'Leader') window.location.href = "leader-dash.html";
-                    else window.location.href = "student-dash.html";
-                }, 1000);
+        try {
+            const result = await loginUser(
+                document.getElementById('login-email').value,
+                document.getElementById('login-password').value
+            );
 
-            } catch (error) {
+            if (result.emailVerified === false) {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                const err = document.getElementById('login-error');
-                err.textContent = "بيانات الدخول غير صحيحة";
+                err.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <span>⚠️ البريد الإلكتروني غير مفعل!</span>
+                        <span class="text-xs text-gray-400 mt-1">راجع صندوق الوارد (أو Spam) واضغط على الرابط.</span>
+                    </div>
+                `;
                 err.classList.remove('hidden');
+                return;
             }
-        });
 
-        // 2. Signup Logic
-        document.getElementById('signup-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-signup');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإنشاء...';
-            btn.disabled = true;
-
-            try {
-                await registerUser(
-                    document.getElementById('signup-email').value,
-                    document.getElementById('signup-password').value,
-                    { fullName: document.getElementById('signup-name').value },
-                    { 
-                        university: document.getElementById('signup-uni').value,
-                        year: document.getElementById('signup-year').value 
-                    }
-                );
-                
-                setTimeout(() => window.location.href = "student-dash.html", 1500);
-
-            } catch (error) {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                const err = document.getElementById('signup-error');
-                err.textContent = "حدث خطأ أثناء التسجيل";
-                err.classList.remove('hidden');
+            const userDoc = await getDoc(doc(db, "users", result.user.uid));
+            if (userDoc.exists()) {
+                const role = userDoc.data().system_info?.role || "Student";
+                window.location.href = role === 'Leader' ? "leader-dash.html" : "student-dash.html";
+            } else {
+                window.location.href = "student-dash.html";
             }
-        });
 
+        } catch (error) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            console.error(error);
+
+            let msg = "بيانات الدخول غير صحيحة";
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') msg = "هذا البريد غير مسجل أو كلمة المرور خطأ.";
+            if (error.code === 'auth/wrong-password') msg = "كلمة المرور خاطئة.";
+            if (error.code === 'auth/too-many-requests') msg = "تم حظر المحاولات مؤقتاً، انتظر قليلاً.";
+            
+            err.textContent = msg;
+            err.classList.remove('hidden');
+        }
     });
+
+
+document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-signup');
+        const err = document.getElementById('signup-error');
+        const originalText = btn.innerHTML;
+        
+        // تغيير حالة الزر للتحميل
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
+        btn.disabled = true;
+        err.classList.add('hidden');
+
+        // 1. تجميع البيانات بدقة
+        const personalInfo = {
+            fullName: document.getElementById('signup-name').value,
+            photoURL: document.getElementById('signup-photo')?.value
+        };
+        
+        const academicInfo = {
+            governorate: document.getElementById('signup-gov')?.value || "Not Specified",
+            university: document.getElementById('signup-uni')?.value || "Not Specified",
+            faculty: document.getElementById('signup-faculty')?.value || "Engineering",
+            department: document.getElementById('signup-dept')?.value || "Electronics",
+            year: document.getElementById('signup-year')?.value || "Prep"
+        };
+
+        try {
+            // 2. استدعاء دالة التسجيل (التي تحفظ في فايربيس وتطلب الإيميل)
+            const result = await registerUser(
+                document.getElementById('signup-email').value,
+                document.getElementById('signup-password').value,
+                personalInfo,
+                academicInfo
+            );
+            
+            // 3. ✅ نجاح! إظهار المودال العائم
+            if (result.verificationRequired) {
+                // وضع الإيميل في رسالة النجاح
+                const emailDisplay = document.getElementById('success-email-display');
+                if (emailDisplay) emailDisplay.innerText = document.getElementById('signup-email').value;
+                
+                // إظهار المودال
+                const modal = document.getElementById('success-modal');
+                if (modal) modal.classList.remove('hidden');
+            }
+
+        } catch (error) {
+            // ❌ فشل! إعادة الزر وعرض الخطأ
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            
+            console.error(error); // للمطور
+            
+            let msg = "حدث خطأ غير معروف: " + error.message;
+            
+            if (error.code === 'auth/email-already-in-use') {
+                msg = "هذا البريد مسجل بالفعل! سيتم تحويلك لتسجيل الدخول...";
+                setTimeout(() => document.getElementById('login-tab').click(), 2000);
+            }
+            else if (error.code === 'auth/weak-password') {
+                msg = "كلمة المرور ضعيفة (يجب أن تكون 6 أحرف على الأقل).";
+            }
+            else if (error.code === 'auth/invalid-email') {
+                msg = "صيغة البريد الإلكتروني غير صحيحة.";
+            }
+            
+            err.textContent = msg;
+            err.classList.remove('hidden');
+        }
+    });
+
 </script>
 </body>
 </html>

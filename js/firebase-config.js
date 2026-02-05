@@ -9,14 +9,14 @@ import {
     getDoc, 
     getDocs,
     updateDoc, 
-    deleteDoc,      // 👈 تم الإضافة: للحذف
-    writeBatch,     // 👈 تم الإضافة: للنشر الجماعي
+    deleteDoc,      
+    writeBatch,     
     query,
     where,
     arrayUnion,
     arrayRemove, 
     serverTimestamp,
-    increment       // 👈 تم الإضافة: للعدادات
+    increment       
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 import { 
@@ -24,6 +24,9 @@ import {
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     onAuthStateChanged, 
+    sendEmailVerification, 
+    updateProfile,  
+    sendPasswordResetEmail, 
     signOut 
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
@@ -50,8 +53,8 @@ export {
     getDoc, 
     getDocs, 
     updateDoc, 
-    deleteDoc,    // 👈 تأكد من تصديرها
-    writeBatch,   // 👈 تأكد من تصديرها
+    deleteDoc,    
+    writeBatch,   
     query, 
     where, 
     arrayUnion, 
@@ -61,5 +64,8 @@ export {
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     onAuthStateChanged, 
+    sendEmailVerification, 
+    updateProfile,  
+    sendPasswordResetEmail, 
     signOut 
 };

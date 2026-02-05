@@ -1,30 +1,57 @@
-// js/auth-handler.js
-import { db, auth, doc, setDoc, getDoc, createUserWithEmailAndPassword, signInWithEmailAndPassword } from './firebase-config.js';
+import { 
+    db, auth, doc, setDoc, getDoc, updateDoc,
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword,
+    sendEmailVerification, 
+    updateProfile 
+} from './firebase-config.js';
 
-// --- دالة تسجيل حساب جديد (كما هي مع تعديل بسيط للتأكد) ---
+// في ملف auth-handler.js
+
+// 1. تأكد من استيراد APPS_SCRIPT_URL (أو عرفه هنا مؤقتاً)
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyndLl7n0L4DVCIaaVwD5wIhx5JotZMiNUEm9b8IaUQCUgFxKtNX_oC9FsvA1uyJ9JJ/exec';
+
+// في ملف auth-handler.js
+
 export async function registerUser(email, password, personalInfo, academicInfo) {
+    let user;
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        console.log("🚀 بدء عملية التسجيل...");
 
+        // 1. إنشاء الحساب في Authentication
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        user = userCredential.user;
+        console.log("✅ تم إنشاء الحساب:", user.uid);
+
+        // 2. تحديث البروفايل فوراً
+        await updateProfile(user, {
+            displayName: personalInfo.fullName,
+            photoURL: personalInfo.photoURL || "" 
+        });
+
+        // 3. 🔥 تجهيز وحفظ البيانات في Firestore (قبل الإيميل) 🔥
         const userData = {
             uid: user.uid,
             personal_info: {
                 full_name: personalInfo.fullName,
                 email: email,
-                phone: ""
+                photo_url: personalInfo.photoURL || "",
+                phone: "", // اختياري
+                uid: user.uid // تكرار للتأكيد
             },
             academic_info: {
                 university: academicInfo.university,
-                faculty: "Engineering",
-                department: "Electronics", // يمكن تعديلها لتكون ديناميكية
-                year: academicInfo.year
+                faculty: academicInfo.faculty || "Engineering",
+                department: academicInfo.department || "Electronics",
+                year: academicInfo.year,
+                governorate: academicInfo.governorate || "Not Specified"
             },
             system_info: {
-                role: "Student", // الافتراضي دائماً طالب
+                role: "Student",
                 team_id: null,
                 join_date: new Date().toISOString(),
-                activity_status: "Active"
+                activity_status: "Active",
+                email_verified: false 
             },
             gamification: {
                 total_points: 0,
@@ -33,34 +60,56 @@ export async function registerUser(email, password, personalInfo, academicInfo) 
             }
         };
 
+        // حفظ المستند كاملاً
         await setDoc(doc(db, "users", user.uid), userData);
-        return { user, role: "Student" };
+        console.log("✅ تم حفظ البيانات في Firestore بنجاح");
+
+        // 4. محاولة إرسال الإيميل (خطوة منفصلة لا توقف التسجيل)
+        try {
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: "sendVerificationEmail",
+                    email: email,
+                    name: personalInfo.fullName
+                })
+            });
+            console.log("📨 تم طلب إرسال الإيميل");
+        } catch (emailErr) {
+            console.warn("⚠️ فشل طلب الإيميل (لكن الحساب سليم):", emailErr);
+        }
+        
+        return { user, verificationRequired: true };
 
     } catch (error) {
+        console.error("❌ Registration Error:", error);
+        // تنظيف: لو حصل خطأ وحساب Auth اتعمل بس الداتا لا، نحذفه عشان ميتحسبش يوزر وهمي
+        if (user) {
+            try { await user.delete(); } catch(e) {}
+        }
         throw error;
     }
 }
-
-// --- دالة تسجيل الدخول (الجديدة والمهمة) ---
+// --- تسجيل الدخول (مع تحديث حالة التفعيل في الداتابيز) ---
 export async function loginUser(email, password) {
     try {
-        // 1. التحقق من صحة الإيميل والباسورد
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // 2. جلب بيانات المستخدم من Firestore لمعرفة الرتبة (Role)
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            const userData = docSnap.data();
-            const role = userData.system_info.role; // Student, Leader, or Admin
-            return { user, role };
-        } else {
-            // حالة نادرة: الحساب موجود في Auth لكن ليس له بيانات في Firestore
-            throw new Error("بيانات المستخدم غير موجودة في قاعدة البيانات.");
+        // 🔥 التعديل الجديد: المزامنة مع الداتابيز
+        // لو الإيميل مفعل في Auth، نخليه مفعل في Firestore كمان
+        if (user.emailVerified) {
+            const userRef = doc(db, "users", user.uid);
+            
+            // تحديث الحقل فقط بدون التأثير على باقي البيانات
+            await updateDoc(userRef, {
+                "system_info.email_verified": true
+            }).catch(err => console.log("تحديث الحالة تم بالفعل أو حدث خطأ بسيط:", err));
         }
 
+        return { user, emailVerified: user.emailVerified }; 
     } catch (error) {
         throw error;
     }

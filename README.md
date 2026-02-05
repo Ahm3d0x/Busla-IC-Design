@@ -4,4 +4,4 @@ The world's first, easiest, most comprehensive, most sophisticated, and best res
 
 ---
 
-https://script.google.com/macros/s/AKfycbzUQ4z75E9mSQ24xG0KP7Y9TVSM8SKj9p9rAC6heMWO1TEgnANThOqFxYLL3VFu3Psy/exec
+https://script.google.com/macros/s/AKfycbznxfnE0yIkXECzHMwPEN_vGtDNM3kzICIP-XgzZJ0Qf8tdEE7aPvb_eBGvGeOgHe4q/exec

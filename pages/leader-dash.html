@@ -31,13 +31,36 @@
     </style>
 </head>
 <body class="bg-b-bg text-white min-h-screen flex overflow-hidden">
+ <div id="mobile-overlay" class="fixed inset-0 bg-black/80 z-40 hidden md:hidden backdrop-blur-sm transition-opacity"></div>
 
-    <aside class="w-64 bg-b-surface border-l border-white/10 hidden md:flex flex-col h-screen z-50">
-        <div class="p-6 border-b border-white/10">
-            <h1 class="font-bold text-lg text-b-primary flex items-center gap-2">
-                <i class="fas fa-crown"></i> غرفة القيادة
-            </h1>
-            <p class="text-xs text-gray-400 mt-1 truncate" id="team-name-sidebar">جاري التحميل...</p>
+<aside id="sidebar" class="w-80 bg-b-surface border-l border-white/10 fixed md:static inset-y-0 right-0 z-50 transform translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col h-screen shadow-2xl md:shadow-none">
+        <div class="md:hidden absolute top-4 left-4 z-50">
+            <button onclick="document.getElementById('mobile-overlay').click()" class="text-gray-400 hover:text-white bg-black/50 rounded-full p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="flex flex-col items-center p-6 border-b border-white/10 text-center bg-gradient-to-b from-white/5 to-transparent">
+            <div class="relative mb-3 group">
+                <img id="sidebar-team-logo" src="../assets/icons/icon.jpg" 
+                     class="w-20 h-20 rounded-2xl object-cover border-2 border-white/10 shadow-lg group-hover:border-b-primary transition-all cursor-pointer">
+                
+                <div class="absolute -bottom-2 -right-2 bg-b-surface p-1 rounded-full">
+                    <div class="bg-yellow-500/20 text-yellow-500 w-6 h-6 flex items-center justify-center rounded-full border border-yellow-500/30">
+                        <i class="fas fa-crown text-[10px]"></i>
+                    </div>
+                </div>
+            </div>
+        
+            <h2 id="sidebar-team-name" class="font-bold text-lg text-white mb-1 tracking-wide"> </h2>
+            
+            <div class="flex items-center justify-center gap-1.5 text-xs text-gray-400 bg-black/30 px-3 py-1 rounded-full border border-white/5">
+                <i class="fas fa-user-tie text-b-primary"></i>
+                <span>القائد: <span id="sidebar-leader-name" class="text-gray-300"> </span></span>
+            </div>
+        
+            <div id="sidebar-badges-container" class="mt-3 flex gap-1 justify-center min-h-[20px]">
+            </div>
         </div>
 
         <nav class="flex-1 p-4 space-y-2 overflow-y-auto custom-scroll">
@@ -60,6 +83,9 @@
             <button onclick="switchTab('calendar')" id="btn-calendar" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-calendar-alt"></i> <span>التقويم</span>
             </button>
+            <button id="open-settings-btn" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
+                <i class="fas fa-cog"></i> <span>إعدادات الحساب</span>
+            </button>
         </nav>
 
         <div class="p-4 border-t border-white/10">
@@ -71,56 +97,104 @@
 
     <main class="flex-1 h-screen overflow-y-auto p-4 md:p-8 relative custom-scroll">
         
-        <header class="flex justify-between items-center mb-8 bg-b-surface p-4 rounded-2xl border border-white/10">
-            <div>
-                <h2 class="text-2xl font-bold">أهلاً، <span id="leader-name" class="text-b-primary">...</span> 👋</h2>
-                <p class="text-sm text-gray-400">قائد فريق: <span id="team-name-display" class="text-white">...</span></p>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <p class="text-xs text-gray-400">نقاط الفريق</p>
-                    <p id="stat-team-score" class="font-bold text-yellow-400 text-lg">0</p>
-                </div>
-                <div class="bg-white/5 px-4 py-2 rounded-xl flex items-center gap-3">
-                    <div class="text-right">
-                        <p class="text-xs text-gray-400">نقاطي</p>
-                        <p id="my-points" class="font-bold text-b-primary text-lg">0</p>
-                    </div>
-                    <i class="fas fa-star text-yellow-400"></i>
-                </div>
-            </div>
-        </header>
-
-<section id="overview" class="tab-content active space-y-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-b-surface p-6 rounded-2xl border border-white/10">
-            <p class="text-gray-400 text-sm">الأعضاء</p>
-            <h3 id="stat-members-count" class="text-3xl font-bold mt-1 text-white">0 / 5</h3>
-        </div>
-        <div class="bg-b-surface p-6 rounded-2xl border border-white/10">
-            <p class="text-gray-400 text-sm">الكورسات المفعلة</p>
-            <h3 id="stat-active-courses" class="text-3xl font-bold mt-1 text-purple-400">0</h3>
-        </div>
-        <div class="bg-b-surface p-6 rounded-2xl border border-white/10">
-            <p class="text-gray-400 text-sm">المهام النشطة</p>
-            <h3 id="stat-active-tasks" class="text-3xl font-bold mt-1 text-green-400">0</h3>
-        </div>
+<header class="flex flex-col-reverse md:flex-row justify-between items-center mb-8 bg-b-surface p-4 rounded-2xl border border-white/10 shadow-lg gap-4">
+            
+    <div class="flex items-center justify-between w-full md:w-auto md:hidden">
+        <span class="font-bold text-lg text-b-primary">BUSLA LMS</span>
+        <button id="mobile-menu-btn" class="text-white p-2 rounded-lg bg-white/5 border border-white/10">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
     </div>
 
-    <div class="bg-b-surface rounded-2xl border border-white/10 p-6">
-        <h3 class="text-xl font-bold text-white mb-4 border-b border-white/10 pb-4">
-            <i class="fas fa-tasks ml-2 text-b-primary"></i> أحدث المهام
-        </h3>
-        <div id="week-header-info"></div>
+    <div class="flex items-center gap-4 w-full md:w-auto bg-black/20 p-2 pr-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
+        <img id="header-user-avatar" src="../assets/icons/icon.jpg" 
+             class="w-12 h-12 rounded-full border-2 border-white/10 p-0.5 bg-b-surface object-cover">
         
-        <div id="overview-container" class="space-y-4 min-h-[100px]">
-            <div class="text-center py-8 text-gray-500">
-                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
-                <p>جاري تحميل المهام...</p>
+        <div>
+            <p class="text-[10px] text-gray-400 mb-0.5">أهلاً بك،</p>
+            <h2 id="header-user-name" class="text-lg font-bold text-white leading-none"></h2>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+        <div class="flex items-center gap-3 bg-black/30 px-4 py-2 rounded-xl border border-white/5">
+            <div class="w-8 h-8 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div>
+                <p class="text-[9px] text-gray-500 uppercase tracking-widest">نقاط الفريق</p>
+                <p id="stat-team-score" class="font-bold text-white font-mono">0</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 bg-b-primary/10 px-4 py-2 rounded-xl border border-b-primary/20">
+            <div class="w-8 h-8 rounded-full bg-b-primary/20 flex items-center justify-center text-b-primary">
+                <i class="fas fa-star"></i>
+            </div>
+            <div>
+                <p class="text-[9px] text-b-primary uppercase tracking-widest">نقاطي</p>
+                <p id="my-points" class="font-bold text-white font-mono">0</p>
             </div>
         </div>
     </div>
-    </section>
+</header>
+<section id="overview" class="tab-content active space-y-8">
+    
+    <div id="week-header-info"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-b-surface p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
+            <div class="absolute -left-4 -bottom-4 text-8xl text-white/5 group-hover:text-white/10 transition-colors"><i class="fas fa-users"></i></div>
+            <p class="text-gray-400 text-sm relative z-10">أعضاء الفريق</p>
+            <h3 id="stat-members-count" class="text-3xl font-bold mt-1 text-white relative z-10">0 / 5</h3>
+        </div>
+        <div class="bg-b-surface p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
+            <div class="absolute -left-4 -bottom-4 text-8xl text-purple-500/5 group-hover:text-purple-500/10 transition-colors"><i class="fas fa-layer-group"></i></div>
+            <p class="text-gray-400 text-sm relative z-10">الكورسات النشطة</p>
+            <h3 id="stat-active-courses" class="text-3xl font-bold mt-1 text-purple-400 relative z-10">0</h3>
+        </div>
+        <div class="bg-b-surface p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
+            <div class="absolute -left-4 -bottom-4 text-8xl text-green-500/5 group-hover:text-green-500/10 transition-colors"><i class="fas fa-tasks"></i></div>
+            <p class="text-gray-400 text-sm relative z-10">مهام الأسبوع</p>
+            <h3 id="stat-active-tasks" class="text-3xl font-bold mt-1 text-green-400 relative z-10">0</h3>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span class="w-2 h-8 bg-b-primary rounded-full"></span>
+                    مهام الأسبوع الحالي
+                </h3>
+                <div class="flex gap-2">
+                    <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">فيديو <i class="fas fa-circle text-red-500 text-[8px] ml-1"></i></span>
+                    <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">كويز <i class="fas fa-circle text-yellow-500 text-[8px] ml-1"></i></span>
+                    <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">مشروع <i class="fas fa-circle text-purple-500 text-[8px] ml-1"></i></span>
+                </div>
+            </div>
+            
+            <div id="overview-container" class="space-y-3 min-h-[200px]">
+                </div>
+        </div>
+
+        <div class="space-y-6">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                <span class="w-2 h-8 bg-purple-500 rounded-full"></span>
+                الكورسات النشطة
+            </h3>
+            
+            <div id="active-courses-container" class="space-y-4">
+                <div class="text-center py-10 text-gray-500 bg-b-surface rounded-xl border border-white/5">
+                    <i class="fas fa-spinner fa-spin mb-2"></i>
+                    <p>جاري التحميل...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
         <section id="roadmap" class="tab-content space-y-6">
             <div class="flex justify-between items-center bg-black/30 p-4 rounded-xl border border-white/10">
                 <div>
@@ -129,8 +203,8 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-220px)]">
-                <div class="lg:col-span-2 bg-b-surface rounded-2xl border border-white/10 overflow-y-auto p-6 custom-scroll" id="roadmap-tree-container">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-220px)]">
+                <div class="lg:col-span-1 bg-b-surface rounded-2xl border border-white/10 overflow-y-auto p-6 custom-scroll" id="roadmap-tree-container">
                     <div class="text-center py-20 text-gray-500">
                         <i class="fas fa-spinner fa-spin text-2xl mb-2"></i><br>جاري تحميل المنهج...
                     </div>
@@ -142,61 +216,112 @@
                         <p>حدد عنصراً من الشجرة لعرض التفاصيل.</p>
                     </div>
                     
-<div id="node-details-content" class="hidden h-full flex flex-col">
-    <div class="relative w-full h-48 shrink-0 rounded-2xl overflow-hidden mb-6 group">
+<div id="node-details-content" class="hidden lg:col-span-1 flex flex-col">
+    
+    <div class="relative w-full h-52 shrink-0 rounded-2xl overflow-hidden mb-6 group border border-white/10 shadow-2xl">
         <img id="detail-img" src="" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-        <div class="absolute inset-0 bg-gradient-to-t from-b-bg via-transparent to-transparent opacity-90"></div>
-        <span id="detail-type" class="absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs px-3 py-1 rounded-full uppercase tracking-wider font-bold shadow-lg"></span>
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+        <span id="detail-type" class="absolute top-4 right-4 bg-b-primary/90 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow-lg border border-white/20 uppercase tracking-widest"></span>
     </div>
 
-    <div class="space-y-4 mb-6">
-        <h2 id="detail-title" class="text-3xl font-bold text-white leading-tight font-heading"></h2>
+    <div class="space-y-6 mb-6">
+        <h2 id="detail-title" class="text-3xl font-bold text-white leading-tight font-heading drop-shadow-md"></h2>
         
-        <div class="flex flex-wrap gap-3">
-            <span class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg text-xs text-gray-300 border border-white/10">
-                <i class="far fa-clock text-yellow-400"></i> <span id="detail-time"></span>
-            </span>
-            <span class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg text-xs text-gray-300 border border-white/10">
-                <i class="fas fa-tools text-blue-400"></i> <span id="detail-tools"></span>
-            </span>
+        <div class="grid grid-cols-2 gap-3">
+            
+            <div class="bg-white/5 border border-white/10 p-3 rounded-xl flex items-center gap-3 hover:bg-white/10 transition-colors">
+                <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-lg border border-purple-500/20">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">المحاضر</p>
+                    <p id="detail-instructor" class="text-white font-bold text-sm truncate">--</p>
+                </div>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-3 rounded-xl flex items-center gap-3 hover:bg-white/10 transition-colors">
+                <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-lg border border-blue-500/20">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">المحتوى</p>
+                    <p id="detail-videos" class="text-white font-bold text-sm">--</p>
+                </div>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-3 rounded-xl flex items-center gap-3 hover:bg-white/10 transition-colors">
+                <div class="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-lg border border-yellow-500/20">
+                    <i class="far fa-clock"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">المدة الفعلية</p>
+                    <p id="detail-duration" class="text-white font-bold text-sm dir-ltr font-mono">--</p>
+                </div>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-3 rounded-xl flex items-center gap-3 hover:bg-white/10 transition-colors">
+                <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-lg border border-green-500/20">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">الخطة الزمنية</p>
+                    <p id="detail-plan-time" class="text-white font-bold text-sm">--</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-6">
-        <div class="bg-white/5 p-5 rounded-2xl border border-white/5">
-            <h4 class="text-sm font-bold text-gray-400 mb-3 uppercase tracking-widest">نبذة عن المحتوى</h4>
-            <p id="detail-desc" class="text-sm text-gray-200 leading-relaxed"></p>
+    <div class="flex-1 overflow-y-auto custom-scroll pr-2 space-y-4">
+        
+        <div class="bg-b-surface p-5 rounded-2xl border border-white/10 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-white/20"></div>
+            <h4 class="text-xs font-bold text-gray-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-align-right text-b-primary"></i> نبذة عن المحتوى
+            </h4>
+            <p id="detail-desc" class="text-sm text-gray-200 leading-relaxed font-light"></p>
         </div>
 
-        <div id="detail-learn-container" class="bg-gradient-to-br from-green-900/10 to-transparent p-5 rounded-2xl border border-green-500/10">
-            <h4 class="text-sm font-bold text-green-400 mb-3 flex items-center gap-2">
-                <i class="fas fa-check-circle"></i> ماذا ستتعلم؟
+        <div id="detail-learn-container" class="hidden bg-green-900/10 p-5 rounded-2xl border border-green-500/20">
+            <h4 class="text-xs font-bold text-green-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-check-circle"></i> المخرجات التعليمية
             </h4>
             <p id="detail-learn" class="text-sm text-gray-300 leading-relaxed"></p>
         </div>
 
-        <div id="detail-prereq-container" class="bg-white/5 p-5 rounded-2xl border border-white/5">
-            <h4 class="text-sm font-bold text-red-400 mb-3 flex items-center gap-2">
-                <i class="fas fa-exclamation-triangle"></i> المتطلبات المسبقة
+        <div id="detail-prereq-container" class="hidden bg-red-900/10 p-5 rounded-2xl border border-red-500/20">
+            <h4 class="text-xs font-bold text-red-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-exclamation-triangle"></i> المتطلبات
             </h4>
             <p id="detail-prereq" class="text-sm text-gray-300"></p>
         </div>
 
-        <div id="detail-notes-container" class="bg-yellow-500/10 p-5 rounded-2xl border border-yellow-500/20">
-            <h4 class="text-sm font-bold text-yellow-400 mb-2"><i class="fas fa-lightbulb mr-2"></i> ملاحظات هامة</h4>
+        <div id="detail-tools-container" class="hidden bg-blue-900/10 p-5 rounded-2xl border border-blue-500/20">
+            <h4 class="text-xs font-bold text-blue-400 mb-3 uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-tools"></i> الأدوات المطلوبة
+            </h4>
+            <p id="detail-tools" class="text-sm text-gray-300"></p>
+        </div>
+
+        <div id="detail-notes-container" class="hidden bg-yellow-900/10 p-5 rounded-2xl border border-yellow-500/20">
+            <h4 class="text-xs font-bold text-yellow-400 mb-2 uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-lightbulb"></i> ملاحظات
+            </h4>
             <p id="detail-notes" class="text-sm text-gray-300 italic"></p>
         </div>
     </div>
 
-    <div id="course-action-area" class="mt-6 pt-6 border-t border-white/10 shrink-0">
-        <label class="flex items-center justify-between bg-b-primary/20 p-4 rounded-xl border border-b-primary/50 cursor-pointer hover:bg-b-primary/30 transition-all group">
-            <div>
-                <span class="font-bold text-white block text-lg group-hover:translate-x-1 transition-transform">تفعيل المحتوى</span>
-                <span class="text-xs text-b-primary/80">إظهار هذا المحتوى في لوحة الطلاب</span>
+    <div id="course-action-area" class="mt-4 pt-4 border-t border-white/10 shrink-0">
+        <label class="flex items-center justify-between bg-b-primary hover:bg-teal-700 p-4 rounded-xl shadow-lg cursor-pointer transition-all group">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/20 p-2 rounded-lg"><i class="fas fa-power-off text-white"></i></div>
+                <div>
+                    <span class="font-bold text-white block text-sm">تفعيل هذا الكورس للفريق</span>
+                    <span class="text-[10px] text-white/70">سيظهر للطلاب في خطتهم</span>
+                </div>
             </div>
-            <div class="relative inline-flex items-center">
+            <div class="relative inline-flex items-center pointer-events-none">
                 <input type="checkbox" id="course-toggle-btn" class="sr-only peer">
-                <div class="w-14 h-7 bg-gray-900 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-b-primary border border-gray-600"></div>
+                <div class="w-11 h-6 bg-black/40 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-white/30"></div>
             </div>
         </label>
     </div>
@@ -269,7 +394,144 @@
             </div>
     </div>
 </section>
+<div id="settings-modal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm items-center justify-center p-4 animate-fade-in">
+    <div class="bg-b-surface border border-b-border w-full max-w-lg rounded-2xl shadow-2xl relative overflow-hidden">
+        
+        <div class="bg-black/40 p-5 flex justify-between items-center border-b border-white/5">
+            <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                <i class="fas fa-cog text-b-primary"></i> إعدادات الحساب
+            </h3>
+            <button id="close-settings-btn" class="text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-6 max-h-[70vh] overflow-y-auto custom-scroll">
+            <form id="settings-form" class="space-y-5">
+                
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="relative group">
+                        <img src="../assets/icons/icon.jpg" id="preview-avatar" class="w-20 h-20 rounded-full object-cover border-2 border-b-primary/30">
+                        <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                            <i class="fas fa-camera text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-400 mb-1">رابط الصورة (Drive/Imgur)</label>
+                        <input type="url" id="set-photo" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-b-primary outline-none" placeholder="https://...">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">الاسم الكامل</label>
+                        <input type="text" id="set-name" required class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-b-primary outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">الجامعة</label>
+                        <select id="set-uni" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-b-primary outline-none">
+                             <option value="جامعة الزقازيق">جامعة الزقازيق</option>
+                             <option value="جامعة القاهرة">جامعة القاهرة</option>
+                             <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">السنة الدراسية</label>
+                    <select id="set-year" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-b-primary outline-none">
+                        <option value="Prep">إعدادي</option>
+                        <option value="1st Year">الأولى</option>
+                        <option value="2nd Year">الثانية</option>
+                        <option value="3rd Year">الثالثة</option>
+                        <option value="4th Year">الرابعة</option>
+                        <option value="Graduated">خريج</option>
+                    </select>
+                </div>
+
+                <div class="pt-4 border-t border-white/5">
+                    <label class="block text-xs text-gray-400 mb-1">البريد الإلكتروني (لا يمكن تغييره)</label>
+                    <div class="flex gap-2">
+                        <input type="email" id="set-email" readonly class="w-full bg-white/5 border border-transparent rounded-lg px-3 py-2 text-gray-400 cursor-not-allowed">
+                        <button type="button" id="btn-reset-pass" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-4 rounded-lg text-sm font-bold transition-all whitespace-nowrap">
+                            <i class="fas fa-key"></i> تغيير الباسورد
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-6 mt-2 border-t border-white/5 flex justify-end gap-3">
+                    <button type="button" onclick="document.getElementById('settings-modal').classList.add('hidden')" class="px-5 py-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all">إلغاء</button>
+                    <button type="submit" id="btn-save-settings" class="px-8 py-2 bg-b-primary hover:bg-b-hl-light hover:text-black text-white font-bold rounded-xl shadow-lg shadow-b-primary/20 transition-all">
+                        حفظ التغييرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<footer class="mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-4">
+            <div class="flex items-center gap-2">
+                <img src="../assets/icons/icon.jpg" class="w-6 h-6 rounded-full opacity-50 grayscale hover:grayscale-0 transition-all">
+                <span class="font-bold text-gray-400">BUSLA LMS &copy; 2026</span>
+                <span class="hidden md:inline">|</span>
+                <span class="hidden md:inline">منصة إدارة الفرق التعليمية</span>
+            </div>
+            
+            <div class="flex items-center gap-2 group cursor-pointer hover:text-white transition-colors">
+                <span>Developed with <i class="fas fa-heart text-red-500 mx-1 animate-pulse"></i> by</span>
+                <span class="font-bold text-b-primary group-hover:underline">Ahmed Mohamed Attia</span>
+                <a href="https://github.com/Ahm3d0x" target="_blank" class="hover:text-white"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/ahmed-m-attia-757aa6292/" target="_blank" class="hover:text-blue-400"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </footer>
     </main>
+<div id="unified-task-modal" class="fixed inset-0 bg-black/90 hidden z-[300] flex items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300">
+    <div class="bg-b-surface w-full max-w-2xl rounded-2xl border border-white/10 shadow-2xl transform scale-100 transition-transform overflow-hidden flex flex-col max-h-[90vh]">
+        
+        <div id="modal-header-bg" class="p-6 border-b border-white/10 bg-gradient-to-r from-b-primary/20 to-transparent">
+            <div class="flex justify-between items-start">
+                <div class="flex gap-4">
+                    <div id="modal-icon-box" class="w-14 h-14 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-2xl shadow-lg shrink-0">
+                        <i id="modal-type-icon" class="fas fa-play"></i>
+                    </div>
+                    <div>
+                        <span id="modal-type-badge" class="text-[10px] uppercase font-bold tracking-wider bg-black/40 px-2 py-1 rounded text-gray-300 border border-white/5">TYPE</span>
+                        <h3 id="modal-title" class="text-2xl font-bold text-white mt-1 leading-tight line-clamp-2">عنوان المهمة</h3>
+                        <p id="modal-subtitle" class="text-sm text-gray-400 mt-1 font-medium flex items-center gap-1">
+                            </p>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('unified-task-modal').classList.add('hidden')" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-6 overflow-y-auto custom-scroll space-y-6 flex-1 bg-black/20">
+            
+            <div id="modal-details-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                </div>
+
+            <div class="bg-b-surface p-5 rounded-xl border border-white/5 shadow-inner">
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 border-b border-white/5 pb-2">
+                    <i class="fas fa-align-right ml-2"></i> الوصف والتفاصيل
+                </h4>
+                <div id="modal-desc" class="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+                    </div>
+            </div>
+
+        </div>
+
+        <div class="p-5 border-t border-white/10 bg-b-surface flex gap-4 z-20">
+            <a id="modal-action-btn" href="#" class="flex-1 bg-b-primary hover:bg-teal-700 text-white py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-b-primary/20 hover:-translate-y-0.5">
+                <i class="fas fa-rocket"></i> <span>بدء التنفيذ</span>
+            </a>
+            <button onclick="document.getElementById('unified-task-modal').classList.add('hidden')" class="px-6 py-3.5 rounded-xl border border-white/10 hover:bg-white/5 text-gray-400 font-bold transition-colors">
+                إغلاق
+            </button>
+        </div>
+    </div>
+</div>
 <div id="week-details-modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
     <div class="bg-b-surface w-full max-w-2xl rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[85vh]">
         
@@ -291,46 +553,8 @@
         </div>
     </div>
 </div>
-<div id="task-details-modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-b-surface w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl transform scale-100 transition-all">
-        <div class="p-6">
-            <div class="flex justify-between items-start mb-4 border-b border-white/10 pb-4">
-                <h3 id="modal-task-title" class="text-xl font-bold text-white leading-relaxed"></h3>
-                <button onclick="document.getElementById('task-details-modal').classList.add('hidden')" class="text-gray-400 hover:text-white transition-colors">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="bg-black/30 p-4 rounded-xl border border-white/5">
-                    <p class="text-xs text-gray-500 mb-1">الوصف / المحتوى</p>
-                    <p id="modal-task-desc" class="text-gray-300 text-sm leading-relaxed"></p>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
-                        <p class="text-xs text-gray-500">المدة</p>
-                        <p id="modal-task-duration" class="text-b-primary font-bold"></p>
-                    </div>
-                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
-                        <p class="text-xs text-gray-500">النوع</p>
-                        <p class="text-white font-bold"><i class="fab fa-youtube text-red-500 mr-1"></i> فيديو</p>
-                    </div>
-                </div>
-            </div>
 
-            <div class="mt-6 flex gap-3">
-                <a id="modal-task-link" href="#" class="flex-1 bg-b-primary hover:bg-teal-700 text-white py-3 rounded-xl font-bold text-center transition-all flex items-center justify-center gap-2">
-                    <i class="fas fa-play"></i> بدء المهمة
-                </a>
-                <button onclick="document.getElementById('task-details-modal').classList.add('hidden')" class="px-6 py-3 rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 transition-colors">
-                    إغلاق
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-    <div id="broadcast-modal" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-4">
+<div id="broadcast-modal" class="fixed inset-0 bg-black/80 hidden z-[100] flex items-center justify-center p-4">
         <div class="bg-b-surface w-full max-w-md p-6 rounded-2xl border border-white/10">
             <h3 class="font-bold mb-4">إرسال إشعار للفريق</h3>
             <textarea id="broadcast-text" class="w-full bg-black/50 border border-white/20 rounded p-3 text-white mb-4" rows="3" placeholder="اكتب رسالتك هنا..."></textarea>
