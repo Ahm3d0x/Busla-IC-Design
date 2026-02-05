@@ -11,7 +11,7 @@
  */
 
 var YOUTUBE_API_KEY = "AIzaSyCeiKc-MsUQs3TDOC7yvqD_Qx3mayLqY6Q"; // مفتاح API الخاص بك
-
+var FIREBASE_AUTH_URL = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + "AIzaSyAsN0YsS3PFIbi-vRp1GK5SiqPqXGeUkG4";
 /* ==========================================================
    ENTRY POINT (نقطة الدخول)
 ========================================================== */
@@ -373,6 +373,9 @@ function doPost(e) {
     if (action === "sendVerificationEmail") {
       return sendCustomVerificationEmail(data.email, data.name);
     }
+    if (action === "resetPassword") {
+    return handlePasswordReset(data.email, data.name);
+  }
     
     return sendJSON({status: "error", message: "Invalid action in doPost"});
   } catch (err) {
@@ -429,7 +432,58 @@ function sendCustomVerificationEmail(email, name) {
     return sendJSON({status: "error", message: "Sending Failed: " + err.toString()});
   }
 }
+function handlePasswordReset(email, name) {
+  try {
+    // 1. طلب رابط الريست من فايربيز REST API
+    var payload = {
+      "requestType": "PASSWORD_RESET",
+      "email": email
+    };
 
+    var options = {
+      "method": "post",
+      "contentType": "application/json",
+      "payload": JSON.stringify(payload),
+      "muteHttpExceptions": true
+    };
+
+    var response = UrlFetchApp.fetch(FIREBASE_AUTH_URL, options);
+    var result = JSON.parse(response.getContentText());
+
+    if (result.error) {
+      return ContentService.createTextOutput(JSON.stringify({status: "error", msg: result.error.message}));
+    }
+
+    var resetLink = result.oobLink; // هذا هو الرابط السحري!
+
+    // 2. تصميم الإيميل
+    var htmlBody = `
+      <div style="direction:rtl; text-align:right; font-family: 'Cairo', sans-serif; background-color:#f4f4f4; padding:20px;">
+        <div style="max-width:600px; margin:0 auto; background:#fff; padding:30px; border-radius:10px; border-top: 5px solid #006A67;">
+          <h2 style="color:#006A67;">طلب تغيير كلمة المرور 🔒</h2>
+          <p>أهلاً ${name}،</p>
+          <p>تلقينا طلباً لتغيير كلمة المرور الخاصة بحسابك في منصة <strong>بوصلة</strong>.</p>
+          <p>اضغط على الزر أدناه لتعيين كلمة مرور جديدة:</p>
+          <a href="${resetLink}" style="display:inline-block; background-color:#006A67; color:#fff; padding:12px 25px; text-decoration:none; border-radius:5px; font-weight:bold; margin: 20px 0;">تغيير كلمة المرور</a>
+          <p style="color:#666; font-size:12px;">إذا لم تطلب هذا التغيير، يمكنك تجاهل هذه الرسالة بأمان.</p>
+          <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+          <p style="color:#999; font-size:11px; text-align:center;">Busla LMS Team</p>
+        </div>
+      </div>
+    `;
+
+    // 3. إرسال الإيميل
+    GmailApp.sendEmail(email, "تغيير كلمة المرور - بوصلة", "", {
+      htmlBody: htmlBody,
+      name: "منصة بوصلة"
+    });
+
+    return ContentService.createTextOutput(JSON.stringify({status: "success"}));
+
+  } catch (e) {
+    return ContentService.createTextOutput(JSON.stringify({status: "error", msg: e.toString()}));
+  }
+}
 // --- إعداد خدمة OAuth2 (للاتصال الآمن) ---
 function getFirebaseService() {
   var props = PropertiesService.getScriptProperties();
