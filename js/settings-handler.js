@@ -207,6 +207,9 @@ export async function openSettings() {
             
             // أ. الاسم: الأولوية لـ (personal_info) ثم (Auth)
             // استخدام trim() للتأكد إنه مش مسافة فاضية
+            // user.personal_info?.full_name || user.full_name
+            console.log(user);
+            console.log(data);
             const dbName = data.personal_info?.full_name?.trim() || user.displayName;
             if(dbName) nameInput.value = dbName;
 
