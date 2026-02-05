@@ -8,6 +8,7 @@ import {
     setDoc, 
     getDoc, 
     getDocs,
+    runTransaction,
     updateDoc, 
     deleteDoc,      
     writeBatch,     
@@ -59,6 +60,7 @@ export {
     where, 
     arrayUnion, 
     arrayRemove, 
+    runTransaction,
     serverTimestamp,
     increment,
     createUserWithEmailAndPassword, 
@@ -66,6 +68,6 @@ export {
     onAuthStateChanged, 
     sendEmailVerification, 
     updateProfile,  
-    sendPasswordResetEmail, 
+    
     signOut 
 };

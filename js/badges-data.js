@@ -1,0 +1,38 @@
+// js/badges-data.js
+
+export const RANKS_DATA = [
+    {"level":1,"key":"recruit","title":"Recruit","points_required":0,"stage":1,"stage_name":"Initiation","stage_color":"#3A7D44","icon":"fa-user","rarity":"Common","description":"The first step of the journey.","lore":"Every legend begins from nothing."},
+    {"level":2,"key":"trainee","title":"Trainee","points_required":50,"stage":1,"stage_name":"Initiation","stage_color":"#3A7D44","icon":"fa-dumbbell","rarity":"Common","description":"Learning the fundamentals.","lore":"Training shapes the future warrior."},
+    {"level":3,"key":"fighter","title":"Fighter","points_required":120,"stage":1,"stage_name":"Initiation","stage_color":"#3A7D44","icon":"fa-hand-rock","rarity":"Common","description":"First taste of strength.","lore":"Courage is born in the first battle."},
+    {"level":4,"key":"warrior","title":"Warrior","points_required":220,"stage":1,"stage_name":"Initiation","stage_color":"#3A7D44","icon":"fa-shield-alt","rarity":"Uncommon","description":"Ready to face real challenges.","lore":"Warriors rise through struggle."},
+    {"level":5,"key":"elite","title":"Elite","points_required":350,"stage":1,"stage_name":"Initiation","stage_color":"#3A7D44","icon":"fa-medal","rarity":"Uncommon","description":"Standing above the crowd.","lore":"Excellence is earned, never given."},
+    {"level":6,"key":"vanguard","title":"Vanguard","points_required":500,"stage":1,"stage_name":"Initiation","stage_color":"#3A7D44","icon":"fa-flag","rarity":"Rare","description":"Leading the path forward.","lore":"The vanguard walks where others hesitate."},
+    
+    {"level":7,"key":"guardian","title":"Guardian","points_required":700,"stage":2,"stage_name":"Discipline","stage_color":"#2F6BFF","icon":"fa-shield-virus","rarity":"Rare","description":"Protector of progress.","lore":"Guardians stand firm against chaos."},
+    {"level":8,"key":"knight","title":"Knight","points_required":950,"stage":2,"stage_name":"Discipline","stage_color":"#2F6BFF","icon":"fa-chess-knight","rarity":"Rare","description":"Honor, skill, and discipline.","lore":"Knights fight with purpose and code."},
+    {"level":9,"key":"commander","title":"Commander","points_required":1250,"stage":2,"stage_name":"Discipline","stage_color":"#2F6BFF","icon":"fa-id-badge","rarity":"Epic","description":"Leads others to victory.","lore":"True leaders shape destiny."},
+    {"level":10,"key":"captain","title":"Captain","points_required":1600,"stage":2,"stage_name":"Discipline","stage_color":"#2F6BFF","icon":"fa-anchor","rarity":"Epic","description":"Master of strategy.","lore":"Victory favors the prepared mind."},
+    {"level":11,"key":"champion","title":"Champion","points_required":2050,"stage":2,"stage_name":"Discipline","stage_color":"#2F6BFF","icon":"fa-trophy","rarity":"Epic","description":"Bearer of triumph.","lore":"Champions rise where others fall."},
+    {"level":12,"key":"hero","title":"Hero","points_required":2600,"stage":2,"stage_name":"Discipline","stage_color":"#2F6BFF","icon":"fa-star","rarity":"Legendary","description":"Symbol of hope.","lore":"Heroes inspire generations to come."},
+    
+    {"level":13,"key":"warlord","title":"Warlord","points_required":3200,"stage":3,"stage_name":"Dominion","stage_color":"#7A3CFF","icon":"fa-gavel","rarity":"Epic","description":"Power through conquest.","lore":"Dominion begins with strength."},
+    {"level":14,"key":"conqueror","title":"Conqueror","points_required":4000,"stage":3,"stage_name":"Dominion","stage_color":"#7A3CFF","icon":"fa-globe","rarity":"Epic","description":"Breaker of limits.","lore":"Nothing stands before true will."},
+    {"level":15,"key":"overlord","title":"Overlord","points_required":5000,"stage":3,"stage_name":"Dominion","stage_color":"#7A3CFF","icon":"fa-chess-king","rarity":"Legendary","description":"Absolute authority.","lore":"Power answers only to itself."},
+    {"level":16,"key":"high_general","title":"High General","points_required":6200,"stage":3,"stage_name":"Dominion","stage_color":"#7A3CFF","icon":"fa-chess-queen","rarity":"Legendary","description":"Supreme battlefield mind.","lore":"Wars are won before they begin."},
+    {"level":17,"key":"supreme","title":"Supreme","points_required":7600,"stage":3,"stage_name":"Dominion","stage_color":"#7A3CFF","icon":"fa-sun","rarity":"Legendary","description":"Beyond ordinary rule.","lore":"Supremacy is a state of being."},
+    {"level":18,"key":"titan","title":"Titan","points_required":9200,"stage":3,"stage_name":"Dominion","stage_color":"#7A3CFF","icon":"fa-mountain","rarity":"Mythic","description":"Colossal unstoppable force.","lore":"Titans reshape the world."},
+    
+    {"level":19,"key":"noble","title":"Noble","points_required":11000,"stage":4,"stage_name":"Royalty","stage_color":"#D4AF37","icon":"fa-gem","rarity":"Legendary","description":"Entry to royalty.","lore":"Nobility is earned through legacy."},
+    {"level":20,"key":"prince","title":"Prince","points_required":13000,"stage":4,"stage_name":"Royalty","stage_color":"#D4AF37","icon":"fa-crown","rarity":"Legendary","description":"Heir of greatness.","lore":"Greatness awaits the worthy."},
+    {"level":21,"key":"king","title":"King","points_required":15500,"stage":4,"stage_name":"Royalty","stage_color":"#D4AF37","icon":"fa-chess-king","rarity":"Mythic","description":"Ruler of dominion.","lore":"Kings command destiny itself."},
+    {"level":22,"key":"high_king","title":"High King","points_required":18500,"stage":4,"stage_name":"Royalty","stage_color":"#D4AF37","icon":"fa-chess-board","rarity":"Mythic","description":"Supreme monarch.","lore":"All crowns bow to one."},
+    {"level":23,"key":"emperor","title":"Emperor","points_required":22000,"stage":4,"stage_name":"Royalty","stage_color":"#D4AF37","icon":"fa-globe-americas","rarity":"Mythic","description":"Empire incarnate.","lore":"Empires rise in their name."},
+    {"level":24,"key":"supreme_emperor","title":"Supreme Emperor","points_required":26000,"stage":4,"stage_name":"Royalty","stage_color":"#D4AF37","icon":"fa-universal-access","rarity":"Mythic","description":"Ultimate sovereign.","lore":"No throne stands higher."},
+    
+    {"level":25,"key":"ascended","title":"Ascended","points_required":30000,"stage":5,"stage_name":"Ascension","stage_color":"#FF3B3B","icon":"fa-angle-double-up","rarity":"Mythic","description":"Beyond mortal limits.","lore":"Ascension begins where humanity ends."},
+    {"level":26,"key":"mythic","title":"Mythic","points_required":35000,"stage":5,"stage_name":"Ascension","stage_color":"#FF3B3B","icon":"fa-dragon","rarity":"Mythic","description":"Legend made real.","lore":"Stories are written in their wake."},
+    {"level":27,"key":"paragon","title":"Paragon","points_required":40000,"stage":5,"stage_name":"Ascension","stage_color":"#FF3B3B","icon":"fa-cube","rarity":"Mythic","description":"Embodiment of perfection.","lore":"Perfection takes form."},
+    {"level":28,"key":"legend","title":"Legend","points_required":45000,"stage":5,"stage_name":"Ascension","stage_color":"#FF3B3B","icon":"fa-scroll","rarity":"Mythic","description":"Name that never fades.","lore":"Legends never die."},
+    {"level":29,"key":"immortal","title":"Immortal","points_required":48000,"stage":5,"stage_name":"Ascension","stage_color":"#FF3B3B","icon":"fa-infinity","rarity":"Mythic","description":"Beyond time itself.","lore":"Immortality is their domain."},
+    {"level":30,"key":"apex_sovereign","title":"Apex Sovereign","points_required":50000,"stage":5,"stage_name":"Ascension","stage_color":"#FF3B3B","icon":"fa-bahai","rarity":"Mythic","description":"The absolute pinnacle.","lore":"All journeys end at the apex."}
+];

@@ -4,7 +4,7 @@ import {
 } from './firebase-config.js';
 import { getTeamData } from './team-system.js';
 import { initSettingsModal, openSettings } from './settings-handler.js';
-
+import { initBadgesSystem } from './badges-handler.js';
 document.addEventListener('DOMContentLoaded', () => {
     // 1. تشغيل المودال
     initSettingsModal();
@@ -1475,6 +1475,9 @@ window.switchTab = function(id) {
         activeBtn.classList.remove('text-gray-400');
     } else {
         console.warn(`Button with id 'btn-${id}' not found!`);
+    }
+    if (id === 'rank') {
+        initBadgesSystem();
     }
 };
 window.closeModal = (id) => document.getElementById(id).classList.add('hidden');

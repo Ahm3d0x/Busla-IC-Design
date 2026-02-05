@@ -83,6 +83,10 @@
             <button onclick="switchTab('calendar')" id="btn-calendar" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-calendar-alt"></i> <span>التقويم</span>
             </button>
+            <button onclick="switchTab('rank')" id="btn-rank" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                <i class="fas fa-medal w-5"></i>
+                <span class="font-bold">رحلة الصعود</span>
+            </button>
             <button id="open-settings-btn" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-cog"></i> <span>إعدادات الحساب</span>
             </button>
@@ -393,6 +397,20 @@
         <div id="calendar-weeks-container" class="space-y-4">
             </div>
     </div>
+</section>
+<section id="rank" class="tab-content hidden animate-fade-in">
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <h2 class="text-3xl font-black text-white mb-2">رحلة البطل</h2>
+            <p class="text-gray-400">تتبع تقدمك، ارتقِ في الرتب، واصنع مجدك الخاص.</p>
+        </div>
+        <div class="hidden md:block text-left">
+            <span class="block text-xs text-gray-500 uppercase tracking-widest">نظام الرتب</span>
+            <span class="block text-b-primary font-bold">V 1.0</span>
+        </div>
+    </header>
+
+    <div id="rank-container" class="max-w-5xl mx-auto"></div>
 </section>
 <div id="settings-modal" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-md items-center justify-center p-4 animate-fade-in flex">
     <div class="bg-b-surface border border-b-border w-full max-w-4xl rounded-3xl shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
@@ -752,6 +770,32 @@
                     إلغاء
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+<div id="rank-up-modal" class="fixed inset-0 z-[300] hidden flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/90 backdrop-blur-xl transition-opacity duration-500"></div>
+    
+    <div class="relative bg-black border border-white/10 rounded-3xl p-10 max-w-md w-full text-center overflow-hidden transform transition-all duration-700 scale-90 opacity-0" id="rank-up-card">
+        
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-gradient-to-r from-transparent via-b-primary/20 to-transparent rotate-45 animate-spin-slow pointer-events-none"></div>
+        
+        <div class="relative z-10 flex flex-col items-center">
+            <span class="text-b-primary font-mono text-sm tracking-[0.3em] uppercase mb-4 animate-pulse">Rank Up Achieved</span>
+            
+            <h2 class="text-4xl font-black text-white mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">CONGRATULATIONS</h2>
+            
+            <div class="relative w-48 h-48 mb-8">
+                <div class="absolute inset-0 bg-b-primary/30 blur-3xl rounded-full animate-pulse"></div>
+                <img id="rank-up-img" src="" alt="New Rank" class="relative w-full h-full object-contain drop-shadow-2xl animate-float">
+            </div>
+            
+            <p class="text-gray-400 text-lg mb-2">You have reached</p>
+            <h3 id="rank-up-name" class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-8">TITAN</h3>
+            
+            <button onclick="closeRankUpModal()" class="px-10 py-3 bg-white text-black font-bold rounded-full hover:bg-gray-200 hover:scale-105 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                CLAIM REWARD
+            </button>
         </div>
     </div>
 </div>
