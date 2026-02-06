@@ -76,6 +76,9 @@
             <button onclick="switchTab('squad')" id="btn-squad" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-users-cog"></i> <span>إدارة الفريق</span>
             </button>
+            <button onclick="switchTab('announcements')" id="btn-announcements" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
+                <i class="fas fa-bullhorn"></i> <span>إشعارات الفريق</span>
+            </button>
             <button onclick="switchTab('grading')" id="btn-grading" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all relative">
                 <i class="fas fa-check-double"></i> <span>التصحيح</span>
                 <span id="pending-badge" class="hidden absolute left-3 top-3 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">0</span>
@@ -92,6 +95,9 @@
             </button>
             <button onclick="switchTab('leaderboard')" id="btn-leaderboard" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-trophy"></i> <span>ساحة المنافسة</span>
+            </button>
+            <button id="open-team-settings-btn" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
+                <i class="fas fa-users-cog"></i> <span>إعدادات الفريق</span>
             </button>
             <button id="open-settings-btn" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-cog"></i> <span>إعدادات الحساب</span>
@@ -377,7 +383,168 @@
                 <div id="squad-list" class="divide-y divide-white/5"></div>
             </div>
         </section>
+<section id="announcements" class="tab-content hidden animate-fade-in relative min-h-screen">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center bg-b-surface p-6 rounded-2xl border border-white/10 shadow-lg mb-8 gap-4">
+        <div>
+            <h2 class="text-3xl font-black text-white mb-1 flex items-center gap-3">
+                <i class="fas fa-bullhorn text-b-primary"></i> مركز الإشعارات
+            </h2>
+            <p class="text-sm text-gray-400">محور التواصل المركزي لفريقك. انشر التعليمات وتابع التفاعل.</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="toggleArchiveView(true)" class="px-5 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:bg-white/5 hover:text-white transition-all text-sm font-bold flex items-center gap-2">
+                <i class="fas fa-archive"></i> الأرشيف
+            </button>
+            <button onclick="openCreatePostPanel()" class="px-6 py-2.5 bg-b-primary hover:bg-teal-700 text-white rounded-xl font-bold shadow-lg shadow-b-primary/20 transition-all flex items-center gap-2 transform hover:scale-105">
+                <i class="fas fa-plus"></i> إشعار جديد
+            </button>
+        </div>
+    </div>
 
+    <div id="active-posts-section" class="bg-b-surface rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+        <div class="p-4 border-b border-white/10 bg-black/20 flex justify-between items-center">
+            <h3 class="font-bold text-white text-sm"><i class="fas fa-bolt text-green-400 ml-2"></i> الإشعارات النشطة</h3>
+        </div>
+        <table class="w-full text-right">
+            <thead class="bg-black/40 border-b border-white/10 text-xs text-gray-500 uppercase font-bold tracking-wider">
+                <tr>
+                    <th class="p-4 pr-6">عنوان الإشعار</th>
+                    <th class="p-4 text-center">التاريخ</th>
+                    <th class="p-4 text-center">المشاهدات</th>
+                    <th class="p-4 text-center">الحالة</th>
+                    <th class="p-4 text-center">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody id="posts-table-body" class="divide-y divide-white/5">
+                </tbody>
+        </table>
+    </div>
+
+    <div id="archive-section" class="hidden animate-fade-in space-y-4">
+        <div class="flex justify-between items-center bg-black/40 p-4 rounded-xl border border-white/10">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleArchiveView(false)" class="text-gray-400 hover:text-white flex items-center gap-2 text-sm font-bold">
+                    <i class="fas fa-arrow-right"></i> العودة للنشطة
+                </button>
+                <h3 class="text-xl font-bold text-gray-200">🗄️ الأرشيف</h3>
+            </div>
+            <div class="relative w-64">
+                <input type="text" id="archive-search" placeholder="بحث في الأرشيف..." class="w-full bg-b-surface border border-white/10 rounded-lg py-2 px-4 pr-10 text-sm text-white focus:border-b-primary outline-none">
+                <i class="fas fa-search absolute left-3 top-2.5 text-gray-500"></i>
+            </div>
+        </div>
+
+        <div class="bg-b-surface rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+            <table class="w-full text-right">
+                <thead class="bg-black/40 border-b border-white/10 text-xs text-gray-500 uppercase font-bold tracking-wider">
+                    <tr>
+                        <th class="p-4 pr-6">عنوان الإشعار</th>
+                        <th class="p-4 text-center">التاريخ</th>
+                        <th class="p-4 text-center">المشاهدات</th>
+                        <th class="p-4 text-center">الحالة</th>
+                        <th class="p-4 text-center">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="archive-table-body" class="divide-y divide-white/5">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+<div id="panel-overlay" onclick="closeCreatePostPanel()" class="fixed inset-0 bg-black/80 z-[200] hidden backdrop-blur-sm transition-opacity"></div>
+<div id="post-side-panel" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-b-surface border-l border-white/10 z-[250] transform translate-x-full transition-transform duration-300 shadow-2xl flex flex-col">
+    
+    <div class="p-6 border-b border-white/10 bg-gradient-to-r from-black via-b-surface to-b-surface flex justify-between items-center">
+        <h3 id="panel-title" class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fas fa-pen-nib text-b-primary"></i> إنشاء إشعار
+        </h3>
+        <button onclick="closeCreatePostPanel()" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto custom-scroll p-6">
+        <form id="post-form" class="space-y-6">
+            
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">نوع الإشعار</label>
+                <select id="post-type" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none appearance-none">
+                    <option value="announcement">📢 إعلان عام</option>
+                    <option value="deadline">⏳ ميعاد تسليم (Deadline)</option>
+                    <option value="meeting">📹 اجتماع أونلاين</option>
+                    <option value="warning">⚠️ تنبيه هام</option>
+                    <option value="achievement">🏆 إنجاز</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">العنوان <span class="text-red-500">*</span></label>
+                <input type="text" id="post-title" required maxlength="80" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none" placeholder="مثال: تسليم مشروع اللوجيك">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">المحتوى <span class="text-red-500">*</span></label>
+                <textarea id="post-content" required rows="6" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none leading-relaxed" placeholder="اكتب تفاصيل الإشعار هنا..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">تاريخ الانتهاء (اختياري)</label>
+                    <input type="date" id="post-expiry" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">رابط مرفق (اختياري)</label>
+                    <input type="url" id="post-link" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none" placeholder="https://...">
+                </div>
+            </div>
+
+            <div class="bg-white/5 rounded-xl p-4 space-y-3 border border-white/5">
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" id="post-pin" class="w-5 h-5 rounded border-gray-600 bg-black checked:bg-b-primary">
+                    <div>
+                        <span class="block text-sm font-bold text-white group-hover:text-b-primary transition-colors">تثبيت في الأعلى (Pin)</span>
+                        <span class="text-xs text-gray-500">سيظهر هذا البوست في مقدمة القائمة دائماً.</span>
+                    </div>
+                </label>
+                
+                <div class="w-full h-[1px] bg-white/5"></div>
+
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" id="post-ack" checked class="w-5 h-5 rounded border-gray-600 bg-black checked:bg-b-primary">
+                    <div>
+                        <span class="block text-sm font-bold text-white group-hover:text-b-primary transition-colors">مطلوب التأكيد (Require Seen)</span>
+                        <span class="text-xs text-gray-500">سيظهر زر "علم" للأعضاء لتأكيد القراءة.</span>
+                    </div>
+                </label>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="p-6 border-t border-white/10 bg-black/20 flex gap-3">
+        <button id="btn-save-post" type="submit" form="post-form" class="flex-1 bg-b-primary hover:bg-teal-700 text-white py-3 rounded-xl font-bold shadow-lg transition-all transform hover:scale-[1.02]">
+            نشر الإشعار
+        </button>
+        <button type="button" onclick="closeCreatePostPanel()" class="px-6 bg-white/5 hover:bg-white/10 text-gray-300 py-3 rounded-xl font-bold transition-all border border-white/5">
+            إلغاء
+        </button>
+    </div>
+</div>
+
+<div id="post-detail-modal" class="fixed inset-0 bg-black/90 hidden z-[300] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-b-surface w-full max-w-lg rounded-3xl border border-white/10 shadow-2xl relative flex flex-col max-h-[85vh]">
+        <div class="absolute top-4 left-4 z-10">
+            <button onclick="closePostDetailModal()" class="w-8 h-8 rounded-full bg-black/50 text-gray-400 hover:text-white flex items-center justify-center transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div id="post-detail-content" class="p-8 overflow-y-auto custom-scroll">
+            </div>
+    </div>
+</div>
         <section id="grading" class="tab-content space-y-6">
             <h3 class="font-bold text-xl">المشاريع المستلمة</h3>
             <div id="submissions-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -689,6 +856,148 @@
             </button>
             <button type="submit" form="settings-form" id="btn-save-settings" class="px-8 py-3 bg-gradient-to-r from-b-primary to-teal-700 hover:from-teal-600 hover:to-teal-800 text-white font-bold rounded-xl shadow-lg shadow-b-primary/20 transition-all flex items-center gap-2">
                 <i class="fas fa-save"></i> حفظ التغييرات
+            </button>
+        </div>
+    </div>
+</div>
+<div id="team-settings-modal" class="hidden fixed inset-0 z-[150] bg-black/95 backdrop-blur-xl items-center justify-center p-4 animate-fade-in flex">
+    <div class="bg-b-surface border border-white/10 w-full max-w-3xl rounded-3xl shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+        
+        <div class="bg-gradient-to-r from-b-primary/20 to-black p-6 flex justify-between items-center border-b border-white/5">
+            <div>
+                <h3 class="text-2xl font-black text-white flex items-center gap-3">
+                    <i class="fas fa-users-cog text-b-primary"></i> إعدادات الفريق
+                </h3>
+                <p class="text-xs text-gray-400 mt-1 mr-8">تعديل هوية وبيانات الفريق (للقادة فقط)</p>
+            </div>
+            <button id="close-team-settings" class="w-10 h-10 rounded-full bg-white/5 hover:bg-red-500/20 hover:text-red-400 flex items-center justify-center transition-all">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-8 overflow-y-auto custom-scroll flex-1">
+            <form id="team-settings-form" class="grid md:grid-cols-12 gap-8">
+                
+                <div class="md:col-span-4 flex flex-col items-center gap-4 text-center md:border-l border-white/5 md:pl-4">
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-b-primary/30 rounded-full blur-xl animate-pulse"></div>
+                        <img src="" id="team-preview-logo" class="relative w-40 h-40 rounded-full object-cover border-4 border-b-surface shadow-2xl ring-1 ring-white/10" onerror="this.src='../assets/icons/icon.jpg'">
+                    </div>
+                    <div>
+                        <h4 id="team-name-preview" class="text-white font-bold text-xl tracking-tight">اسم الفريق</h4>
+                        <span class="text-[10px] text-b-primary bg-b-primary/10 px-2 py-1 rounded border border-b-primary/20 uppercase font-bold mt-2 inline-block">Team Profile</span>
+                    </div>
+                </div>
+
+                <div class="md:col-span-8 space-y-5">
+                    
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-2 font-bold uppercase tracking-wider">شعار الفريق (Link)</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <input type="url" id="team-set-logo" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none pl-10 text-sm font-mono" placeholder="https://...">
+                                <i class="fas fa-link absolute left-4 top-3.5 text-gray-500"></i>
+                            </div>
+                            <button type="button" id="btn-preview-team-logo" class="bg-white/5 hover:bg-white/10 text-white px-4 rounded-xl border border-white/10 transition-all" title="تحديث">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] text-gray-400 mb-2 font-bold uppercase tracking-wider">اسم الفريق</label>
+                        <input type="text" id="team-set-name" required class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none text-lg font-bold" placeholder="مثال: Spark Team">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-2 font-bold uppercase tracking-wider">الجامعة</label>
+                            <select id="team-set-uni" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none appearance-none text-sm">
+                                <option value="" disabled selected>اختر الجامعة</option>
+                                <option value="Zagazig">جامعة الزقازيق</option>
+                                <option value="Cairo">جامعة القاهرة</option>
+                                <option value="Ain Shams">جامعة عين شمس</option>
+                                <option value="Alexandria">جامعة الإسكندرية</option>
+                                <option value="Mansoura">جامعة المنصورة</option>
+                                <option value="Assiut">جامعة أسيوط</option>
+                                <option value="Helwan">جامعة حلوان</option>
+                                <option value="Minya">جامعة المنيا</option>
+                                <option value="Menoufia">جامعة المنوفية</option>
+                                <option value="Suez Canal">جامعة قناة السويس</option>
+                                <option value="Benha">جامعة بنها</option>
+                                <option value="Tanta">جامعة طنطا</option>
+                                <option value="Fayoum">جامعة الفيوم</option>
+                                <option value="Beni Suef">جامعة بني سويف</option>
+                                <option value="Kafr El Sheikh">جامعة كفر الشيخ</option>
+                                <option value="Sohag">جامعة سوهاج</option>
+                                <option value="Port Said">جامعة بورسعيد</option>
+                                <option value="South Valley">جامعة جنوب الوادي</option>
+                                <option value="Aswan">جامعة أسوان</option>
+                                <option value="Damanhour">جامعة دمنهور</option>
+                                <option value="Damietta">جامعة دمياط</option>
+                                <option value="Suez">جامعة السويس</option>
+                                <option value="Sadat City">جامعة مدينة السادات</option>
+                                <option value="Arish">جامعة العريش</option>
+                                <option value="New Valley">جامعة الوادي الجديد</option>
+                                <option value="Matrouh">جامعة مطروح</option>
+                                <option value="Luxor">جامعة الأقصر</option>
+                                <option value="Al-Azhar">جامعة الأزهر</option>
+                                <option value="E-JUST">الجامعة المصرية اليابانية (E-JUST)</option>
+                                <option value="Zewail City">مدينة زويل للعلوم والتكنولوجيا</option>
+                                <option value="AUC">الجامعة الأمريكية بالقاهرة</option>
+                                <option value="GUC">الجامعة الألمانية بالقاهرة</option>
+                                <option value="BUE">الجامعة البريطانية في مصر</option>
+                                <option value="MUST">جامعة مصر للعلوم والتكنولوجيا</option>
+                                <option value="MSA">جامعة أكتوبر للعلوم الحديثة والآداب</option>
+                                <option value="MIU">جامعة مصر الدولية</option>
+                                <option value="Other">جامعة أخرى / معهد</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-2 font-bold uppercase tracking-wider">المحافظة</label>
+                            <select id="team-set-gov" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none appearance-none text-sm">
+                                <option value="" disabled selected>اختر المحافظة</option>
+                                <option value="Cairo">القاهرة</option>
+                                <option value="Giza">الجيزة</option>
+                                <option value="Alexandria">الإسكندرية</option>
+                                <option value="Dakahlia">الدقهلية</option>
+                                <option value="Sharqia">الشرقية</option>
+                                <option value="Monufia">المنوفية</option>
+                                <option value="Qalyubia">القليوبية</option>
+                                <option value="Beheira">البحيرة</option>
+                                <option value="Gharbia">الغربية</option>
+                                <option value="Damietta">دمياط</option>
+                                <option value="Kafr El Sheikh">كفر الشيخ</option>
+                                <option value="Port Said">بورسعيد</option>
+                                <option value="Ismailia">الإسماعيلية</option>
+                                <option value="Suez">السويس</option>
+                                <option value="Minya">المنيا</option>
+                                <option value="Beni Suef">بني سويف</option>
+                                <option value="Fayoum">الفيوم</option>
+                                <option value="Assiut">أسيوط</option>
+                                <option value="Sohag">سوهاج</option>
+                                <option value="Qena">قنا</option>
+                                <option value="Luxor">الأقصر</option>
+                                <option value="Aswan">أسوان</option>
+                                <option value="Red Sea">البحر الأحمر</option>
+                                <option value="New Valley">الوادي الجديد</option>
+                                <option value="Matrouh">مطروح</option>
+                                <option value="North Sinai">شمال سيناء</option>
+                                <option value="South Sinai">جنوب سيناء</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+        <div class="p-6 bg-black/40 border-t border-white/5 flex justify-end gap-3">
+            <button type="button" onclick="document.getElementById('team-settings-modal').classList.add('hidden')" class="px-6 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all font-bold text-sm">
+                إلغاء
+            </button>
+            <button type="submit" form="team-settings-form" id="btn-save-team" class="px-8 py-3 bg-white text-black hover:bg-gray-200 font-bold rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all flex items-center gap-2 text-sm transform hover:scale-105">
+                <i class="fas fa-save"></i> حفظ التعديلات
             </button>
         </div>
     </div>

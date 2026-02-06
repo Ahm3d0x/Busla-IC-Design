@@ -7,12 +7,13 @@ import { initSettingsModal, openSettings } from './settings-handler.js';
 import { initBadgesSystem } from './badges-handler.js';
 import { initTeamBadgesSystem } from './team-badges-handler.js';
 import { initLeaderboard } from './leaderboard-handler.js';
+import { initTeamSettingsModal, openTeamSettings } from './team-settings-handler.js'; 
+import { initNotificationsSystem } from './notifications-handler.js';
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. تشغيل المودال
-    initSettingsModal();
 
-    // 2. ربط زر الإعدادات في الـ HTML
-    // افترضنا إن عندك زر واخد ID اسمه open-settings-btn
+});
+document.addEventListener('DOMContentLoaded', () => {
+    initSettingsModal();
     const settingsBtn = document.getElementById('open-settings-btn'); 
     if(settingsBtn) {
         settingsBtn.addEventListener('click', (e) => {
@@ -20,36 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             openSettings();
         });
     }
-});
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. تشغيل المودال
-    initSettingsModal();
-
-    // 2. ربط زر الإعدادات في الـ HTML
-    // افترضنا إن عندك زر واخد ID اسمه open-settings-btn
-    const settingsBtn = document.getElementById('open-settings-btn'); 
-    if(settingsBtn) {
-        settingsBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openSettings();
-        });
-    }
-});
-// --- Configuration ---
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyndLl7n0L4DVCIaaVwD5wIhx5JotZMiNUEm9b8IaUQCUgFxKtNX_oC9FsvA1uyJ9JJ/exec';
-const CACHE_KEY = 'busla_lms_v6';
-let lookupData = { projects: {}, quizzes: {}, videos: {} };
-// --- State Management ---
-let currentUser = null;
-let currentTeam = null;
-let currentUserData = null;
-let allData = { phases: [], courses: [], tree: [] };
-let selectedAssignCourse = null;
-let expandedNodes = new Set(); // Persist expanded tree nodes
-
-// --- Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
-    onAuthStateChanged(auth, async (user) => {
+        onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUser = user;
             await initDashboard(user.uid);
@@ -65,7 +37,43 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = "auth.html";
         });
     }
+
+
+    initTeamSettingsModal();
+
+    // 2. ربط الزر
+    const teamSettingsBtn = document.getElementById('open-team-settings-btn');
+    if (teamSettingsBtn) {
+        teamSettingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // 🔒 التحقق من أن المستخدم هو الليدر
+            const isLeader = currentUserData?.uid === currentTeam?.leader_id;
+            
+            if (currentTeam && currentTeam.team_id) {
+                openTeamSettings(currentTeam.team_id, isLeader);
+            } else {
+                // Fallback لو الداتا لسه بتحمل
+                showToast("انتظر تحميل البيانات...", "info");
+            }
+        });
+    }
+
 });
+// --- Configuration ---
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyndLl7n0L4DVCIaaVwD5wIhx5JotZMiNUEm9b8IaUQCUgFxKtNX_oC9FsvA1uyJ9JJ/exec';
+const CACHE_KEY = 'busla_lms_v6';
+let lookupData = { projects: {}, quizzes: {}, videos: {} };
+// --- State Management ---
+let currentUser = null;
+let currentTeam = null;
+let currentUserData = null;
+let allData = { phases: [], courses: [], tree: [] };
+let selectedAssignCourse = null;
+let expandedNodes = new Set(); // Persist expanded tree nodes
+
+// --- Initialization ---
+
 // ==========================================
 // 1. DATA FETCHING (Network First -> Update Cache)
 // ==========================================
@@ -1486,6 +1494,13 @@ window.switchTab = function(id) {
     }
     if (id === 'leaderboard') {
         initLeaderboard();
+    }
+    if (id === 'announcements') {
+        if (currentUserData && currentUserData.system_info.team_id) {
+            initNotificationsSystem(currentUserData.system_info.team_id);
+        } else {
+            showToast("جاري تحميل بيانات الفريق...", "info");
+        }
     }
 };
 window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
