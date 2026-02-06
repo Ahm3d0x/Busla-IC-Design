@@ -384,6 +384,7 @@ function updateHeroStats(data) {
     }
 }
 
+
 async function fetchSpecificRank(collectionName, fieldName, myScore) {
     try {
         const q = query(

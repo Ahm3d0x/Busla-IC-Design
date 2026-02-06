@@ -9,9 +9,60 @@ import { initTeamBadgesSystem } from './team-badges-handler.js';
 import { initLeaderboard } from './leaderboard-handler.js';
 import { initTeamSettingsModal, openTeamSettings } from './team-settings-handler.js'; 
 import { initNotificationsSystem } from './notifications-handler.js';
-document.addEventListener('DOMContentLoaded', () => {
+import { RANKS_DATA } from './badges-data.js';
+import { TEAM_RANKS_DATA } from './team-badges-data.js';
+function updateHeaderInfo(user, team) {
+    const safeText = (id, txt) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = txt;
+    };
 
-});
+    // 1. تجهيز البيانات الأساسية
+    const userPoints = user.gamification?.total_points || 0;
+    const teamPoints = team.total_score || 0;
+
+    // 2. دالة داخلية لجلب اللقب بناءً على النقاط
+    const getBadgeTitle = (points, dataSet) => {
+        let title = dataSet[0].title;
+        for (let i = 0; i < dataSet.length; i++) {
+            if (points >= dataSet[i].points_required) {
+                title = dataSet[i].title;
+            } else {
+                break;
+            }
+        }
+        return title;
+    };
+
+    // 3. تحديث ألقاب البادجات
+    safeText('header-user-badge', getBadgeTitle(userPoints, RANKS_DATA));
+    safeText('sidebar-team-badge', getBadgeTitle(teamPoints, TEAM_RANKS_DATA));
+
+    // --- بقية الكود الأصلي الخاص بك بدون تغيير ---
+    const userName = user.personal_info?.full_name || user.full_name || "مستخدم Busla";
+    const teamName = team.info?.name || team.team_name || "فريقي";
+    const leaderName = team.leader_name || user.personal_info?.full_name || "القائد";
+
+    safeText('sidebar-team-name', teamName);
+    safeText('sidebar-leader-name', leaderName);
+    safeText('header-user-name', userName);
+    safeText('my-points', userPoints);
+    safeText('stat-team-score', teamPoints);
+
+    // تحديث الصور كما هي في كودك الأصلي
+    const sidebarLogoEl = document.getElementById('sidebar-team-logo');
+    if(sidebarLogoEl) {
+        let rawTeamLogo = team.info?.logo_url || team.logo_url;
+        sidebarLogoEl.src = resolveImageUrl(rawTeamLogo, 'team');
+    }
+
+    const headerAvatarEl = document.getElementById('header-user-avatar');
+    if(headerAvatarEl) {
+        const rawUserAvatar = user.personal_info?.photo_url || user.photo_url;
+        headerAvatarEl.src = rawUserAvatar ? resolveImageUrl(rawUserAvatar, 'user') : "../assets/icons/icon.jpg";
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initSettingsModal();
     const settingsBtn = document.getElementById('open-settings-btn'); 
@@ -563,76 +614,7 @@ function getCurrentWeekCycle() {
         isExpired: (dateToCheck) => dateToCheck > endDate
     };
 }
-function updateHeaderInfo(user, team) {
-    const safeText = (id, txt) => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = txt;
-    };
 
-    // 1. تجهيز البيانات
-    const userName = user.personal_info?.full_name || user.full_name || "مستخدم Busla";
-    const userPoints = user.gamification?.total_points || user.total_points || 0;
-    const teamName = team.info?.name || team.team_name || "فريقي";
-    const leaderName = team.leader_name || user.personal_info?.full_name || "القائد"; // اسم القائد (غالباً هو المستخدم الحالي هنا)
-
-    // 2. صور (Team Logo & User Avatar)
-    // - لوجو الفريق من الفايربيز
-    let rawTeamLogo = null;
-    if (team.info && team.info.logo_url) rawTeamLogo = team.info.logo_url;
-    else if (team.logo_url) rawTeamLogo = team.logo_url;
-    const teamLogoUrl = resolveImageUrl(rawTeamLogo, 'team');
-
-    // - صورة المستخدم (حالياً افتراضية أو بوصلة، مستقبلاً من user.photo_url)
-    const rawUserAvatar = user.personal_info?.photo_url || user.photo_url;
-    // نستخدم صورة البوصلة كبديل افتراضي لليوزر
-    const defaultUserAvatar = "../assets/icons/icon.jpg"; 
-    const userAvatarUrl = rawUserAvatar ? resolveImageUrl(rawUserAvatar, 'user') : defaultUserAvatar;
-
-
-    // 3. تحديث الـ DOM (واجهة المستخدم)
-
-    // --- منطقة السايدبار (Team Profile) ---
-    safeText('sidebar-team-name', teamName);
-    safeText('sidebar-leader-name', leaderName);
-    
-    const sidebarLogoEl = document.getElementById('sidebar-team-logo');
-    if(sidebarLogoEl) {
-        sidebarLogoEl.src = teamLogoUrl;
-        sidebarLogoEl.onerror = function() { 
-            this.onerror = null; 
-            this.src = `../assets/icons/icon.jpg`; 
-        };
-    }
-
-    // --- منطقة الهيدر (User Profile) ---
-    safeText('header-user-name', userName);
-    safeText('my-points', userPoints);
-    safeText('stat-team-score', team.total_score || 0);
-
-    const headerAvatarEl = document.getElementById('header-user-avatar');
-    if(headerAvatarEl) {
-        headerAvatarEl.src = userAvatarUrl;
-        headerAvatarEl.onerror = function() {
-            this.onerror = null;
-            this.src = defaultUserAvatar;
-        };
-    }
-
-    // --- منطقة البادجات (Placeholder للمستقبل) ---
-    const badgesContainer = document.getElementById('sidebar-badges-container');
-    if(badgesContainer) {
-        // مثال: لو الفريق معدي 1000 نقطة نديله بادج
-        if ((team.total_score || 0) > 1000) {
-            badgesContainer.innerHTML = `
-                <div class="w-6 h-6 rounded-full bg-yellow-500/20 border border-yellow-500/50 flex items-center justify-center text-yellow-500 text-xs" title="فريق ذهبي">
-                    <i class="fas fa-medal"></i>
-                </div>
-            `;
-        } else {
-            badgesContainer.innerHTML = ''; // فاضي حالياً
-        }
-    }
-}
 function loadFromCache() {
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
