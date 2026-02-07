@@ -434,54 +434,60 @@ function sendCustomVerificationEmail(email, name) {
 }
 function handlePasswordReset(email, name) {
   try {
-    // 1. طلب رابط الريست من فايربيز REST API
-    var payload = {
-      "requestType": "PASSWORD_RESET",
-      "email": email
-    };
-
-    var options = {
-      "method": "post",
-      "contentType": "application/json",
-      "payload": JSON.stringify(payload),
-      "muteHttpExceptions": true
-    };
-
-    var response = UrlFetchApp.fetch(FIREBASE_AUTH_URL, options);
-    var result = JSON.parse(response.getContentText());
-
-    if (result.error) {
-      return ContentService.createTextOutput(JSON.stringify({status: "error", msg: result.error.message}));
+    // 1. الاتصال بـ Firebase بصلاحيات المفتاح الجديد (الأدمن)
+    var service = getFirebaseService();
+    if (!service.hasAccess()) {
+      return sendJSON({status: "error", message: "Auth Failed: " + service.getLastError()});
     }
 
-    var resetLink = result.oobLink; // هذا هو الرابط السحري!
+    // 2. طلب رابط الريست باستخدام الـ Admin Token لضمان القبول
+    var projectId = PropertiesService.getScriptProperties().getProperty("FIREBASE_PROJECT_ID");
+    var url = "https://identitytoolkit.googleapis.com/v1/projects/" + projectId + "/accounts:sendOobCode";
+    
+    var payload = {
+      "requestType": "PASSWORD_RESET",
+      "email": email,
+      "returnOobLink": true 
+    };
 
-    // 2. تصميم الإيميل
+    var response = UrlFetchApp.fetch(url, {
+      method: "post",
+      contentType: "application/json",
+      headers: { "Authorization": "Bearer " + service.getAccessToken() },
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+
+    var result = JSON.parse(response.getContentText());
+    if (result.error) throw new Error(result.error.message);
+
+    var resetLink = result.oobLink; 
+
+    // 3. تصميم الإيميل (يفضل استخدام التصميم الأسود الموحد للمنصة)
     var htmlBody = `
-      <div style="direction:rtl; text-align:right; font-family: 'Cairo', sans-serif; background-color:#f4f4f4; padding:20px;">
-        <div style="max-width:600px; margin:0 auto; background:#fff; padding:30px; border-radius:10px; border-top: 5px solid #006A67;">
+      <div style="direction:rtl; text-align:right; font-family: sans-serif; background-color:#000; padding:20px; color:#fff;">
+        <div style="max-width:500px; margin:0 auto; background:#111; padding:30px; border-radius:15px; border:1px solid #333;">
           <h2 style="color:#006A67;">طلب تغيير كلمة المرور 🔒</h2>
-          <p>أهلاً ${name}،</p>
+          <p>أهلاً ${name || 'يا بطل'}،</p>
           <p>تلقينا طلباً لتغيير كلمة المرور الخاصة بحسابك في منصة <strong>بوصلة</strong>.</p>
-          <p>اضغط على الزر أدناه لتعيين كلمة مرور جديدة:</p>
-          <a href="${resetLink}" style="display:inline-block; background-color:#006A67; color:#fff; padding:12px 25px; text-decoration:none; border-radius:5px; font-weight:bold; margin: 20px 0;">تغيير كلمة المرور</a>
+          <div style="text-align:center; margin:30px 0;">
+            <a href="${resetLink}" style="background-color:#006A67; color:#fff; padding:15px 30px; text-decoration:none; border-radius:10px; font-weight:bold;">تغيير كلمة المرور</a>
+          </div>
           <p style="color:#666; font-size:12px;">إذا لم تطلب هذا التغيير، يمكنك تجاهل هذه الرسالة بأمان.</p>
-          <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-          <p style="color:#999; font-size:11px; text-align:center;">Busla LMS Team</p>
         </div>
       </div>
     `;
 
-    // 3. إرسال الإيميل
+    // 4. الإرسال
     GmailApp.sendEmail(email, "تغيير كلمة المرور - بوصلة", "", {
       htmlBody: htmlBody,
-      name: "منصة بوصلة"
+      name: "Busla LMS Team"
     });
 
-    return ContentService.createTextOutput(JSON.stringify({status: "success"}));
+    return sendJSON({ status: "success", message: "Reset email sent" });
 
   } catch (e) {
-    return ContentService.createTextOutput(JSON.stringify({status: "error", msg: e.toString()}));
+    return sendJSON({ status: "error", message: e.toString() });
   }
 }
 // --- إعداد خدمة OAuth2 (للاتصال الآمن) ---

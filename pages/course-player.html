@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشغل الكورسات | بوصلة</title>
-    <link rel="icon" type="image/jpg" href="../assets/icons/icon.jpg">
+    <title>Busla Course Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { 'b-bg': '#000000', 'b-surface': '#111111', 'b-primary': '#006A67', 'b-hl-light': '#22C45D' },
+                    colors: { 'b-bg': '#000000', 'b-surface': '#111111', 'b-primary': '#006A67', 'b-accent': '#FFC107' },
                     fontFamily: { 'cairo': ['Cairo', 'sans-serif'] }
                 }
             }
@@ -21,112 +19,281 @@
     </script>
     <style>
         body { font-family: 'Cairo', sans-serif; background-color: #000; overflow: hidden; }
-        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
-        .sidebar-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        .active-module { background: rgba(0, 106, 103, 0.15); border-right: 3px solid #006A67; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        /* Video Overlay to prevent native clicks */
+        #video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: transparent; }
     </style>
 </head>
-<body class="text-white flex h-screen">
+<body class="text-white h-screen flex flex-col md:flex-row">
 
-    <aside class="w-80 bg-[#0a0a0a] border-l border-white/10 flex flex-col h-full absolute md:relative z-20 transform translate-x-full md:translate-x-0 transition-transform duration-300" id="sidebar">
+    <aside class="w-full md:w-80 bg-b-surface border-l border-white/10 flex flex-col h-full z-20">
+        <div class="p-6 border-b border-white/10">
+            <h2 id="course-title" class="font-bold text-lg text-b-primary mb-1">...</h2>
+            <p id="instructor-name" class="text-xs text-gray-400">...</p>
+            <div class="mt-4">
+                <div class="flex justify-between text-xs mb-1">
+                    <span>نسبة الإكمال</span>
+                    <span id="total-progress-txt">0%</span>
+                </div>
+                <div class="h-1.5 w-full bg-black rounded-full overflow-hidden">
+                    <div id="total-progress-bar" class="h-full bg-b-primary w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+        </div>
         
-        <div class="p-4 border-b border-white/10 flex items-center justify-between">
-            <div>
-                <a href="student-dash.html" class="text-gray-400 hover:text-white text-xs mb-1 block">
-                    <i class="fas fa-arrow-right ml-1"></i> عودة للوحة القيادة
-                </a>
-                <h2 id="course-title" class="font-bold text-sm text-b-hl-light">جاري التحميل...</h2>
+        <div id="playlist-container" class="flex-1 overflow-y-auto p-2 space-y-1">
             </div>
-            <button id="close-sidebar" class="md:hidden text-gray-400"><i class="fas fa-times"></i></button>
-        </div>
-
-        <div id="modules-list" class="flex-1 overflow-y-auto sidebar-scroll p-2 space-y-1">
-            <div class="text-center py-10 text-gray-500 text-sm">جاري جلب المحتوى...</div>
-        </div>
-
-        <div class="p-4 border-t border-white/10 bg-b-surface">
-            <div class="flex justify-between text-xs mb-2 text-gray-400">
-                <span>نسبة الإكمال</span>
-                <span id="progress-percent">0%</span>
-            </div>
-            <div class="w-full bg-gray-800 rounded-full h-1.5">
-                <div id="progress-bar" class="bg-b-hl-light h-1.5 rounded-full" style="width: 0%"></div>
-            </div>
-        </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full relative">
+    <main class="flex-1 relative flex flex-col bg-black h-full overflow-hidden">
         
-        <div class="md:hidden p-4 bg-b-surface border-b border-white/10 flex justify-between items-center">
-            <button id="open-sidebar" class="text-white"><i class="fas fa-bars"></i> قائمة الدروس</button>
-            <span class="font-bold text-b-primary">بوصلة</span>
-        </div>
+<div id="view-video" class="content-view hidden h-full flex flex-col group/video-container relative">
+    
+<div id="video-header" class="bg-gradient-to-r from-b-surface via-[#1a1a1a] to-black border-b border-white/10 p-6 md:p-8 flex flex-col lg:flex-row justify-between items-start gap-6 z-30 transition-all duration-300 shadow-2xl">
+    
+    <div class="flex-1 space-y-3">
+        <div class="flex flex-wrap items-center gap-3 text-sm font-medium">
+            <span id="header-course-title" class="bg-white/5 text-gray-300 px-3 py-1 rounded-full border border-white/5">اسم الكورس</span>
+            
+            <div class="flex items-center gap-2 text-gray-400">
+                <i class="fas fa-user-tie"></i>
+                <span id="header-author">المحاضر</span>
+            </div>
 
-        <div id="content-area" class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center justify-center bg-b-bg">
-            <div class="text-center">
-                <i class="fas fa-circle-notch fa-spin text-4xl text-b-primary mb-4"></i>
-                <p class="text-gray-400">اختر درساً للبدء</p>
+            <div id="header-points-badge" class="hidden flex items-center gap-1.5 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-3 py-1 rounded-full animate-pulse">
+                <i class="fas fa-star text-xs"></i>
+                <span class="font-bold font-mono" id="header-points-text">0</span>
+                <span class="text-[10px] uppercase tracking-wider">XP</span>
             </div>
         </div>
 
+        <h1 id="header-video-title" class="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight tracking-wide drop-shadow-md">
+            عنوان الفيديو
+        </h1>
+    </div>
+
+    <div id="header-note-container" class="hidden w-full lg:w-1/3 bg-blue-500/5 border-r-4 border-blue-500 rounded-l-xl p-4 relative overflow-hidden group hover:bg-blue-500/10 transition-colors">
+        <div class="flex items-start gap-3">
+            <div class="bg-blue-500/20 p-2 rounded-lg text-blue-400 mt-1">
+                <i class="fas fa-info-circle text-lg"></i>
+            </div>
+            <div>
+                <h4 class="text-blue-400 font-bold text-xs uppercase mb-1 tracking-widest">ملاحظة هامة</h4>
+                <p id="header-note-text" class="text-sm text-gray-200 leading-relaxed font-light">
+                    </p>
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="video-wrapper" class="relative flex-1 flex flex-col bg-black overflow-hidden">
+        <div class="relative flex-1 flex items-center justify-center bg-black">
+            <div id="youtube-player" class="w-full h-full"></div>
+            <div id="video-overlay" class="absolute inset-0 z-10 bg-transparent hidden"></div>
+        </div>
+        
+        <div class="h-16 bg-b-surface/90 backdrop-blur-sm border-t border-white/10 flex items-center justify-between px-4 md:px-6 z-50">
+            <div class="flex items-center gap-4">
+<div class="flex items-center gap-3 md:gap-4">
+                
+                <button id="btn-play" class="w-10 h-10 rounded-full bg-b-primary flex items-center justify-center hover:bg-teal-600 transition shadow-lg group">
+                    <i class="fas fa-play text-white group-hover:scale-110 transition-transform"></i>
+                </button>
+
+                <button id="btn-restart" class="text-gray-400 hover:text-white transition p-2" title="إعادة البدء">
+                    <i class="fas fa-undo text-lg"></i>
+                </button>
+
+                <button id="btn-rewind" class="text-gray-400 hover:text-white transition p-2 flex items-center gap-1" title="رجوع 10s">
+                    <i class="fas fa-history"></i>
+                    <span class="text-[10px] font-mono hidden md:inline">-10s</span>
+                </button>
+
+                <div class="text-xs md:text-sm font-mono text-gray-300 bg-black/40 px-3 py-1 rounded-full border border-white/5">
+                    <span id="time-current">00:00</span> <span class="text-gray-500">/</span> <span id="time-duration">00:00</span>
+                </div>
+            </div>
+            </div>
+
+            <div class="flex items-center gap-3 md:gap-4">
+                <div class="relative group">
+                    <button id="btn-quality" class="text-gray-400 hover:text-white transition flex items-center gap-1 text-xs font-bold border border-white/10 px-2 py-1 rounded">
+                        <span id="current-quality-txt">720p</span> <i class="fas fa-cog"></i>
+                    </button>
+                    <div id="quality-menu" class="hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-24 bg-black/90 border border-white/10 rounded-lg shadow-xl overflow-hidden py-1 z-50">
+                        </div>
+                </div>
+                <div class="relative group">
+                    <button id="btn-captions" class="text-gray-400 hover:text-white transition p-2"><i class="fas fa-closed-captioning text-xl"></i></button>
+                    <div id="captions-menu" class="hidden absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 bg-black/90 border border-white/10 rounded-lg shadow-xl overflow-hidden py-1 z-50"></div>
+                </div>
+                <div class="relative">
+                    <select id="playback-speed" class="appearance-none bg-black/30 border border-white/10 rounded-lg text-xs py-1.5 pl-3 pr-8 text-gray-300 outline-none hover:border-b-primary cursor-pointer text-center w-[70px]"></select>
+                    <i class="fas fa-tachometer-alt absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-gray-500 pointer-events-none"></i>
+                </div>
+                <button id="btn-fullscreen" class="text-gray-400 hover:text-white transition p-2"><i class="fas fa-expand text-lg"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container" class="fixed top-24 left-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+        <div id="view-quiz" class="content-view hidden h-full overflow-y-auto p-8 max-w-4xl mx-auto w-full">
+            <div class="bg-b-surface border border-white/10 rounded-2xl p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 id="quiz-title" class="text-2xl font-bold text-white mb-2"></h2>
+                        <p id="quiz-desc" class="text-gray-400 text-sm"></p>
+                    </div>
+                    <span class="bg-yellow-500/20 text-yellow-500 text-xs px-3 py-1 rounded-full border border-yellow-500/30">اختبار</span>
+                </div>
+
+                <div id="quiz-questions-container" class="space-y-8">
+                    </div>
+
+                <div id="quiz-result-area" class="hidden mt-8 p-6 bg-black/40 rounded-xl border border-white/10 text-center">
+                    </div>
+
+                <button id="btn-submit-quiz" class="mt-8 w-full bg-b-primary hover:bg-teal-600 text-white font-bold py-3 rounded-xl transition-all">
+                    تسليم الإجابات
+                </button>
+            </div>
+        </div>
+<div id="view-project" class="content-view hidden h-full overflow-y-auto p-4 md:p-8 max-w-5xl mx-auto w-full scroll-smooth">
+    
+    <div class="bg-b-surface border border-white/10 rounded-2xl p-6 md:p-8 mb-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10">
+            <i class="fas fa-laptop-code text-9xl text-purple-500"></i>
+        </div>
+        
+        <div class="relative z-10">
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+                <span class="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                    <i class="fas fa-code-branch mr-1"></i> مشروع عملي
+                </span>
+                <span id="project-lesson-tag" class="text-gray-400 text-xs bg-black/30 px-3 py-1 rounded-full border border-white/5">
+                    </span>
+            </div>
+
+            <h2 id="project-title" class="text-3xl font-bold text-white mb-4 leading-tight"></h2>
+            
+            <div id="project-desc" class="text-gray-300 text-sm leading-relaxed bg-black/20 p-4 rounded-xl border border-white/5 mb-6"></div>
+
+            <div class="flex flex-wrap gap-4">
+                <a id="btn-project-requirements" href="#" target="_blank" class="hidden px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm font-bold border border-white/10 transition-all flex items-center gap-2">
+                    <i class="fas fa-external-link-alt text-purple-400"></i> دليل المشروع (Google Docs)
+                </a>
+                
+                <div class="px-5 py-2.5 rounded-xl bg-black/40 border border-white/5 text-gray-400 text-sm flex items-center gap-2">
+                    <i class="fas fa-star text-yellow-500"></i> إجمالي النقاط: <span id="project-max-points" class="text-white font-bold">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-b-surface border border-white/10 rounded-2xl p-6">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fas fa-list-check text-purple-500"></i> معايير التقييم (Rubric)
+                </h3>
+                <div id="project-rubric-container" class="space-y-3">
+                    </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div id="submission-card" class="bg-b-surface border border-white/10 rounded-2xl p-6 sticky top-6 shadow-xl shadow-black/50">
+                </div>
+        </div>
+    </div>
+</div>
     </main>
 
-    <template id="video-template">
-        <div class="w-full max-w-4xl">
-            <div class="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10 mb-6">
-                <iframe id="video-frame" class="w-full h-full" src="" frameborder="0" allowfullscreen></iframe>
-            </div>
-            <div class="flex justify-between items-start">
-                <div>
-                    <h1 id="video-title" class="text-2xl font-bold mb-2">عنوان الدرس</h1>
-                    <p class="text-gray-400 text-sm">شاهد الفيديو بالكامل لتسجيل الحضور.</p>
-                </div>
-                <button id="mark-complete-btn" class="bg-white/10 hover:bg-b-primary text-white px-6 py-2 rounded-lg font-bold transition-colors">
-                    <i class="fas fa-check ml-2"></i> إتمام الدرس
-                </button>
+<aside class="hidden xl:flex w-72 bg-b-surface border-r border-white/10 flex-col p-6 gap-6 z-20">
+    
+    <div class="text-center relative">
+        <div class="w-24 h-24 mx-auto mb-3 relative">
+            <img id="user-avatar" src="../assets/icons/icon.jpg" class="w-full h-full rounded-full object-cover border-2 border-b-primary p-1 bg-black">
+            <div class="absolute -bottom-2 -right-2 bg-black rounded-full border border-white/10 p-1">
+                <i class="fas fa-medal text-yellow-500 text-lg"></i>
             </div>
         </div>
-    </template>
+        <h3 id="user-name" class="font-bold text-lg text-white">جاري التحميل...</h3>
+        <p id="user-rank-title" class="text-xs text-b-primary font-bold uppercase tracking-wider mt-1">Student</p>
+    </div>
 
-    <template id="quiz-template">
-        <div class="w-full max-w-2xl bg-b-surface p-8 rounded-2xl border border-white/10 shadow-xl">
-            <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                <h2 class="text-xl font-bold text-white"><i class="fas fa-question-circle text-b-primary ml-2"></i> <span id="quiz-title">اختبار</span></h2>
-                <span id="quiz-timer" class="text-red-400 font-mono hidden">00:00</span>
-            </div>
-
-            <div id="question-container" class="mb-8">
-                </div>
-
-            <div class="flex justify-between mt-8">
-                <button id="prev-q-btn" class="text-gray-400 hover:text-white px-4 py-2 rounded disabled:opacity-50">السابق</button>
-                <button id="next-q-btn" class="bg-b-primary hover:bg-teal-700 text-white px-6 py-2 rounded-lg font-bold">التالي</button>
-            </div>
+    <div class="space-y-4 bg-black/20 p-4 rounded-xl border border-white/5">
+        
+        <div class="flex justify-between items-center border-b border-white/5 pb-2 mb-2">
+            <span class="text-gray-400 text-xs">نقاط الكورس</span>
+            <span id="stat-points" class="font-mono font-bold text-b-primary">0</span>
         </div>
-    </template>
 
-    <template id="project-template">
-        <div class="w-full max-w-3xl bg-b-surface p-8 rounded-2xl border border-white/10 text-center">
-            <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-code-branch text-3xl text-purple-400"></i>
-            </div>
-            <h2 id="project-title" class="text-2xl font-bold mb-4">عنوان المشروع</h2>
-            <div id="project-desc" class="text-gray-300 text-right bg-black/30 p-4 rounded-xl mb-6 text-sm leading-relaxed">
-                وصف المشروع...
-            </div>
-            
-            <form id="project-form" class="space-y-4 max-w-md mx-auto">
-                <div class="text-right">
-                    <label class="text-xs text-gray-400 block mb-1">رابط المشروع (GitHub / Drive)</label>
-                    <input type="url" id="project-link" required placeholder="https://github.com/..." class="w-full bg-black/50 border border-white/20 rounded-lg p-3 text-white outline-none focus:border-b-primary">
-                </div>
-                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-bold shadow-lg transition-transform hover:scale-105">
-                    <i class="fas fa-paper-plane ml-2"></i> تسليم المشروع
-                </button>
-            </form>
+        <div class="flex justify-between items-center">
+            <span class="text-gray-400 text-xs"><i class="fas fa-check-circle text-green-500 mr-2"></i>الإنجاز</span>
+            <span id="stat-completion" class="font-mono font-bold">0%</span>
         </div>
-    </template>
 
+        <div class="flex justify-between items-center">
+            <span class="text-gray-400 text-xs"><i class="fas fa-clipboard-question text-blue-500 mr-2"></i>الكويزات</span>
+            <span id="stat-quizzes" class="font-mono font-bold">0</span>
+        </div>
+    </div>
+
+    <div id="video-progress-panel" class="hidden space-y-3 bg-black/20 p-4 rounded-xl border border-white/5 shadow-lg animate-fade-in">
+        <div class="flex justify-between items-center border-b border-white/5 pb-2">
+            <span class="text-gray-400 text-xs"><i class="fas fa-history text-b-primary mr-2"></i>استئناف المشاهدة</span>
+            <span id="saved-time-display" class="font-mono text-xs text-white">--:--</span>
+        </div>
+        
+        <div class="w-full bg-black rounded-full h-1.5 overflow-hidden">
+            <div id="saved-progress-bar" class="bg-yellow-500 h-full w-0 transition-all duration-500"></div>
+        </div>
+        
+        <p id="video-status-msg" class="text-[10px] text-gray-500 text-center">يتم الحفظ تلقائياً كل دقيقة</p>
+    </div>
+
+    <div class="flex-1 bg-gradient-to-b from-b-primary/10 to-transparent p-4 rounded-xl border border-b-primary/20 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-20 h-20 bg-b-primary/20 blur-3xl rounded-full -mr-10 -mt-10"></div>
+        
+        <i class="fas fa-trophy text-4xl text-yellow-500 mb-2 drop-shadow-[0_0_10px_rgba(234,179,8,0.5)]"></i>
+        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">ترتيبك في الفريق</p>
+        
+        <div class="mt-2 flex items-baseline gap-1">
+            <span class="text-4xl font-black text-white" id="team-rank-display">--</span>
+            <span class="text-sm text-gray-500" id="team-total-members">/ --</span>
+        </div>
+        
+        <p id="rank-diff-text" class="text-[10px] text-green-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            حافظ على تقدمك!
+        </p>
+    </div>
+
+</aside>
+<div id="confirm-modal" class="fixed inset-0 z-[200] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-b-surface border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl transform scale-100 transition-all">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-3xl text-yellow-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">تأكيد الإجراء</h3>
+            <p id="confirm-msg" class="text-gray-400 text-sm">هل أنت متأكد من هذا الإجراء؟</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeConfirmModal()" class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold transition-all border border-white/5">
+                إلغاء
+            </button>
+            <button id="btn-confirm-yes" class="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold transition-all shadow-lg shadow-red-900/20">
+                نعم، متابعة
+            </button>
+        </div>
+    </div>
+</div>
     <script type="module" src="../js/course-player.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>

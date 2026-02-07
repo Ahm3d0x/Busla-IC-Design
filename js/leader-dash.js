@@ -2494,3 +2494,246 @@ window.closeConfirmModal = () => {
     document.getElementById('confirm-modal').classList.add('hidden');
     confirmCallback = null;
 };
+// نسخة التشخيص (Debug Version)
+async function loadPendingSubmissions() {
+    console.log("🚀 1. بدء دالة جلب المشاريع...");
+
+    const container = document.getElementById('submissions-list');
+    if (!container) {
+        console.error("❌ خطأ: لم يتم العثور على عنصر submissions-list في HTML");
+        return;
+    }
+
+    if (!currentTeamId) {
+        console.error("❌ خطأ: currentTeamId فارغ! الليدر غير مرتبط بفريق أو لم يتم تحميل البيانات بعد.");
+        container.innerHTML = '<p class="text-red-500 text-center">خطأ: لم يتم التعرف على فريق الليدر.</p>';
+        return;
+    }
+
+    console.log("✅ 2. Team ID المستخدم في البحث:", currentTeamId);
+    
+    container.innerHTML = '<div class="text-center py-10"><i class="fas fa-spinner fa-spin text-2xl text-b-primary"></i></div>';
+
+    try {
+        // الاستعلام
+        const q = query(
+            collection(db, "submissions"), 
+            where("team_id", "==", String(currentTeamId).trim()), // ضمان أن النص نظيف
+            where("status", "==", "pending")
+        );
+        
+        console.log("🔍 3. جاري الاتصال بقاعدة البيانات...");
+        const snapshot = await getDocs(q);
+        
+        console.log(`📊 4. عدد النتائج التي وجدها الفايربيس: ${snapshot.size}`);
+
+        if (snapshot.empty) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-12 bg-black/20 rounded-2xl border border-white/5">
+                    <i class="fas fa-check-circle text-4xl text-gray-600 mb-4"></i>
+                    <p class="text-gray-400">لا توجد مشاريع (Pending) لهذا الفريق حالياً</p>
+                    <p class="text-xs text-gray-600 mt-2">Team ID: ${currentTeamId}</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        snapshot.forEach(doc => {
+            const sub = doc.data();
+            console.log("📄 مشروع تم إيجاده:", sub.project_title, "للطالب:", sub.student_name);
+            
+            const date = sub.submitted_at ? new Date(sub.submitted_at.seconds * 1000).toLocaleDateString('ar-EG') : 'غير معروف';
+            
+            container.innerHTML += `
+            <div class="bg-b-surface border border-white/10 rounded-xl p-5 hover:border-b-primary/50 transition-colors group">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 font-bold border border-purple-500/20">
+                            ${sub.student_name ? sub.student_name[0] : 'S'}
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm">${sub.project_title}</h4>
+                            <p class="text-xs text-gray-400">${sub.student_name}</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded border border-yellow-500/20">
+                        Pending
+                    </span>
+                </div>
+                
+                <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
+                    <span class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i> ${date}</span>
+                    <button onclick="openGradingModal('${doc.id}')" class="px-4 py-1.5 bg-b-primary hover:bg-teal-600 text-white text-xs font-bold rounded-lg transition">
+                        تصحيح
+                    </button>
+                </div>
+            </div>`;
+        });
+
+    } catch (e) {
+        console.error("🔥 خطأ كارثي أثناء جلب البيانات:", e);
+        // هذا السطر سيكشف لك مشكلة الـ Index
+        if (e.message.includes("index")) {
+            alert("مطلوب إنشاء Index في الفايربيس! راجع الكونسول.");
+        }
+        container.innerHTML = `<p class="text-red-400 text-center">حدث خطأ: ${e.message}</p>`;
+    }
+}
+// متغير لتخزين التسليم الحالي
+let currentSubmission = null;
+
+// فتح نافذة التصحيح
+window.openGradingModal = async (submissionId) => {
+    const subDoc = await getDoc(doc(db, "submissions", submissionId));
+    if (!subDoc.exists()) return;
+    
+    currentSubmission = { id: subDoc.id, ...subDoc.data() };
+    
+    // البحث عن بيانات المشروع الأصلي (Rubric)
+    const projectsList = allCurriculumData?.projects || allCurriculumData?.Projects || [];
+    const projectMeta = projectsList.find(p => String(p.project_id) === String(currentSubmission.project_id));
+
+    if (!projectMeta) {
+        alert("تفاصيل الروبيكس غير متوفرة لهذا المشروع");
+        return;
+    }
+
+    // تعبئة البيانات
+    document.getElementById('grading-project-title').innerText = currentSubmission.project_title;
+    document.getElementById('grading-student-name').innerText = currentSubmission.student_name;
+    document.getElementById('grading-submission-link').href = currentSubmission.link;
+    document.getElementById('grading-submission-link').innerText = currentSubmission.link;
+    document.getElementById('grading-btn-link').href = currentSubmission.link;
+    document.getElementById('grading-max-score').innerText = projectMeta.max_points;
+
+    renderRubricInputs(projectMeta.rubric_json);
+    document.getElementById('grading-modal').classList.remove('hidden');
+};
+
+// رسم عناصر الروبيكس (Sliders)
+function renderRubricInputs(rubricJson) {
+    const container = document.getElementById('grading-rubric-container');
+    container.innerHTML = '';
+    
+    let criteria = [];
+    try {
+        if (typeof rubricJson === 'string') criteria = JSON.parse(rubricJson).criteria;
+        else criteria = rubricJson.criteria;
+    } catch (e) {
+        container.innerHTML = '<p class="text-gray-500">لا يوجد معايير تقييم.</p>';
+        return;
+    }
+
+    criteria.forEach((item, index) => {
+        container.innerHTML += `
+        <div class="bg-black/30 border border-white/5 rounded-lg p-4 rubric-item" data-aspect="${item.aspect}">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h5 class="text-white font-bold text-sm">${item.aspect}</h5>
+                    <p class="text-xs text-gray-400">${item.description}</p>
+                </div>
+                <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">Max: ${item.points}</span>
+            </div>
+            <div class="flex gap-4 items-center">
+                <div class="flex-1">
+                    <input type="range" min="0" max="${item.points}" value="${item.points}" 
+                           class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-b-primary"
+                           oninput="updateRubricScore(this, 'score-${index}')">
+                </div>
+                <input type="number" id="score-${index}" max="${item.points}" value="${item.points}" 
+                       class="w-16 bg-black border border-white/10 rounded p-1 text-center text-white font-mono text-sm rubric-score-input"
+                       onchange="calculateTotalScore()">
+            </div>
+        </div>`;
+    });
+    
+    calculateTotalScore();
+}
+
+// تحديث القيم والحساب
+window.updateRubricScore = (range, inputId) => {
+    document.getElementById(inputId).value = range.value;
+    calculateTotalScore();
+};
+
+window.calculateTotalScore = () => {
+    let total = 0;
+    document.querySelectorAll('.rubric-score-input').forEach(input => {
+        total += parseInt(input.value) || 0;
+    });
+    document.getElementById('grading-total-score').innerText = total;
+};
+
+// إغلاق النافذة
+window.closeGradingModal = () => {
+    document.getElementById('grading-modal').classList.add('hidden');
+    currentSubmission = null;
+};
+window.submitGradingDecision = async () => {
+    if (!currentSubmission) return;
+
+    const btn = document.querySelector('button[onclick="submitGradingDecision()"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+
+    // تجميع الدرجات من الواجهة
+    const scores = {};
+    let totalScore = 0;
+    
+    document.querySelectorAll('.rubric-item').forEach(item => {
+        const aspect = item.getAttribute('data-aspect');
+        const score = parseInt(item.querySelector('.rubric-score-input').value) || 0;
+        scores[aspect] = score;
+        totalScore += score;
+    });
+
+    const feedback = document.getElementById('grading-feedback').value;
+
+    try {
+        // 1. تحديث حالة التسليم والدرجة
+        const subRef = doc(db, "submissions", currentSubmission.id);
+        await updateDoc(subRef, {
+            status: "graded",
+            grade: totalScore,
+            rubric_scores: scores,
+            feedback: feedback,
+            graded_at: serverTimestamp(),
+            graded_by: auth.currentUser.uid,
+            graded_by_name: document.getElementById('leader-name').innerText
+        });
+
+        // 2. إضافة نقاط للطالب
+        const studentId = currentSubmission.student_id;
+        await updateDoc(doc(db, "users", studentId), {
+            "gamification.total_points": increment(totalScore)
+        });
+
+        // 3. إضافة نقاط للفريق وسجل
+        if (currentTeamId) {
+            await updateDoc(doc(db, "teams", currentTeamId), {
+                total_score: increment(totalScore)
+            });
+
+            await addDoc(collection(db, "teams", currentTeamId, "point_logs"), {
+                member_uid: studentId,
+                member_name: currentSubmission.student_name,
+                action_type: "project_graded",
+                content_title: currentSubmission.project_title,
+                content_id: currentSubmission.project_id,
+                points_earned: totalScore,
+                timestamp: serverTimestamp()
+            });
+        }
+
+        alert("تم رصد الدرجة بنجاح!");
+        closeGradingModal();
+        loadPendingSubmissions(); // تحديث القائمة لإخفاء المشروع المصحح
+
+    } catch (e) {
+        console.error("Grading Error:", e);
+        alert("حدث خطأ أثناء الحفظ");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> اعتماد الدرجة';
+    }
+};

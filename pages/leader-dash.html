@@ -1277,6 +1277,66 @@
         </div>
     </div>
 </div>
+<div id="grading-modal" class="fixed inset-0 z-[100] hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-b-surface border border-white/10 rounded-2xl w-full max-w-4xl my-8 shadow-2xl animate-scale-in flex flex-col max-h-[90vh]">
+        
+        <div class="p-6 border-b border-white/10 flex justify-between items-start bg-black/20">
+            <div>
+                <h3 class="text-xl font-bold text-white mb-1" id="grading-project-title">عنوان المشروع</h3>
+                <p class="text-xs text-gray-400">الطالب: <span id="grading-student-name" class="text-b-primary font-bold">--</span> | التاريخ: <span id="grading-date">--</span></p>
+            </div>
+            <button onclick="closeGradingModal()" class="text-gray-400 hover:text-white transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-6 overflow-y-auto custom-scrollbar flex-1 space-y-6">
+            
+            <div class="bg-blue-900/10 border border-blue-500/20 rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400">رابط التسليم</p>
+                        <a id="grading-submission-link" href="#" target="_blank" class="text-sm text-blue-400 font-bold hover:underline truncate max-w-[300px] block">
+                            فتح المشروع
+                        </a>
+                    </div>
+                </div>
+                <a id="grading-btn-link" href="#" target="_blank" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition">
+                    معاينة <i class="fas fa-external-link-alt ml-1"></i>
+                </a>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-tasks text-purple-500"></i> معايير التقييم (Rubric)
+                </h4>
+                <div id="grading-rubric-container" class="space-y-4"></div>
+            </div>
+
+            <div class="bg-black/40 rounded-xl p-4 border border-white/5">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-300 font-bold">الدرجة النهائية:</span>
+                    <div class="text-2xl font-bold text-b-primary">
+                        <span id="grading-total-score">0</span> / <span id="grading-max-score">100</span>
+                    </div>
+                </div>
+                
+                <label class="block text-xs text-gray-400 mb-2">ملاحظات عامة للطالب (اختياري)</label>
+                <textarea id="grading-feedback" rows="3" class="w-full bg-b-surface border border-white/10 rounded-lg p-3 text-sm text-white focus:border-b-primary outline-none" placeholder="اكتب نصائح أو ملاحظات لتحسين المشروع..."></textarea>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-white/10 bg-black/20 flex justify-end gap-3">
+            <button onclick="closeGradingModal()" class="px-6 py-2.5 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition">إلغاء</button>
+            <button onclick="submitGradingDecision()" class="px-8 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg shadow-green-900/20 transition flex items-center gap-2">
+                <i class="fas fa-check-circle"></i> اعتماد الدرجة
+            </button>
+        </div>
+    </div>
+</div>
 <div id="rank-up-modal" class="fixed inset-0 z-[300] hidden flex items-center justify-center">
     <div class="absolute inset-0 bg-black/90 backdrop-blur-xl transition-opacity duration-500"></div>
     
