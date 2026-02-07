@@ -80,9 +80,10 @@
             <button onclick="switchTab('announcements')" id="btn-announcements" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-bullhorn"></i> <span>إشعارات الفريق</span>
             </button>
-            <button onclick="switchTab('grading')" id="btn-grading" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all relative">
-                <i class="fas fa-check-double"></i> <span>التصحيح</span>
-                <span id="pending-badge" class="hidden absolute left-3 top-3 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full">0</span>
+            <button id="btn-grading" onclick="switchTab('grading'); if(window.loadPendingSubmissions) window.loadPendingSubmissions();" 
+                    class="nav-btn w-full text-right p-3 rounded-xl mb-2 text-gray-400 hover:bg-white/5 transition-all flex items-center gap-3">
+                <i class="fas fa-check-double"></i>
+                <span class="font-bold">التصحيح</span>
             </button>
             <button onclick="switchTab('calendar')" id="btn-calendar" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition-all">
                 <i class="fas fa-calendar-alt"></i> <span>التقويم</span>
@@ -645,10 +646,20 @@
             </div>
     </div>
 </div>
-        <section id="grading" class="tab-content space-y-6">
-            <h3 class="font-bold text-xl">المشاريع المستلمة</h3>
-            <div id="submissions-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </section>
+<section id="grading" class="tab-content space-y-6 hidden">
+    <div class="flex justify-between items-center">
+        <h3 class="font-bold text-xl text-white">المشاريع المستلمة (Pending)</h3>
+        
+        <button onclick="if(window.loadPendingSubmissions) window.loadPendingSubmissions()" 
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg flex items-center gap-2 transition-all">
+            <i class="fas fa-sync-alt"></i> تحديث القائمة
+        </button>
+    </div>
+
+    <div id="submissions-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p class="text-gray-500 text-center col-span-full py-8">اضغط على زر التحديث لجلب البيانات...</p>
+    </div>
+</section>
 <section id="calendar" class="tab-content space-y-6">
     <div class="bg-b-surface p-6 rounded-2xl border border-white/10 min-h-[500px]">
         <div class="flex justify-between items-center mb-8 pb-6 border-b border-white/5">
@@ -1364,21 +1375,43 @@
     </div>
 </div>
     <script type="module" src="../js/leader-dash.js"></script>
-    <script>
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.classList.remove('bg-b-primary/10', 'text-b-primary', 'font-bold');
-                b.classList.add('text-gray-400');
-            });
-            document.getElementById('btn-'+id).classList.add('bg-b-primary/10', 'text-b-primary', 'font-bold');
-            document.getElementById('btn-'+id).classList.remove('text-gray-400');
+<script>
+    function switchTab(id) {
+        // 1. التبديل الشكلي
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.classList.add('hidden');
+            el.classList.remove('active');
+        });
+        
+        const target = document.getElementById(id);
+        if(target) {
+            target.classList.remove('hidden');
+            target.classList.add('active');
         }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        window.openCustomTaskModal = () => document.getElementById('custom-task-modal').classList.remove('hidden');
-        window.openBroadcastModal = () => document.getElementById('broadcast-modal').classList.remove('hidden');
-        window.openAddMemberModal = () => alert("سيتم إضافة نظام الدعوات لاحقاً");
-    </script>
+
+        // 2. تحديث أزرار القائمة الجانبية
+        document.querySelectorAll('.nav-btn').forEach(b => {
+            b.classList.remove('bg-b-primary/10', 'text-b-primary', 'font-bold');
+            b.classList.add('text-gray-400');
+        });
+        
+        const activeBtn = document.getElementById('btn-'+id);
+        if(activeBtn) {
+            activeBtn.classList.add('bg-b-primary/10', 'text-b-primary', 'font-bold');
+            activeBtn.classList.remove('text-gray-400');
+        }
+
+        // 3. استدعاء البيانات (Logic Trigger)
+        // التحقق من أننا في صفحة التصحيح (سواء سميتها grading أو submissions)
+        if ((id === 'grading' || id === 'submissions') && window.loadPendingSubmissions) {
+            console.log("🔄 جاري طلب المشاريع...");
+            window.loadPendingSubmissions();
+        }
+    }
+
+    // تعريف الدوال العامة للنوافذ
+    window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
+    window.closeGradingModal = () => document.getElementById('grading-modal').classList.add('hidden');
+</script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 import { 
-    auth, db, doc, getDoc,addDoc, getDocs, updateDoc, setDoc, deleteDoc, writeBatch, // 👈 تأكد من وجود دول
-    arrayUnion, arrayRemove, query, where, collection, onAuthStateChanged, signOut, serverTimestamp ,EmailAuthProvider, reauthenticateWithCredential
+    auth, db, doc, getDoc, addDoc, getDocs, updateDoc, setDoc, deleteDoc, writeBatch, 
+    arrayUnion, arrayRemove, query, where, collection, onAuthStateChanged, signOut, 
+    serverTimestamp, EmailAuthProvider, reauthenticateWithCredential,
+    increment
 } from './firebase-config.js';
 import { getTeamData } from './team-system.js';
 import { initSettingsModal, openSettings } from './settings-handler.js';
@@ -118,7 +120,9 @@ let lookupData = { projects: {}, quizzes: {}, videos: {} };
 // --- State Management ---
 let currentUser = null;
 let currentTeam = null;
+let currentTeamId = null;
 let currentUserData = null;
+let allCurriculumData = null;
 let allData = { phases: [], courses: [], tree: [] };
 let selectedAssignCourse = null;
 let expandedNodes = new Set(); // Persist expanded tree nodes
@@ -192,6 +196,27 @@ async function fetchDataFromServer() {
         }
     }
 }
+async function fetchCurriculumData() {
+    try {
+        console.log("🚀 Fetching Fresh Data from Server...");
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=getFullCurriculum`);
+        const json = await response.json();
+        
+        if (json.status === "error") {
+            console.error("Server Error:", json.message);
+            return;
+        }
+
+        // ✅ الحل هنا: تخزين البيانات في المتغير الذي ينتظره كود التصحيح
+        allCurriculumData = json; 
+        
+        console.log("✅ تم تحميل بيانات المشاريع والروبيكس بنجاح");
+
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        alert("فشل تحميل تفاصيل المشاريع. تأكد من الاتصال بالإنترنت.");
+    }
+}
 // Mobile Menu Toggle (تم التحديث ليتوافق مع الاتجاه الصحيح)
     const menuBtn = document.getElementById('mobile-menu-btn');
     const sidebar = document.getElementById('sidebar');
@@ -234,14 +259,20 @@ async function initDashboard(uid) {
         if (!userDoc.exists()) throw new Error("User profile not found");
         
         currentUserData = userDoc.data();
+        
+        // استخراج معرف الفريق
         const teamId = currentUserData.team_id || currentUserData.system_info?.team_id;
 
+        // ✅ تصحيح الخطأ: تخزين المعرف في المتغير العام
+        currentTeamId = teamId; 
+await fetchCurriculumData();
         if (!teamId) {
+            console.warn("User has no team, redirecting...");
             window.location.href = "student-dash.html";
             return;
         }
 
-        // 1. أولاً: نجلب بيانات الفريق (التصحيح هنا)
+        // 1. جلب بيانات الفريق
         currentTeam = await getTeamData(teamId);
         
         if (!currentTeam) {
@@ -252,14 +283,13 @@ async function initDashboard(uid) {
         // تعيين الـ ID بشكل صريح لضمان وجوده
         currentTeam.team_id = teamId;
         
-        // 2. ثانياً: نستدعي دالة رسم السكواد ونمرر لها بيانات الفريق الصحيحة
-        // (كان الخطأ هنا أنك تمرر teamData وهو غير معرف)
+        // 2. رسم السكواد
         renderSquadTab(currentTeam);   
         
         // 3. تحديث الهيدر
         updateHeaderInfo(currentUserData, currentTeam);
 
-        // 4. بقية منطق الكاش والسيرفر كما هو
+        // 4. منطق الكاش والسيرفر
         const hasCache = loadFromCache();
         if (hasCache) {
             console.log("⚡ Rendering from Cache immediately...");
@@ -2092,7 +2122,7 @@ window.sendBroadcast = () => {
 };
 
 function renderGrading() {
-    const grid = document.getElementById('submissions-grid');
+    const grid = document.getElementById('submissions-list');
     if(grid) {
         grid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-20"><i class="fas fa-check-circle text-4xl mb-4 text-green-500/20"></i><p>No submissions.</p></div>`;
     }
@@ -2494,91 +2524,103 @@ window.closeConfirmModal = () => {
     document.getElementById('confirm-modal').classList.add('hidden');
     confirmCallback = null;
 };
-// نسخة التشخيص (Debug Version)
+// نسخة محدثة لكشف الأخطاء وعرض المشاريع
 async function loadPendingSubmissions() {
-    console.log("🚀 1. بدء دالة جلب المشاريع...");
+    console.log("🚀 جاري طلب المشاريع...");
 
-    const container = document.getElementById('submissions-list');
-    if (!container) {
-        console.error("❌ خطأ: لم يتم العثور على عنصر submissions-list في HTML");
-        return;
-    }
-
-    if (!currentTeamId) {
-        console.error("❌ خطأ: currentTeamId فارغ! الليدر غير مرتبط بفريق أو لم يتم تحميل البيانات بعد.");
-        container.innerHTML = '<p class="text-red-500 text-center">خطأ: لم يتم التعرف على فريق الليدر.</p>';
-        return;
-    }
-
-    console.log("✅ 2. Team ID المستخدم في البحث:", currentTeamId);
+    // 1. محاولة العثور على العنصر بأي من الاسمين المحتملين
+    let container = document.getElementById('submissions-list') || document.getElementById('submissions-grid');
     
-    container.innerHTML = '<div class="text-center py-10"><i class="fas fa-spinner fa-spin text-2xl text-b-primary"></i></div>';
+    if (!container) {
+        alert("❌ خطأ تصميم: لم يتم العثور على مكان عرض المشاريع (submissions-list) في ملف HTML.");
+        return;
+    }
+
+    // 2. التأكد من أن الليدر مرتبط بفريق
+    if (!currentTeamId) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-8 bg-red-900/20 border border-red-500/30 rounded-xl">
+                <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-2"></i>
+                <p class="text-white font-bold">حساب الليدر غير مرتبط بأي فريق!</p>
+                <p class="text-xs text-gray-400 mt-1">تأكد من أن حسابك يحتوي على (team_id) في قاعدة البيانات.</p>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = '<div class="col-span-full text-center py-10"><i class="fas fa-spinner fa-spin text-2xl text-b-primary"></i><p class="text-xs text-gray-500 mt-2">جاري البحث...</p></div>';
 
     try {
-        // الاستعلام
+        // 3. الاستعلام من قاعدة البيانات
         const q = query(
             collection(db, "submissions"), 
-            where("team_id", "==", String(currentTeamId).trim()), // ضمان أن النص نظيف
+            where("team_id", "==", String(currentTeamId).trim()), // تنظيف النص
             where("status", "==", "pending")
         );
         
-        console.log("🔍 3. جاري الاتصال بقاعدة البيانات...");
         const snapshot = await getDocs(q);
         
-        console.log(`📊 4. عدد النتائج التي وجدها الفايربيس: ${snapshot.size}`);
-
+        // 4. فحص النتائج
         if (snapshot.empty) {
             container.innerHTML = `
                 <div class="col-span-full text-center py-12 bg-black/20 rounded-2xl border border-white/5">
-                    <i class="fas fa-check-circle text-4xl text-gray-600 mb-4"></i>
-                    <p class="text-gray-400">لا توجد مشاريع (Pending) لهذا الفريق حالياً</p>
-                    <p class="text-xs text-gray-600 mt-2">Team ID: ${currentTeamId}</p>
+                    <i class="fas fa-inbox text-4xl text-gray-600 mb-4"></i>
+                    <p class="text-gray-400">لا توجد مشاريع جديدة للتصحيح</p>
+                    <p class="text-[10px] text-gray-600 mt-2 font-mono">Team ID: ${currentTeamId}</p>
                 </div>`;
             return;
         }
 
+        // 5. عرض المشاريع
         container.innerHTML = '';
         snapshot.forEach(doc => {
             const sub = doc.data();
-            console.log("📄 مشروع تم إيجاده:", sub.project_title, "للطالب:", sub.student_name);
-            
             const date = sub.submitted_at ? new Date(sub.submitted_at.seconds * 1000).toLocaleDateString('ar-EG') : 'غير معروف';
             
             container.innerHTML += `
-            <div class="bg-b-surface border border-white/10 rounded-xl p-5 hover:border-b-primary/50 transition-colors group">
+            <div class="bg-b-surface border border-white/10 rounded-xl p-5 hover:border-b-primary/50 transition-colors group animate-fade-in">
                 <div class="flex justify-between items-start mb-4">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 font-bold border border-purple-500/20">
                             ${sub.student_name ? sub.student_name[0] : 'S'}
                         </div>
                         <div>
-                            <h4 class="text-white font-bold text-sm">${sub.project_title}</h4>
+                            <h4 class="text-white font-bold text-sm line-clamp-1">${sub.project_title}</h4>
                             <p class="text-xs text-gray-400">${sub.student_name}</p>
                         </div>
                     </div>
-                    <span class="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded border border-yellow-500/20">
-                        Pending
+                    <span class="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded border border-yellow-500/20 flex items-center gap-1">
+                        <i class="fas fa-clock"></i> انتظار
                     </span>
                 </div>
                 
                 <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
-                    <span class="text-xs text-gray-500"><i class="far fa-clock mr-1"></i> ${date}</span>
-                    <button onclick="openGradingModal('${doc.id}')" class="px-4 py-1.5 bg-b-primary hover:bg-teal-600 text-white text-xs font-bold rounded-lg transition">
-                        تصحيح
+                    <span class="text-xs text-gray-500 font-mono">${date}</span>
+                    <button onclick="openGradingModal('${doc.id}')" class="px-4 py-2 bg-b-primary hover:bg-teal-600 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-teal-900/20">
+                        بدء التصحيح
                     </button>
                 </div>
             </div>`;
         });
 
     } catch (e) {
-        console.error("🔥 خطأ كارثي أثناء جلب البيانات:", e);
-        // هذا السطر سيكشف لك مشكلة الـ Index
+        console.error("Error loading submissions:", e);
+        
+        // كشف مشكلة الـ Index المشهورة
         if (e.message.includes("index")) {
-            alert("مطلوب إنشاء Index في الفايربيس! راجع الكونسول.");
+            container.innerHTML = `
+            <div class="col-span-full text-center p-6 bg-red-900/20 border border-red-500 rounded-xl">
+                <h3 class="text-red-400 font-bold text-lg">⚠️ مطلوب إنشاء Index في الفايربيس</h3>
+                <p class="text-gray-300 text-sm mt-2">لا يمكن تصفية البيانات بـ team_id و status معاً إلا بعد إنشاء فهرس.</p>
+                <p class="text-gray-400 text-xs mt-4">افتح الـ Console (F12) واضغط على الرابط الأزرق الطويل لإنشائه تلقائياً.</p>
+            </div>`;
+        } else {
+            container.innerHTML = `<p class="text-red-400 text-center col-span-full">حدث خطأ غير متوقع: ${e.message}</p>`;
         }
-        container.innerHTML = `<p class="text-red-400 text-center">حدث خطأ: ${e.message}</p>`;
     }
 }
+
+// ✅ ضمان أن الدالة متاحة لزر HTML
+window.loadPendingSubmissions = loadPendingSubmissions;
 // متغير لتخزين التسليم الحالي
 let currentSubmission = null;
 
@@ -2670,27 +2712,45 @@ window.closeGradingModal = () => {
     currentSubmission = null;
 };
 window.submitGradingDecision = async () => {
-    if (!currentSubmission) return;
+    console.log("🚀 بدء عملية اعتماد الدرجة...");
+
+    // 1. فحص المتطلبات
+    if (!currentSubmission) {
+        showToast("خطأ: لا يوجد مشروع محدد للتصحيح.", "error"); // استبدلنا alert
+        return;
+    }
+
+    if (!auth.currentUser) {
+        showToast("خطأ: الجلسة انتهت، يرجى إعادة تسجيل الدخول.", "error"); // استبدلنا alert
+        return;
+    }
 
     const btn = document.querySelector('button[onclick="submitGradingDecision()"]');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
-
-    // تجميع الدرجات من الواجهة
-    const scores = {};
-    let totalScore = 0;
-    
-    document.querySelectorAll('.rubric-item').forEach(item => {
-        const aspect = item.getAttribute('data-aspect');
-        const score = parseInt(item.querySelector('.rubric-score-input').value) || 0;
-        scores[aspect] = score;
-        totalScore += score;
-    });
-
-    const feedback = document.getElementById('grading-feedback').value;
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+    }
 
     try {
-        // 1. تحديث حالة التسليم والدرجة
+        // 2. تجميع الدرجات
+        const scores = {};
+        let totalScore = 0;
+        
+        const rubricItems = document.querySelectorAll('.rubric-item');
+        rubricItems.forEach(item => {
+            const aspect = item.getAttribute('data-aspect');
+            const input = item.querySelector('.rubric-score-input');
+            const score = input ? (parseInt(input.value) || 0) : 0;
+            if (aspect) scores[aspect] = score;
+            totalScore += score;
+        });
+
+        // قراءة الملاحظات
+        const feedbackInput = document.getElementById('grading-feedback');
+        const feedback = feedbackInput ? feedbackInput.value.trim() : "";
+        const leaderName = document.getElementById('leader-name') ? document.getElementById('leader-name').innerText : "Leader";
+
+        // 3. تحديث وثيقة التسليم
         const subRef = doc(db, "submissions", currentSubmission.id);
         await updateDoc(subRef, {
             status: "graded",
@@ -2699,41 +2759,56 @@ window.submitGradingDecision = async () => {
             feedback: feedback,
             graded_at: serverTimestamp(),
             graded_by: auth.currentUser.uid,
-            graded_by_name: document.getElementById('leader-name').innerText
+            graded_by_name: leaderName
         });
 
-        // 2. إضافة نقاط للطالب
-        const studentId = currentSubmission.student_id;
-        await updateDoc(doc(db, "users", studentId), {
-            "gamification.total_points": increment(totalScore)
-        });
+        // 4. إضافة نقاط للطالب (الآن ستعمل لأن increment تم استيرادها)
+        if (currentSubmission.student_id) {
+            const userRef = doc(db, "users", currentSubmission.student_id);
+            await updateDoc(userRef, {
+                "gamification.total_points": increment(totalScore)
+            });
+        }
 
-        // 3. إضافة نقاط للفريق وسجل
-        if (currentTeamId) {
-            await updateDoc(doc(db, "teams", currentTeamId), {
+        // 5. إضافة نقاط للفريق
+        const targetTeamId = currentTeamId || currentSubmission.team_id;
+        if (targetTeamId) {
+            const teamRef = doc(db, "teams", targetTeamId);
+            await updateDoc(teamRef, {
                 total_score: increment(totalScore)
             });
 
-            await addDoc(collection(db, "teams", currentTeamId, "point_logs"), {
-                member_uid: studentId,
-                member_name: currentSubmission.student_name,
+            // تسجيل في Log الفريق
+            await addDoc(collection(db, "teams", targetTeamId, "point_logs"), {
+                member_uid: currentSubmission.student_id || "unknown",
+                member_name: currentSubmission.student_name || "Unknown Student",
                 action_type: "project_graded",
-                content_title: currentSubmission.project_title,
-                content_id: currentSubmission.project_id,
+                content_title: currentSubmission.project_title || "Project",
+                content_id: currentSubmission.project_id || "unknown",
                 points_earned: totalScore,
                 timestamp: serverTimestamp()
             });
         }
 
-        alert("تم رصد الدرجة بنجاح!");
+        // 6. الختام بنجاح
+        showToast("تم اعتماد الدرجة وتوزيع النقاط بنجاح! 🎉", "success"); // استبدلنا alert
         closeGradingModal();
-        loadPendingSubmissions(); // تحديث القائمة لإخفاء المشروع المصحح
+        
+        // تحديث القائمة الخلفية
+        if (typeof window.loadPendingSubmissions === 'function') {
+            window.loadPendingSubmissions();
+        }
 
     } catch (e) {
-        console.error("Grading Error:", e);
-        alert("حدث خطأ أثناء الحفظ");
+        console.error("❌ Grading Error Details:", e);
+        showToast(`حدث خطأ أثناء الحفظ: ${e.message}`, "error"); // استبدلنا alert
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check-circle"></i> اعتماد الدرجة';
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> اعتماد الدرجة';
+        }
     }
 };
+window.loadPendingSubmissions = loadPendingSubmissions;
+window.openGradingModal = openGradingModal;
+window.submitGradingDecision = submitGradingDecision;
