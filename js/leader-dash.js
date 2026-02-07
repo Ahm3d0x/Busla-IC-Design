@@ -1,6 +1,6 @@
 import { 
-    auth, db, doc, getDoc, getDocs, updateDoc, setDoc, deleteDoc, writeBatch, // 👈 تأكد من وجود دول
-    arrayUnion, arrayRemove, query, where, collection, onAuthStateChanged, signOut, serverTimestamp 
+    auth, db, doc, getDoc,addDoc, getDocs, updateDoc, setDoc, deleteDoc, writeBatch, // 👈 تأكد من وجود دول
+    arrayUnion, arrayRemove, query, where, collection, onAuthStateChanged, signOut, serverTimestamp ,EmailAuthProvider, reauthenticateWithCredential
 } from './firebase-config.js';
 import { getTeamData } from './team-system.js';
 import { initSettingsModal, openSettings } from './settings-handler.js';
@@ -241,26 +241,34 @@ async function initDashboard(uid) {
             return;
         }
 
+        // 1. أولاً: نجلب بيانات الفريق (التصحيح هنا)
         currentTeam = await getTeamData(teamId);
+        
+        if (!currentTeam) {
+            console.error("Team data fetch failed");
+            return;
+        }
+
+        // تعيين الـ ID بشكل صريح لضمان وجوده
         currentTeam.team_id = teamId;
         
-        // 1. تحديث الهيدر فوراً
+        // 2. ثانياً: نستدعي دالة رسم السكواد ونمرر لها بيانات الفريق الصحيحة
+        // (كان الخطأ هنا أنك تمرر teamData وهو غير معرف)
+        renderSquadTab(currentTeam);   
+        
+        // 3. تحديث الهيدر
         updateHeaderInfo(currentUserData, currentTeam);
 
-        // 🔥 2. استراتيجية الكاش أولاً (Stale-While-Revalidate) 🔥
+        // 4. بقية منطق الكاش والسيرفر كما هو
         const hasCache = loadFromCache();
         if (hasCache) {
             console.log("⚡ Rendering from Cache immediately...");
-            renderAllTabs(); // ارسم الموقع فوراً للمستخدم
+            renderAllTabs(); 
         } else {
             console.log("⚠️ No cache found, waiting for server...");
         }
-
-        // 3. طلب البيانات الحديثة في الخلفية (بدون تجميد الشاشة)
-        // نستخدم await هنا لضمان تحديث البيانات، لكن المستخدم يرى النسخة القديمة بالفعل
-        await fetchDataFromServer();
         
-        // 4. إعادة الرسم بالبيانات الحديثة
+        await fetchDataFromServer();
         console.log("🔄 Re-rendering with fresh data...");
         renderAllTabs();
 
@@ -269,7 +277,6 @@ async function initDashboard(uid) {
         showToast("Error loading dashboard", "error");
     }
 }
-
 function getSafeDate(dateVal) {
     if (!dateVal) return new Date(); // لو فارغ هات تاريخ دلوقتي
     if (typeof dateVal.toDate === 'function') {
@@ -292,6 +299,632 @@ window.openTaskDetailsModal = (taskId) => {
     document.getElementById('modal-task-link').href = playerLink;
 
     document.getElementById('task-details-modal').classList.remove('hidden');
+};
+async function renderSquadTab(teamData) {
+    if (!teamData) return;
+
+    // فقط تحديث قائمة الأعضاء وتحديث عداد الطلبات (للبادج الأحمر)
+    await renderTeamMembers(teamData); 
+    
+    // تحديث بادج الطلبات في الزر
+    const requestsCount = (teamData.requests || []).length;
+    const badge = document.getElementById('requests-badge');
+    if (badge) {
+        badge.innerText = requestsCount;
+        badge.classList.toggle('hidden', requestsCount === 0);
+    }
+}
+window.openInviteModal = () => {
+    document.getElementById('invite-member-modal').classList.remove('hidden');
+    document.getElementById('invite-email-input').value = ''; // Reset input
+};
+
+window.openSentInvitesModal = () => {
+    document.getElementById('sent-invites-modal').classList.remove('hidden');
+    renderSentInvitesList(); // Fetch and render
+};
+
+window.openRequestsModal = () => {
+    document.getElementById('requests-modal').classList.remove('hidden');
+    renderRequestsList(); // Fetch and render
+};
+window.sendTeamInvitation = async () => {
+    const emailInput = document.getElementById('invite-email-input');
+    const btn = document.getElementById('btn-send-invite');
+    const email = emailInput.value.trim();
+
+    if (!email) return showToast("يرجى إدخال البريد الإلكتروني", "error");
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
+
+    try {
+        // 1. البحث عن المستخدم بواسطة الإيميل
+        // ملاحظة: نفترض أن الإيميل موجود في personal_info.email أو email مباشرة
+        // سنبحث في الاثنين للأمان
+        const usersRef = collection(db, "users");
+        
+        // Query 1: Check personal_info.email
+        const q1 = query(usersRef, where("personal_info.email", "==", email));
+        let snapshot = await getDocs(q1);
+
+        // Fallback: Check root email field if not found
+        if (snapshot.empty) {
+            const q2 = query(usersRef, where("email", "==", email));
+            snapshot = await getDocs(q2);
+        }
+
+        if (snapshot.empty) {
+            throw new Error("هذا البريد الإلكتروني غير مسجل في المنصة.");
+        }
+
+        const targetUserDoc = snapshot.docs[0];
+        const targetUserData = targetUserDoc.data();
+        const targetUid = targetUserDoc.id;
+
+        // 2. التحقق مما إذا كان المستخدم بالفعل في فريق
+        if (targetUserData.system_info?.team_id) {
+            throw new Error("هذا الطالب عضو بالفعل في فريق آخر.");
+        }
+
+        // 3. التحقق من عدم وجود دعوة سابقة (لتجنب التكرار)
+        const invitesRef = collection(db, "team_invitations");
+        const existingInviteQ = query(invitesRef, 
+            where("to_uid", "==", targetUid), 
+            where("from_team_id", "==", currentTeam.team_id),
+            where("status", "==", "pending")
+        );
+        const existingSnap = await getDocs(existingInviteQ);
+        if (!existingSnap.empty) {
+            throw new Error("لقد قمت بإرسال دعوة لهذا الطالب مسبقاً وهي قيد الانتظار.");
+        }
+
+        // 4. تجهيز بيانات الدعوة الكاملة
+        const inviteData = {
+            to_uid: targetUid,
+            to_email: email,
+            to_name: targetUserData.personal_info?.full_name || "طالب",
+            from_team_id: currentTeam.team_id,
+            from_leader_id: currentUser.uid,
+            status: 'pending',
+            created_at: serverTimestamp(),
+            // تخزين بيانات الفريق للعرض عند الطالب
+            team_snapshot: {
+                name: currentTeam.info?.name || "فريق بلا اسم",
+                leader_name: currentUserData.personal_info?.full_name || "غير معروف",
+                rank: "Newbie", // يمكن جلب الرتبة الحالية
+                members_count: (currentTeam.members || []).length,
+                university: currentTeam.info?.university || "غير محدد",
+                governorate: currentTeam.info?.governorate || "غير محدد",
+                logo: currentTeam.info?.logo_url || null
+            }
+        };
+
+        // 5. حفظ الدعوة في كولكشن منفصل "team_invitations" لتسهيل البحث
+        await addDoc(invitesRef, inviteData);
+
+        showToast("تم إرسال الدعوة بنجاح!", "success");
+        closeModal('invite-member-modal');
+
+    } catch (error) {
+        console.error(error);
+        showToast(error.message, "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'إرسال الدعوة';
+    }
+};
+async function renderSentInvitesList() {
+    const container = document.getElementById('sent-invites-list');
+    container.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500"><i class="fas fa-spinner fa-spin"></i> تحميل...</td></tr>';
+
+    try {
+        const invitesRef = collection(db, "team_invitations");
+        const q = query(invitesRef, where("from_team_id", "==", currentTeam.team_id));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+            container.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-500">لا توجد دعوات مرسلة حالياً.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        snapshot.forEach(docSnap => {
+            const invite = docSnap.data();
+            const inviteId = docSnap.id;
+            
+            // لا نعرض الدعوات المقبولة (Accepted) لأنها انتهت، نعرض (Pending, Rejected)
+            if (invite.status === 'accepted') return; 
+
+            const date = invite.created_at ? new Date(invite.created_at.seconds * 1000).toLocaleDateString('ar-EG') : '-';
+            
+            let statusBadge = '';
+            if (invite.status === 'pending') statusBadge = '<span class="bg-yellow-500/20 text-yellow-500 text-xs px-2 py-1 rounded border border-yellow-500/20">قيد الانتظار</span>';
+            if (invite.status === 'rejected') statusBadge = '<span class="bg-red-500/20 text-red-500 text-xs px-2 py-1 rounded border border-red-500/20">مرفوضة</span>';
+
+            html += `
+            <tr class="hover:bg-white/5 transition border-b border-white/5 last:border-0">
+                <td class="p-4 font-bold text-white">${invite.to_name} <br><span class="text-[10px] text-gray-500 font-mono">${invite.to_email}</span></td>
+                <td class="p-4">${statusBadge}</td>
+                <td class="p-4 text-xs text-gray-400 font-mono">${date}</td>
+                <td class="p-4">
+                    <button onclick="cancelInvitation('${inviteId}')" class="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded transition-all">
+                        <i class="fas fa-trash-alt"></i> إلغاء
+                    </button>
+                </td>
+            </tr>
+            `;
+        });
+
+        container.innerHTML = html || '<tr><td colspan="4" class="p-6 text-center text-gray-500">سجل الدعوات نظيف.</td></tr>';
+
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-red-500">فشل تحميل البيانات.</td></tr>';
+    }
+}
+function renderRequestsList() {
+    const container = document.getElementById('requests-list-container');
+    const requests = currentTeam.requests || [];
+
+    if (requests.length === 0) {
+        container.innerHTML = `<div class="text-center py-10 text-gray-500 border border-white/5 border-dashed rounded-xl">لا توجد طلبات انضمام جديدة.</div>`;
+        return;
+    }
+
+    container.innerHTML = requests.map(req => `
+        <div class="bg-black/30 border border-white/10 rounded-xl p-4 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-500">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white text-sm">${req.name || 'مستخدم'}</h4>
+                    <p class="text-[10px] text-gray-400">يرغب في الانضمام</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="handleRequestAction('${currentTeam.team_id}', '${req.uid}', '${req.name}', 'accept')" 
+                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-bold transition-all">
+                    قبول
+                </button>
+                <button onclick="handleRequestAction('${currentTeam.team_id}', '${req.uid}', '${req.name}', 'reject')" 
+                        class="px-4 py-2 bg-white/10 hover:bg-red-500/20 text-white hover:text-red-400 rounded-lg text-xs font-bold transition-all border border-white/5">
+                    رفض
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+async function renderTeamMembers(teamData) {
+    const container = document.getElementById('squad-list-container');
+    const countDisplay = document.getElementById('squad-count-display');
+    
+    if (!teamData.members || teamData.members.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-gray-500 border border-white/5 border-dashed rounded-2xl">لا يوجد أعضاء في الفريق حالياً</div>`;
+        return;
+    }
+
+    if(countDisplay) countDisplay.innerText = teamData.members.length;
+
+    try {
+        const memberPromises = teamData.members.map(uid => getDoc(doc(db, "users", uid)));
+        const snapshots = await Promise.all(memberPromises);
+
+        let members = [];
+        snapshots.forEach(snap => {
+            if (snap.exists()) {
+                members.push({ uid: snap.id, ...snap.data() });
+            }
+        });
+
+        // ترتيب الأعضاء حسب النقاط
+        members.sort((a, b) => (b.gamification?.total_points || 0) - (a.gamification?.total_points || 0));
+
+        container.innerHTML = members.map((member, index) => {
+            const points = member.gamification?.total_points || 0;
+            const rankData = getRankDataForMember(points);
+            const isLeader = teamData.leader_id === member.uid;
+            const isMe = auth.currentUser.uid === member.uid;
+            const canKick = (auth.currentUser.uid === teamData.leader_id) && !isMe;
+            
+            // ✅✅✅ التصحيح هنا: قراءة البيانات الأكاديمية بشكل صحيح ✅✅✅
+            // نتحقق من academic_info أولاً، ثم personal_info كبديل، ثم الجذور
+            const academic = member.academic_info || {};
+            const personal = member.personal_info || {};
+            
+            const university = academic.university || personal.university || member.university || "جامعة غير محددة";
+            const college = academic.faculty || personal.faculty || member.faculty || "";
+            const fullName = academic.full_name || personal.full_name || member.full_name || "عضو مجهول";
+            const photo = resolveImageUrl(personal.photo_url || member.photo_url);
+
+            return `
+            <div class="group flex flex-col md:flex-row items-center bg-white/5 border border-white/5 rounded-3xl p-5 relative overflow-hidden transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-2xl hover:shadow-black/50">
+                
+                <div class="absolute right-0 top-0 bottom-0 w-1.5 transition-all duration-500 bg-gradient-to-b from-${index < 3 ? 'yellow-500' : 'transparent'} to-transparent group-hover:h-full"></div>
+                
+                <div class="hidden md:flex items-center justify-center w-14 text-3xl font-black text-white/5 font-mono group-hover:text-white/20 transition-colors">
+                    #${index + 1}
+                </div>
+
+                <div class="relative mb-4 md:mb-0 md:ml-8 flex-shrink-0">
+                    <div class="w-24 h-24 rounded-full p-[3px] bg-gradient-to-tr from-[${rankData.stage_color}] to-transparent relative">
+                        <img src="${photo}" class="w-full h-full rounded-full object-cover border-4 border-black bg-black" alt="Avatar">
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 w-12 h-12 bg-black rounded-full flex items-center justify-center border-2 border-[${rankData.stage_color}] shadow-[0_0_15px_${rankData.stage_color}40] z-10">
+                        <img src="../assets/user-badge/lv${rankData.level}.png" class="w-12  h-12 rounded-[34%] object-contain">
+                    </div>
+                </div>
+
+                <div class="flex-1 text-center md:text-right space-y-1.5 min-w-0">
+                    <div class="flex items-center justify-center md:justify-start gap-3">
+                        <h4 class="text-white font-bold text-xl truncate tracking-tight">${fullName}</h4>
+                        ${isLeader ? `<span class="px-2.5 py-0.5 bg-yellow-500/20 text-yellow-500 text-[10px] rounded-full border border-yellow-500/30 font-bold uppercase"><i class="fas fa-crown mr-1"></i> LEADER</span>` : ''}
+                    </div>
+                    
+                    <div class="text-xs font-bold tracking-widest uppercase opacity-90" style="color: ${rankData.stage_color}">
+                        ${rankData.title}
+                    </div>
+
+                    <div class="flex items-center justify-center md:justify-start gap-2 text-xs text-gray-400 mt-1">
+                        <i class="fas fa-university text-gray-500"></i>
+                        <span>${university} ${college ? `• ${college}` : ''}</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6 mt-6 md:mt-0 pl-4 border-l border-white/5 ml-4">
+                    <div class="text-center px-2">
+                        <span class="block text-[9px] text-gray-500 uppercase tracking-widest mb-0.5">نقاط الخبرة</span>
+                        <span class="font-mono font-black text-2xl text-white tracking-wider">${points.toLocaleString()} <span class="text-[10px] text-b-primary">XP</span></span>
+                    </div>
+                    
+                    ${canKick ? `
+                    <button onclick="confirmKickMember('${teamData.id}', '${member.uid}', '${fullName}')" 
+                            class="w-10 h-10 rounded-xl bg-red-500/5 text-red-500 border border-red-500/10 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center" title="طرد">
+                        <i class="fas fa-user-times"></i>
+                    </button>
+                    ` : '<div class="w-10"></div>'}
+                </div>
+            </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error("Error rendering members:", error);
+    }
+}
+window.confirmKickMember = (teamId, memberUid, memberName) => {
+    openConfirmModal(
+        `هل أنت متأكد من استبعاد "${memberName}"؟ سيحتفظ بنقاطه كاملة، وسيحتفظ الفريق بنقاطه أيضاً.`,
+        async () => {
+            try {
+                // 1. إزالة من مصفوفة الفريق (بدون تعديل total_score)
+                await updateDoc(doc(db, "teams", teamId), {
+                    members: arrayRemove(memberUid)
+                });
+
+                // 2. تحديث ملف المستخدم
+                await updateDoc(doc(db, "users", memberUid), {
+                    "system_info.team_id": null
+                });
+
+                showToast(`تم استبعاد ${memberName} بنجاح`, 'success');
+                setTimeout(() => location.reload(), 1000);
+            } catch (error) {
+                console.error("Kick Error:", error);
+                showToast("فشل تنفيذ الأمر", 'error');
+            }
+        }
+    );
+};
+// ==========================================
+// 6. SAFE LEAVE & DELETE TEAM LOGIC
+// ==========================================
+window.confirmLeaveTeam = async () => {
+    // 1. تحديد الحالة
+    const isSolo = (!currentTeam.members || currentTeam.members.length <= 1);
+    const newLeaderId = document.getElementById('new-leader-select')?.value;
+    const passwordInput = document.getElementById('leave-confirm-password');
+    const confirmBtn = document.querySelector('#leave-team-modal button.bg-red-600') || document.querySelector('#leave-team-modal button[onclick*="confirmLeaveTeam"]');
+
+    // التحقق الأولي
+    if (!isSolo && !newLeaderId) {
+        return showToast("يجب اختيار قائد جديد للفريق قبل المغادرة", "error");
+    }
+
+    if (isSolo && (!passwordInput || !passwordInput.value)) {
+        return showToast("يجب إدخال كلمة المرور لتأكيد حذف الفريق", "error");
+    }
+
+    // تعطيل الزر
+    if(confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التنفيذ...';
+    }
+
+    try {
+        const batch = writeBatch(db);
+        const teamRef = doc(db, "teams", currentTeam.team_id);
+        const myUserRef = doc(db, "users", currentUser.uid);
+
+        if (isSolo) {
+            // ============================
+            // مسار حذف الفريق (Solo Mode)
+            // ============================
+            
+            // 1. إعادة المصادقة (Re-authentication)
+            const password = passwordInput.value;
+            const credential = EmailAuthProvider.credential(currentUser.email, password);
+            
+            try {
+                await reauthenticateWithCredential(currentUser, credential);
+            } catch (authError) {
+                console.error("Auth Error:", authError);
+                throw new Error("كلمة المرور غير صحيحة. لا يمكن حذف الفريق.");
+            }
+
+            // 2. حذف وثيقة الفريق نهائياً
+            batch.delete(teamRef);
+
+            // 3. تحديث بيانات المستخدم (عودة لطالب حر)
+            batch.update(myUserRef, { 
+                role: "Student",
+                "system_info.role": "Student",
+                "system_info.team_id": null 
+            });
+
+            showToast("تم حذف الفريق ومغادرته بنجاح", "success");
+
+        } else {
+            // ============================
+            // مسار تسليم القيادة (Transfer Mode)
+            // ============================
+            const newLeaderRef = doc(db, "users", newLeaderId);
+
+            // ترقية الجديد
+            batch.update(newLeaderRef, { 
+                role: "Leader",
+                "system_info.role": "Leader"
+            });
+
+            // تحديث الفريق
+            batch.update(teamRef, { 
+                leader_id: newLeaderId,
+                members: arrayRemove(currentUser.uid)
+            });
+
+            // تخفيض رتبتي
+            batch.update(myUserRef, { 
+                role: "Student",
+                "system_info.role": "Student",
+                "system_info.team_id": null 
+            });
+
+            showToast("تمت المغادرة وتسليم القيادة بنجاح", "success");
+        }
+
+        // تنفيذ التغييرات
+        await batch.commit();
+        
+        // التوجيه
+        setTimeout(() => window.location.href = "student-dash.html", 1500);
+
+    } catch (e) {
+        console.error("Leave/Delete Error:", e);
+        showToast(e.message || "حدث خطأ أثناء العملية", "error");
+        
+        // إعادة تفعيل الزر عند الخطأ
+        if(confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = isSolo ? '<i class="fas fa-trash-alt"></i> حذف الفريق والمغادرة' : 'تأكيد المغادرة';
+        }
+    }
+};
+function renderJoinRequests(teamData) {
+    const section = document.getElementById('requests-section');
+    const container = document.getElementById('requests-container');
+    const countBadge = document.getElementById('requests-count');
+    
+    const requests = teamData.requests || [];
+
+    if (requests.length === 0) {
+container.innerHTML = `<div class="col-span-full text-center py-8 text-gray-600 border border-white/5 border-dashed rounded-xl">لا توجد طلبات انضمام جديدة حالياً</div>`;
+        return;
+    }
+
+    section.classList.remove('hidden');
+    if(countBadge) countBadge.innerText = requests.length;
+    
+    container.innerHTML = requests.map(req => `
+        <div class="bg-b-surface border border-yellow-500/20 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 animate-slide-in relative overflow-hidden group">
+            <div class="absolute inset-0 bg-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            
+            <div class="flex items-center gap-4 z-10">
+                <div class="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 text-xl border border-yellow-500/20 shadow-inner">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white text-base">${req.name || 'مستخدم'}</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">يرغب في الانضمام لفريقك</p>
+                </div>
+            </div>
+
+            <div class="flex gap-2 w-full sm:w-auto z-10">
+                <button onclick="handleRequestAction('${teamData.id}', '${req.uid}', '${req.name}', 'accept')" 
+                        class="flex-1 sm:flex-none py-2 px-4 rounded-xl bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-600 hover:text-white transition-all font-bold text-sm">
+                    <i class="fas fa-check mr-1"></i> قبول
+                </button>
+                <button onclick="handleRequestAction('${teamData.id}', '${req.uid}', '${req.name}', 'reject')" 
+                        class="flex-1 sm:flex-none py-2 px-4 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-600 hover:text-white transition-all font-bold text-sm">
+                    <i class="fas fa-times mr-1"></i> رفض
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ==========================================
+// 4. SENT INVITES (الدعوات المرسلة)
+// ==========================================
+function renderSentInvites(teamData) {
+    const section = document.getElementById('invites-section');
+    const container = document.getElementById('invites-container');
+    
+    const invites = teamData.sent_invites || [];
+    const pendingInvites = invites.filter(inv => inv.status === 'pending');
+
+    if (pendingInvites.length === 0) {
+container.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-500">لم تقم بإرسال دعوات نشطة حالياً.</td></tr>`;
+        return;
+    }
+
+    section.classList.remove('hidden');
+    
+    container.innerHTML = pendingInvites.map(inv => `
+        <tr class="hover:bg-white/5 transition border-b border-white/5 last:border-0 group">
+            <td class="p-4">
+                <div class="font-bold text-white flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs text-gray-400">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    ${inv.name || 'مستخدم غير معروف'}
+                </div>
+            </td>
+            <td class="p-4">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-bold border border-blue-500/20 uppercase tracking-wide">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                    Waiting
+                </span>
+            </td>
+            <td class="p-4 text-xs font-mono text-gray-500 dir-ltr text-right">
+                ${inv.timestamp ? new Date(inv.timestamp.seconds * 1000).toLocaleDateString('en-GB') : '-'}
+            </td>
+            <td class="p-4 text-left">
+                <button onclick="cancelInvitation('${teamData.id}', '${inv.uid}')" 
+                        class="text-gray-500 hover:text-red-400 text-xs font-bold py-1 px-3 rounded-lg hover:bg-red-500/10 transition-all flex items-center gap-1 ml-auto">
+                    <i class="fas fa-trash-alt"></i> إلغاء
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// دالة مساعدة لحساب الرتبة (تأكد من وجودها أيضاً)
+function getRankDataForMember(points) {
+    let rank = RANKS_DATA[0];
+    for (let i = 0; i < RANKS_DATA.length; i++) {
+        if (points >= RANKS_DATA[i].points_required) {
+            rank = RANKS_DATA[i];
+        } else {
+            break;
+        }
+    }
+    return rank;
+}
+// -- Action: Handle Join Request (Accept/Reject) --
+window.handleRequestAction = async (teamId, userId, userName, action) => {
+    try {
+        const teamRef = doc(db, "teams", teamId);
+        const userRef = doc(db, "users", userId);
+
+        if (action === 'accept') {
+            // قبول: إضافة للعضوية + إزالة من الطلبات + تحديث بيانات المستخدم
+            await runTransaction(db, async (transaction) => {
+                const teamDoc = await transaction.get(teamRef);
+                if (!teamDoc.exists()) throw "Team not found";
+                
+                // 1. Remove request object (We filter by UID roughly)
+                const teamData = teamDoc.data();
+                const requests = teamData.requests || [];
+                const reqToRemove = requests.find(r => r.uid === userId);
+                
+                transaction.update(teamRef, {
+                    members: arrayUnion(userId),
+                    requests: arrayRemove(reqToRemove)
+                });
+
+                transaction.update(userRef, {
+                    "system_info.team_id": teamId,
+                    "system_info.joined_team_at": serverTimestamp()
+                });
+            });
+            showCustomToast(`تم قبول ${userName} في الفريق!`, 'success');
+        } else {
+            // رفض: إزالة من الطلبات فقط
+            const teamSnap = await getDoc(teamRef);
+            const requests = teamSnap.data().requests || [];
+            const reqToRemove = requests.find(r => r.uid === userId);
+            
+            await updateDoc(teamRef, {
+                requests: arrayRemove(reqToRemove)
+            });
+            showCustomToast(`تم رفض طلب ${userName}`, 'neutral');
+        }
+        
+        // Reload Dashboard to reflect changes
+        // ملاحظة: الأفضل استدعاء initDashboard(user.uid) بدل إعادة التحميل الكامل
+        location.reload(); 
+
+    } catch (e) {
+        console.error("Request Action Error:", e);
+        alert("حدث خطأ أثناء تنفيذ الإجراء");
+    }
+};
+
+// إلغاء الدعوة (النسخة المصححة باستخدام المودال المخصص)
+window.cancelInvitation = (inviteId) => {
+    // نستخدم دالة openConfirmModal الموجودة في ملفك بدلاً من window.confirm
+    openConfirmModal(
+        "هل أنت متأكد تماماً من إلغاء هذه الدعوة وحذفها؟ لا يمكن التراجع عن هذا الإجراء.",
+        async () => {
+            try {
+                // تنفيذ الحذف بعد التأكيد
+                await deleteDoc(doc(db, "team_invitations", inviteId));
+                
+                showToast("تم إلغاء الدعوة بنجاح", "success");
+                
+                // إغلاق المودال وتحديث القائمة
+                closeConfirmModal();
+                renderSentInvitesList(); 
+            } catch (e) {
+                console.error("Cancel Error:", e);
+                showToast("حدث خطأ أثناء محاولة الإلغاء", "error");
+            }
+        }
+    );
+};
+// ==========================================
+// 2. KICK MEMBER LOGIC (Strict & No Penalty)
+// ==========================================
+window.confirmKickMember = (teamId, memberUid, memberName) => {
+    // استخدام المودال الموجود لديك بالفعل
+    window.openConfirmModal(
+        `تحذير هام: هل أنت متأكد تماماً من طرد العضو "${memberName}"؟ سيتم إزالته من الفريق فوراً، ولكنه سيحتفظ بنقاطه ولن تتأثر نقاط الفريق.`,
+        async () => {
+            try {
+                // تنفيذ عملية الطرد
+                // 1. إزالة من قائمة أعضاء الفريق (دون المساس بالـ total_score)
+                await updateDoc(doc(db, "teams", teamId), {
+                    members: arrayRemove(memberUid)
+                });
+
+                // 2. إزالة معرف الفريق من ملف المستخدم
+                await updateDoc(doc(db, "users", memberUid), {
+                    "system_info.team_id": null
+                });
+
+                // إغلاق المودال وتحديث الواجهة
+                document.getElementById('confirm-modal').classList.add('hidden');
+                
+                // إعادة تحميل الصفحة أو تحديث القائمة
+                location.reload(); 
+
+            } catch (error) {
+                console.error("Kick Error:", error);
+                alert("حدث خطأ أثناء محاولة الطرد.");
+            }
+        }
+    );
 };
 // ==========================================
 // 5. UNIFIED MODAL (Instant Load & Correct Data) ⚡
@@ -1343,77 +1976,113 @@ window.toggleActivate = async (id, isChecked) => {
     }
 };
 
-// --- Squad & Grading ---
-
-function renderSquad() {
+// ==========================================
+// RENDER SQUAD (FIXED - إصلاح مشكلة عدم ظهور الأعضاء)
+// ==========================================
+async function renderSquad() {
     const list = document.getElementById('squad-list');
-    const select = document.getElementById('new-leader-select');
+    const select = document.getElementById('new-leader-select'); // القائمة المنسدلة
+    
+    // التحقق من وجود العناصر
     if(!list) return;
     
+    // 1. تنظيف القوائم وعرض حالة التحميل
     list.innerHTML = '';
-    if(select) select.innerHTML = '';
+    if(select) {
+        select.innerHTML = '<option value="" disabled selected>جاري البحث عن أعضاء...</option>';
+        select.disabled = true;
+    }
 
-    if(!currentTeam.members) return;
+    // التحقق من وجود بيانات الفريق
+    if(!currentTeam || !currentTeam.members || currentTeam.members.length === 0) {
+        if(select) select.innerHTML = '<option value="" disabled>لا يوجد أعضاء في الفريق</option>';
+        return;
+    }
 
-    currentTeam.members.forEach(async (mid) => {
-        const mDoc = await getDoc(doc(db, "users", mid));
-        if(!mDoc.exists()) return;
-        const md = mDoc.data();
-        
-        const name = md.personal_info?.full_name || md.full_name || "Unknown";
-        const isMe = mid === currentUser.uid;
-        const isLeader = mid === currentTeam.leader_id;
+    try {
+        // 2. جلب بيانات كل الأعضاء بالتوازي (ننتظر اكتمال الجميع)
+        // هذا هو الجزء الذي يحل المشكلة بدلاً من forEach
+        const memberPromises = currentTeam.members.map(async (mid) => {
+            try {
+                const snap = await getDoc(doc(db, "users", mid));
+                if(snap.exists()) {
+                    return { id: mid, ...snap.data() };
+                }
+            } catch(e) { 
+                console.error(`Error fetching user ${mid}:`, e); 
+            }
+            return null;
+        });
 
-        list.innerHTML += `
-            <div class="p-4 flex justify-between items-center hover:bg-white/5 transition-colors border-b border-white/5 last:border-0">
+        // انتظار وصول كافة البيانات
+        const membersData = (await Promise.all(memberPromises)).filter(m => m !== null);
+
+        // 3. الآن نبدأ في ملء القائمة (لأن البيانات أصبحت جاهزة)
+        if(select) {
+            select.innerHTML = '<option value="" disabled selected>-- اختر قائداً جديداً --</option>';
+            select.disabled = false;
+        }
+
+        let candidatesFound = 0;
+
+        membersData.forEach(member => {
+            const name = member.personal_info?.full_name || member.full_name || "عضو مجهول";
+            const points = member.gamification?.total_points || member.total_points || 0;
+            const photo = resolveImageUrl(member.personal_info?.photo_url || member.photo_url, 'user');
+            
+            const isMe = member.id === currentUser.uid;
+            const isLeader = member.id === currentTeam.leader_id;
+
+            // أ) رسم العضو في قائمة الفريق (الجدول)
+            const memberRow = document.createElement('div');
+            memberRow.className = "p-4 flex justify-between items-center hover:bg-white/5 transition-colors border-b border-white/5 last:border-0";
+            memberRow.innerHTML = `
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center font-bold text-gray-400 border border-white/10 uppercase">
-                        ${name.charAt(0)}
+                    <div class="w-10 h-10 rounded-full bg-gray-800 border border-white/10 overflow-hidden">
+                        <img src="${photo}" class="w-full h-full object-cover" onerror="this.src='../assets/icons/icon.jpg'">
                     </div>
                     <div>
                         <h4 class="font-bold text-sm text-white flex items-center gap-2">
                             ${name} 
-                            ${isMe ? '<span class="text-[10px] bg-white/10 px-1.5 rounded text-gray-400">YOU</span>' : ''}
-                            ${isLeader ? '<i class="fas fa-crown text-yellow-500 text-xs"></i>' : ''}
+                            ${isMe ? '<span class="text-[10px] bg-white/10 px-1.5 rounded text-gray-400">أنت</span>' : ''}
+                            ${isLeader ? '<i class="fas fa-crown text-yellow-500 text-xs" title="القائد"></i>' : ''}
                         </h4>
-                        <p class="text-[10px] text-gray-500 font-mono">${md.total_points || 0} XP</p>
+                        <p class="text-[10px] text-gray-500 font-mono">${points} XP</p>
                     </div>
                 </div>
-                ${!isMe && !isLeader ? `<button class="text-red-400 hover:text-red-500 text-xs px-3 py-1.5 border border-red-500/20 hover:bg-red-500/10 rounded transition-all">Kick</button>` : ''}
-            </div>
-        `;
+                ${(!isMe && !isLeader) ? `
+                    <button onclick="confirmKickMember('${currentTeam.team_id}', '${member.id}', '${name}')" 
+                            class="text-red-400 hover:text-red-500 text-xs px-3 py-1.5 border border-red-500/20 hover:bg-red-500/10 rounded transition-all">
+                        طرد
+                    </button>` : ''
+                }
+            `;
+            list.appendChild(memberRow);
 
-        if (!isMe && select) {
-            const opt = document.createElement('option');
-            opt.value = mid;
-            opt.text = name;
-            select.appendChild(opt);
+            // ب) إضافة العضو لقائمة اختيار القائد (Dropdown)
+            // الشرط: أن يكون العضو ليس "أنا" (لأنني أنا المغادر)
+            if (!isMe && select) {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.text = `${name} (${points} XP)`;
+                select.appendChild(option);
+                candidatesFound++;
+            }
+        });
+
+        // إذا لم يوجد مرشحين (أنت وحدك في الفريق)
+        if (select && candidatesFound === 0) {
+            select.innerHTML = '<option value="" disabled selected>لا يوجد أعضاء آخرين</option>';
+            select.disabled = true;
         }
-    });
+
+    } catch (e) {
+        console.error("Squad Render Error:", e);
+        if(select) select.innerHTML = '<option>خطأ في التحميل</option>';
+    }
 }
 
-window.confirmLeaveTeam = async () => {
-    const newLeaderId = document.getElementById('new-leader-select').value;
-    if (!newLeaderId) return showToast("Select new leader", "error");
 
-    try {
-        const teamRef = doc(db, "teams", currentTeam.team_id);
-        const meRef = doc(db, "users", currentUser.uid);
-        const newLeaderRef = doc(db, "users", newLeaderId);
-
-        await updateDoc(teamRef, {
-            leader_id: newLeaderId,
-            members: arrayRemove(currentUser.uid)
-        });
-        await updateDoc(newLeaderRef, { role: "Leader" });
-        await updateDoc(meRef, { role: "Student", team_id: null });
-
-        showToast("Left successfully", "success");
-        setTimeout(() => window.location.href = "student-dash.html", 1500);
-    } catch (e) {
-        showToast("Error leaving", "error");
-    }
-};
 
 window.sendBroadcast = () => {
     if(document.getElementById('broadcast-text').value) {
@@ -1490,7 +2159,103 @@ window.openCustomTaskModal = () => document.getElementById('custom-task-modal').
 window.openBroadcastModal = () => document.getElementById('broadcast-modal').classList.remove('hidden');
 window.openLeaveTeamModal = () => document.getElementById('leave-team-modal').classList.remove('hidden');
 window.openAddMemberModal = () => showToast("Invite system coming soon", "info");
+// ==========================================
+// فتح نافذة المغادرة (مع التعامل الذكي لحالة العضو الأخير)
+// ==========================================
+window.openLeaveTeamModal = async () => {
+    const modal = document.getElementById('leave-team-modal');
+    const select = document.getElementById('new-leader-select');
+    let warningContainer = document.getElementById('solo-leave-warning');
+    const confirmBtn = modal.querySelector('button.bg-red-600') || modal.querySelector('button[onclick*="confirmLeaveTeam"]'); // محاولة العثور على الزر
 
+    // 1. إظهار المودال
+    if (modal) modal.classList.remove('hidden');
+    
+    // 2. التحقق من وجود حاوية التحذير، وإنشاؤها إذا لم تكن موجودة (حقن HTML ديناميكي)
+    if (!warningContainer && select) {
+        warningContainer = document.createElement('div');
+        warningContainer.id = 'solo-leave-warning';
+        warningContainer.className = 'hidden mt-4 p-4 bg-red-900/20 border border-red-500/50 rounded-xl space-y-3';
+        warningContainer.innerHTML = `
+            <div class="flex items-start gap-3">
+                <i class="fas fa-exclamation-triangle text-red-500 text-xl mt-1"></i>
+                <div>
+                    <h4 class="font-bold text-red-400 text-sm">تنبيه هام جداً!</h4>
+                    <p class="text-xs text-gray-300 mt-1 leading-relaxed">
+                        أنت العضو الأخير في هذا الفريق. المغادرة الآن تعني <span class="text-red-400 font-bold underline">حذف الفريق نهائياً</span> وجميع بياناته.
+                    </p>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">أدخل كلمة المرور للتأكيد:</label>
+                <input type="password" id="leave-confirm-password" class="w-full bg-black/50 border border-red-500/30 rounded-lg px-3 py-2 text-white focus:border-red-500 outline-none placeholder-gray-600" placeholder="Password">
+            </div>
+        `;
+        select.parentNode.insertBefore(warningContainer, select.nextSibling);
+    }
+
+    // إعادة تعيين الحقول
+    if (document.getElementById('leave-confirm-password')) {
+        document.getElementById('leave-confirm-password').value = '';
+    }
+
+    // التحقق من وجود الفريق
+    if (!currentTeam || !currentTeam.members) return;
+
+    // 3. تحديد الحالة (هل أنت وحيد؟)
+    const isSolo = (currentTeam.members.length <= 1);
+
+    if (isSolo) {
+        // --- حالة الحذف (أنت وحدك) ---
+        if (select) {
+            select.classList.add('hidden'); // إخفاء القائمة
+            select.disabled = true;
+        }
+        if (warningContainer) warningContainer.classList.remove('hidden'); // إظهار التحذير والباسورد
+        
+        // تغيير نص الزر
+        if (confirmBtn) {
+            confirmBtn.innerHTML = '<i class="fas fa-trash-alt"></i> حذف الفريق والمغادرة';
+            confirmBtn.className = "w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg transition-all border border-red-500/50";
+        }
+
+    } else {
+        // --- حالة التسليم (يوجد أعضاء) ---
+        if (warningContainer) warningContainer.classList.add('hidden');
+        if (select) {
+            select.classList.remove('hidden');
+            select.disabled = false;
+            select.innerHTML = '<option value="" disabled selected>جاري تحميل المرشحين...</option>';
+        }
+
+        if (confirmBtn) {
+            confirmBtn.innerHTML = 'تأكيد المغادرة';
+            confirmBtn.className = "w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg transition-all";
+        }
+
+        // جلب المرشحين (نفس الكود السابق)
+        try {
+            const otherMembersIds = currentTeam.members.filter(uid => uid !== currentUser.uid);
+            const promises = otherMembersIds.map(uid => getDoc(doc(db, "users", uid)));
+            const snapshots = await Promise.all(promises);
+
+            select.innerHTML = '<option value="" disabled selected>-- اختر القائد الجديد --</option>';
+            snapshots.forEach(snap => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    const name = data.personal_info?.full_name || "عضو";
+                    const option = document.createElement('option');
+                    option.value = snap.id;
+                    option.text = name;
+                    select.appendChild(option);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            select.innerHTML = '<option>خطأ في التحميل</option>';
+        }
+    }
+};
 function formatDuration(rawTime) {
     if (!rawTime) return '';
     const str = String(rawTime);

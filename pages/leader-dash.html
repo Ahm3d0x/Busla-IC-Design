@@ -372,19 +372,117 @@
             </div>
         </section>
 
-        <section id="squad" class="tab-content space-y-6">
-            <div class="flex flex-wrap gap-4 justify-between items-center">
-                <h3 class="font-bold text-xl">إدارة الفريق</h3>
-                <div class="flex gap-2">
-                    <button onclick="openBroadcastModal()" class="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 px-4 py-2 rounded-lg text-sm border border-blue-600/30 transition-all">📢 إشعار للكل</button>
-                    <button onclick="openAddMemberModal()" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm border border-white/10 transition-all">➕ إضافة عضو</button>
-                    <button onclick="openLeaveTeamModal()" class="bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-lg text-sm border border-red-500/20 transition-all">🚪 مغادرة الفريق</button>
+<section id="squad" class="tab-content hidden">
+    <div class="p-6 max-w-6xl mx-auto space-y-8">
+        
+        <div class="bg-gradient-to-r from-b-primary/20 to-black/40 p-6 rounded-2xl border border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h2 class="text-3xl font-black text-white mb-1">قيادة الفريق</h2>
+                <p class="text-gray-400 text-sm">أدر أعضاء فريقك، وتحكم في الدعوات والطلبات من هنا.</p>
+            </div>
+            
+            <div class="flex flex-wrap gap-3">
+                <button onclick="openInviteModal()" class="bg-b-primary hover:bg-teal-600 text-white px-5 py-3 rounded-xl font-bold shadow-lg flex items-center gap-2 transition-all">
+                    <i class="fas fa-paper-plane"></i> دعوة عضو
+                </button>
+                
+                <button onclick="openSentInvitesModal()" class="bg-white/5 hover:bg-white/10 text-white px-5 py-3 rounded-xl font-bold border border-white/10 flex items-center gap-2 transition-all relative">
+                    <i class="fas fa-envelope-open-text text-blue-400"></i> الدعوات المرسلة
+                </button>
+
+                <button onclick="openRequestsModal()" class="bg-white/5 hover:bg-white/10 text-white px-5 py-3 rounded-xl font-bold border border-white/10 flex items-center gap-2 transition-all relative">
+                    <i class="fas fa-user-clock text-yellow-500"></i> طلبات الانضمام
+                    <span id="requests-badge" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full text-[14px] flex items-center justify-center animate-bounce">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <div class="flex justify-between items-end mb-6 border-b border-white/10 pb-4">
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fas fa-users text-purple-500"></i> القائمة الرسمية
+                    </h3>
+                </div>
+                <div class="text-left bg-white/5 px-4 py-2 rounded-lg border border-white/5">
+                    <span class="text-xs text-gray-500 uppercase tracking-widest block">إجمالي الأعضاء</span>
+                    <span id="squad-count-display" class="text-xl font-mono font-bold text-white">0 / 5</span>
                 </div>
             </div>
-            <div class="bg-b-surface rounded-2xl border border-white/10 overflow-hidden">
-                <div id="squad-list" class="divide-y divide-white/5"></div>
+
+            <div id="squad-list-container" class="space-y-4 min-h-[200px]">
+                <div class="text-center py-12">
+                    <i class="fas fa-circle-notch fa-spin text-b-primary text-3xl mb-4"></i>
+                    <p class="text-gray-500">جاري تحميل الأبطال...</p>
+                </div>
             </div>
-        </section>
+            
+            <div class="mt-8 pt-6 border-t border-white/5 text-center">
+                <button onclick="window.openLeaveTeamModal()" class="text-red-500/60 hover:text-red-500 text-sm font-bold flex items-center justify-center gap-2 mx-auto transition-colors">
+                    <i class="fas fa-sign-out-alt"></i> مغادرة الفريق وتسليم القيادة
+                </button>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div id="invite-member-modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-b-surface w-full max-w-md p-8 rounded-3xl border border-white/10 shadow-2xl relative">
+        <button onclick="closeModal('invite-member-modal')" class="absolute top-4 left-4 text-gray-500 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+        
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-b-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-b-primary/30">
+                <i class="fas fa-user-plus text-2xl text-b-primary"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">دعوة عضو جديد</h3>
+            <p class="text-sm text-gray-400 mt-2">أدخل البريد الإلكتروني للطالب لإرسال دعوة رسمية.</p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs text-gray-500 uppercase font-bold mb-2">البريد الإلكتروني</label>
+                <input type="email" id="invite-email-input" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-b-primary outline-none" placeholder="example@email.com">
+            </div>
+            <button onclick="sendTeamInvitation()" id="btn-send-invite" class="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-all shadow-lg">
+                إرسال الدعوة
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="sent-invites-modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-b-surface w-full max-w-3xl rounded-3xl border border-white/10 shadow-2xl flex flex-col max-h-[85vh]">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
+            <h3 class="text-xl font-bold text-white"><i class="fas fa-paper-plane text-blue-400 ml-2"></i> سجل الدعوات المرسلة</h3>
+            <button onclick="closeModal('sent-invites-modal')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-0 overflow-y-auto custom-scroll flex-1">
+            <table class="w-full text-right">
+                <thead class="bg-black/40 text-gray-500 text-xs uppercase sticky top-0 backdrop-blur-md">
+                    <tr>
+                        <th class="p-4">المستلم</th>
+                        <th class="p-4">الحالة</th>
+                        <th class="p-4">التاريخ</th>
+                        <th class="p-4">تحكم</th>
+                    </tr>
+                </thead>
+                <tbody id="sent-invites-list" class="divide-y divide-white/5 text-sm text-gray-300"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="requests-modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+    <div class="bg-b-surface w-full max-w-2xl rounded-3xl border border-white/10 shadow-2xl flex flex-col max-h-[85vh]">
+        <div class="p-6 border-b border-white/10 flex justify-between items-center bg-black/20">
+            <h3 class="text-xl font-bold text-white"><i class="fas fa-hand-paper text-yellow-500 ml-2"></i> طلبات الانضمام</h3>
+            <button onclick="closeModal('requests-modal')" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="requests-list-container" class="p-6 overflow-y-auto custom-scroll flex-1 space-y-3">
+            </div>
+    </div>
+</div>
 <section id="announcements" class="tab-content hidden animate-fade-in relative min-h-screen">
     
     <div class="flex flex-col md:flex-row justify-between items-center bg-b-surface p-6 rounded-2xl border border-white/10 shadow-lg mb-8 gap-4">
@@ -1220,7 +1318,6 @@
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         window.openCustomTaskModal = () => document.getElementById('custom-task-modal').classList.remove('hidden');
         window.openBroadcastModal = () => document.getElementById('broadcast-modal').classList.remove('hidden');
-        window.openLeaveTeamModal = () => document.getElementById('leave-team-modal').classList.remove('hidden');
         window.openAddMemberModal = () => alert("سيتم إضافة نظام الدعوات لاحقاً");
     </script>
 </body>

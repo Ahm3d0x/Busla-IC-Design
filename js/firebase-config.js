@@ -30,6 +30,8 @@ import {
     sendEmailVerification, 
     updateProfile,  
     sendPasswordResetEmail, 
+    EmailAuthProvider,
+    reauthenticateWithCredential,
     signOut 
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
@@ -72,6 +74,7 @@ export {
     onAuthStateChanged, 
     sendEmailVerification, 
     updateProfile,  
-    
+    EmailAuthProvider,
+    reauthenticateWithCredential,
     signOut 
 };
