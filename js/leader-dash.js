@@ -1,8 +1,6 @@
 import { 
-    auth, db, doc, getDoc, addDoc, getDocs, updateDoc, setDoc, deleteDoc, writeBatch, 
-    arrayUnion, arrayRemove, query, where, collection, onAuthStateChanged, signOut, 
-    serverTimestamp, EmailAuthProvider, reauthenticateWithCredential,
-    increment
+    auth, db, doc, getDoc,addDoc, getDocs, updateDoc, setDoc, deleteDoc, writeBatch, // 👈 تأكد من وجود دول
+    arrayUnion, arrayRemove, query, where, collection, onAuthStateChanged, signOut, serverTimestamp 
 } from './firebase-config.js';
 import { getTeamData } from './team-system.js';
 import { initSettingsModal, openSettings } from './settings-handler.js';
@@ -94,16 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initTeamSettingsModal();
 
+    // 2. ربط الزر
     const teamSettingsBtn = document.getElementById('open-team-settings-btn');
     if (teamSettingsBtn) {
         teamSettingsBtn.addEventListener('click', (e) => {
             e.preventDefault();
             
+            // 🔒 التحقق من أن المستخدم هو الليدر
             const isLeader = currentUserData?.uid === currentTeam?.leader_id;
             
             if (currentTeam && currentTeam.team_id) {
                 openTeamSettings(currentTeam.team_id, isLeader);
             } else {
+                // Fallback لو الداتا لسه بتحمل
                 showToast("انتظر تحميل البيانات...", "info");
             }
         });
@@ -117,9 +118,7 @@ let lookupData = { projects: {}, quizzes: {}, videos: {} };
 // --- State Management ---
 let currentUser = null;
 let currentTeam = null;
-let currentTeamId = null;
 let currentUserData = null;
-let allCurriculumData = null;
 let allData = { phases: [], courses: [], tree: [] };
 let selectedAssignCourse = null;
 let expandedNodes = new Set(); // Persist expanded tree nodes
@@ -193,32 +192,14 @@ async function fetchDataFromServer() {
         }
     }
 }
-async function fetchCurriculumData() {
-    try {
-        console.log("🚀 Fetching Fresh Data from Server...");
-        const response = await fetch(`${APPS_SCRIPT_URL}?action=getFullCurriculum`);
-        const json = await response.json();
-        
-        if (json.status === "error") {
-            console.error("Server Error:", json.message);
-            return;
-        }
-
-        allCurriculumData = json; 
-        
-        console.log("✅ تم تحميل بيانات المشاريع والروبيكس بنجاح");
-
-    } catch (error) {
-        console.error("Fetch Error:", error);
-        alert("فشل تحميل تفاصيل المشاريع. تأكد من الاتصال بالإنترنت.");
-    }
-}
+// Mobile Menu Toggle (تم التحديث ليتوافق مع الاتجاه الصحيح)
     const menuBtn = document.getElementById('mobile-menu-btn');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobile-overlay');
 
     if (menuBtn) {
         menuBtn.addEventListener('click', () => {
+            // لإظهار القائمة: نزيل كلاس الإزاحة (فتعود لمكانها الطبيعي 0)
             sidebar.classList.remove('translate-x-full'); 
             overlay.classList.remove('hidden'); 
         });
@@ -226,6 +207,7 @@ async function fetchCurriculumData() {
 
     if (overlay) {
         overlay.addEventListener('click', () => {
+            // لإخفاء القائمة: نضيف كلاس الإزاحة لليمين
             sidebar.classList.add('translate-x-full'); 
             overlay.classList.add('hidden'); 
         });
@@ -252,17 +234,14 @@ async function initDashboard(uid) {
         if (!userDoc.exists()) throw new Error("User profile not found");
         
         currentUserData = userDoc.data();
-        
         const teamId = currentUserData.team_id || currentUserData.system_info?.team_id;
 
-        currentTeamId = teamId; 
-await fetchCurriculumData();
         if (!teamId) {
-            console.warn("User has no team, redirecting...");
             window.location.href = "student-dash.html";
             return;
         }
 
+        // 1. أولاً: نجلب بيانات الفريق (التصحيح هنا)
         currentTeam = await getTeamData(teamId);
         
         if (!currentTeam) {
@@ -270,12 +249,17 @@ await fetchCurriculumData();
             return;
         }
 
+        // تعيين الـ ID بشكل صريح لضمان وجوده
         currentTeam.team_id = teamId;
         
+        // 2. ثانياً: نستدعي دالة رسم السكواد ونمرر لها بيانات الفريق الصحيحة
+        // (كان الخطأ هنا أنك تمرر teamData وهو غير معرف)
         renderSquadTab(currentTeam);   
         
+        // 3. تحديث الهيدر
         updateHeaderInfo(currentUserData, currentTeam);
 
+        // 4. بقية منطق الكاش والسيرفر كما هو
         const hasCache = loadFromCache();
         if (hasCache) {
             console.log("⚡ Rendering from Cache immediately...");
@@ -294,13 +278,15 @@ await fetchCurriculumData();
     }
 }
 function getSafeDate(dateVal) {
-    if (!dateVal) return new Date(); 
+    if (!dateVal) return new Date(); // لو فارغ هات تاريخ دلوقتي
     if (typeof dateVal.toDate === 'function') {
-        return dateVal.toDate(); 
+        return dateVal.toDate(); // لو جاي من Firebase Timestamp
     }
-    return new Date(dateVal); 
+    return new Date(dateVal); // لو جاي String أو Date عادي
 }
+// إضافة دالة مساعدة لفتح المودال الجديد
 window.openTaskDetailsModal = (taskId) => {
+    // البحث عن المهمة في البيانات المحلية
     const task = currentTeam.weekly_tasks.find(t => t.task_id === taskId);
     if (!task) return;
 
@@ -542,6 +528,8 @@ async function renderTeamMembers(teamData) {
             const isMe = auth.currentUser.uid === member.uid;
             const canKick = (auth.currentUser.uid === teamData.leader_id) && !isMe;
             
+            // ✅✅✅ التصحيح هنا: قراءة البيانات الأكاديمية بشكل صحيح ✅✅✅
+            // نتحقق من academic_info أولاً، ثم personal_info كبديل، ثم الجذور
             const academic = member.academic_info || {};
             const personal = member.personal_info || {};
             
@@ -629,107 +617,42 @@ window.confirmKickMember = (teamId, memberUid, memberName) => {
         }
     );
 };
-// ==========================================
-// 6. SAFE LEAVE & DELETE TEAM LOGIC
-// ==========================================
 window.confirmLeaveTeam = async () => {
-    // 1. تحديد الحالة
+    const newLeaderId = document.getElementById('new-leader-select').value;
+    
+    // يجب اختيار قائد إلا إذا كنت وحدك في الفريق
     const isSolo = (!currentTeam.members || currentTeam.members.length <= 1);
-    const newLeaderId = document.getElementById('new-leader-select')?.value;
-    const passwordInput = document.getElementById('leave-confirm-password');
-    const confirmBtn = document.querySelector('#leave-team-modal button.bg-red-600') || document.querySelector('#leave-team-modal button[onclick*="confirmLeaveTeam"]');
-
-    // التحقق الأولي
-    if (!isSolo && !newLeaderId) {
-        return showToast("يجب اختيار قائد جديد للفريق قبل المغادرة", "error");
-    }
-
-    if (isSolo && (!passwordInput || !passwordInput.value)) {
-        return showToast("يجب إدخال كلمة المرور لتأكيد حذف الفريق", "error");
-    }
-
-    // تعطيل الزر
-    if(confirmBtn) {
-        confirmBtn.disabled = true;
-        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التنفيذ...';
-    }
+    
+    if (!isSolo && !newLeaderId) return showToast("يجب اختيار قائد جديد قبل المغادرة", "error");
 
     try {
-        const batch = writeBatch(db);
         const teamRef = doc(db, "teams", currentTeam.team_id);
-        const myUserRef = doc(db, "users", currentUser.uid);
+        const meRef = doc(db, "users", currentUser.uid);
 
-        if (isSolo) {
-            // ============================
-            // مسار حذف الفريق (Solo Mode)
-            // ============================
-            
-            // 1. إعادة المصادقة (Re-authentication)
-            const password = passwordInput.value;
-            const credential = EmailAuthProvider.credential(currentUser.email, password);
-            
-            try {
-                await reauthenticateWithCredential(currentUser, credential);
-            } catch (authError) {
-                console.error("Auth Error:", authError);
-                throw new Error("كلمة المرور غير صحيحة. لا يمكن حذف الفريق.");
-            }
-
-            // 2. حذف وثيقة الفريق نهائياً
-            batch.delete(teamRef);
-
-            // 3. تحديث بيانات المستخدم (عودة لطالب حر)
-            batch.update(myUserRef, { 
-                role: "Student",
-                "system_info.role": "Student",
-                "system_info.team_id": null 
-            });
-
-            showToast("تم حذف الفريق ومغادرته بنجاح", "success");
-
-        } else {
-            // ============================
-            // مسار تسليم القيادة (Transfer Mode)
-            // ============================
+        // 1. إذا كان هناك قائد جديد، قم بترقيته
+        if (newLeaderId) {
             const newLeaderRef = doc(db, "users", newLeaderId);
-
-            // ترقية الجديد
-            batch.update(newLeaderRef, { 
-                role: "Leader",
-                "system_info.role": "Leader"
-            });
-
-            // تحديث الفريق
-            batch.update(teamRef, { 
-                leader_id: newLeaderId,
-                members: arrayRemove(currentUser.uid)
-            });
-
-            // تخفيض رتبتي
-            batch.update(myUserRef, { 
-                role: "Student",
-                "system_info.role": "Student",
-                "system_info.team_id": null 
-            });
-
-            showToast("تمت المغادرة وتسليم القيادة بنجاح", "success");
+            await updateDoc(newLeaderRef, { role: "Leader" });
+            await updateDoc(teamRef, { leader_id: newLeaderId });
         }
 
-        // تنفيذ التغييرات
-        await batch.commit();
-        
-        // التوجيه
+        // 2. إزالة نفسي من الأعضاء (بدون خصم نقاط)
+        await updateDoc(teamRef, {
+            members: arrayRemove(currentUser.uid)
+        });
+
+        // 3. تحديث حالتي إلى طالب حر
+        await updateDoc(meRef, { 
+            role: "Student", 
+            "system_info.team_id": null 
+        });
+
+        showToast("غادرت الفريق بنجاح", "success");
         setTimeout(() => window.location.href = "student-dash.html", 1500);
 
     } catch (e) {
-        console.error("Leave/Delete Error:", e);
-        showToast(e.message || "حدث خطأ أثناء العملية", "error");
-        
-        // إعادة تفعيل الزر عند الخطأ
-        if(confirmBtn) {
-            confirmBtn.disabled = false;
-            confirmBtn.innerHTML = isSolo ? '<i class="fas fa-trash-alt"></i> حذف الفريق والمغادرة' : 'تأكيد المغادرة';
-        }
+        console.error(e);
+        showToast("حدث خطأ أثناء المغادرة", "error");
     }
 };
 function renderJoinRequests(teamData) {
@@ -1063,7 +986,7 @@ function updateModalContent(task, details, type) {
         }
 
         const duration = formatDuration(details.Duration || details.duration || task.duration);
-        const points = details.base_points || 0;
+        const points = details.base_points || 10;
 
         addGridItem("المحاضر", authorName, "fa-chalkboard-teacher");
         addGridItem("المدة", duration, "fa-clock");
@@ -1294,98 +1217,30 @@ function renderAllTabs() {
     renderGrading();
 }
 
-
-async function renderOverview(user, team) {
-    // 1. تحديث الكروت الإحصائية
-    const xp = user.gamification?.total_points || 0;
-    safeSetText('stat-my-xp', xp.toLocaleString());
-
-    if(team.total_score !== undefined) {
-        safeSetText('stat-team-score', team.total_score.toLocaleString());
-    } else {
-        safeSetText('stat-team-score', "-");
-    }
-
-    // 2. حساب وعرض الترتيب
-    let myRankStr = "-";
-    if (team.members && team.members.length > 0) {
-        try {
-            const memberPromises = team.members.map(uid => getDoc(doc(db, "users", uid)));
-            const memberSnapshots = await Promise.all(memberPromises);
-            const sortedMembers = memberSnapshots
-                .map(snap => ({ uid: snap.id, points: snap.exists() ? (snap.data().gamification?.total_points || 0) : 0 }))
-                .sort((a, b) => b.points - a.points);
-            const myRankIndex = sortedMembers.findIndex(m => m.uid === user.uid);
-            myRankStr = myRankIndex !== -1 ? `#${myRankIndex + 1}` : "-";
-        } catch(e) {}
-    }
+function renderOverview() {
+    if (!currentTeam) return;
     
-    // التأكد من وجود العناصر قبل الكتابة
-    const rankEl = document.getElementById('stat-my-rank');
-    if(rankEl) rankEl.innerText = myRankStr;
-    const badgeEl = document.getElementById('overview-rank-badge');
-    if(badgeEl) badgeEl.innerText = `RANK ${myRankStr}`;
+    renderWeekInfo(); 
 
-    // 3. عرض بار الأسبوع
-    renderWeekInfo(myRankStr);
+    const activeIds = currentTeam.courses_plan || [];
+    const tasks = currentTeam.weekly_tasks || [];
 
-    // 🔥🔥🔥 4. الفلترة الذكية (Smart Filter) 🔥🔥🔥
-    const allTasks = team.weekly_tasks || [];
-    const weekCycle = getCurrentWeekCycle(); 
+    // تحديث العدادات العلوية
+    const statMembers = document.getElementById('stat-members-count');
+    const statCourses = document.getElementById('stat-active-courses');
+    const statTasks = document.getElementById('stat-active-tasks');
+
+    // نحاول جلب عدد الأعضاء الحقيقي إذا توفرت الدالة، وإلا 0
+    if (statMembers) statMembers.innerText = `${(currentTeam.members || []).length} / 5`;
+    if (statCourses) statCourses.innerText = activeIds.length;
+    if (statTasks) statTasks.innerText = tasks.length;
+
+    // 1. رسم المهام
+    renderTeamOverview(tasks);
     
-    const filteredTasks = allTasks.filter(task => {
-        let isCompleted = false;
-
-        // --- أ) التحقق من المشاريع ---
-        if (task.type === 'project') {
-            // نبحث في قائمة التسليمات التي جلبناها في initStudentDash
-            // نستخدم String() لضمان تطابق النوع
-            const sub = userSubmissions[String(task.content_id)];
-            // إذا وجدنا تسليم (سواء مصحح أو قيد الانتظار)، نعتبره منجزاً ونخفيه
-            isCompleted = !!sub; 
-        } 
-        // --- ب) التحقق من الفيديوهات والكويزات ---
-        else {
-            // محاولة 1: البحث بالـ ID المباشر (مثال: "16")
-            let state = user.content_states?.[task.content_id];
-            
-            // محاولة 2: البحث بالبادئة (مثال: "video_16" أو "quiz_1")
-            if (!state) {
-                const prefix = task.type === 'video' ? 'video_' : (task.type === 'quiz' ? 'quiz_' : '');
-                const prefixedId = `${prefix}${task.content_id}`;
-                state = user.content_states?.[prefixedId];
-            }
-
-            // محاولة 3: البحث مع التأكد من تحويل الرقم لنص
-            if (!state) {
-                state = user.content_states?.[String(task.content_id)];
-            }
-            
-            isCompleted = state?.is_completed === true;
-        }
-
-        // 🛑 القاعدة الصارمة: إذا المهمة مكتملة -> إخفاء فوراً
-        if (isCompleted) return false;
-
-        // --- ج) التحقق من التاريخ ---
-        // إذا لم تكن مكتملة، هل يجب عرضها؟
-        // نعرضها إذا كانت في الأسبوع الحالي أو قبله (متأخرة)
-        const taskDate = new Date(task.due_date || task.week_id || task.created_at);
-        taskDate.setHours(0,0,0,0); // تصفير الساعة للمقارنة باليوم
-        
-        // هل تاريخ المهمة أصغر من أو يساوي نهاية الأسبوع الحالي؟
-        return taskDate <= weekCycle.end;
-    });
-
-    // 5. الترتيب: المتأخر أولاً (الأقدم)، ثم الأحدث
-    filteredTasks.sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
-
-    // 6. التحديث في الواجهة
-    safeSetText('stat-active-tasks', filteredTasks.length);
-    renderFocusList(filteredTasks, user);
-    renderActiveCourses(team.courses_plan || []);
+    // 2. رسم الكورسات النشطة (الجديد)
+    renderActiveCourses(activeIds);
 }
-
 function renderActiveCourses(activeIds) {
     const container = document.getElementById('active-courses-container');
     if (!container) return;
@@ -2162,7 +2017,28 @@ async function renderSquad() {
     }
 }
 
+window.confirmLeaveTeam = async () => {
+    const newLeaderId = document.getElementById('new-leader-select').value;
+    if (!newLeaderId) return showToast("Select new leader", "error");
 
+    try {
+        const teamRef = doc(db, "teams", currentTeam.team_id);
+        const meRef = doc(db, "users", currentUser.uid);
+        const newLeaderRef = doc(db, "users", newLeaderId);
+
+        await updateDoc(teamRef, {
+            leader_id: newLeaderId,
+            members: arrayRemove(currentUser.uid)
+        });
+        await updateDoc(newLeaderRef, { role: "Leader" });
+        await updateDoc(meRef, { role: "Student", team_id: null });
+
+        showToast("Left successfully", "success");
+        setTimeout(() => window.location.href = "student-dash.html", 1500);
+    } catch (e) {
+        showToast("Error leaving", "error");
+    }
+};
 
 window.sendBroadcast = () => {
     if(document.getElementById('broadcast-text').value) {
@@ -2172,7 +2048,7 @@ window.sendBroadcast = () => {
 };
 
 function renderGrading() {
-    const grid = document.getElementById('submissions-list');
+    const grid = document.getElementById('submissions-grid');
     if(grid) {
         grid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-20"><i class="fas fa-check-circle text-4xl mb-4 text-green-500/20"></i><p>No submissions.</p></div>`;
     }
@@ -2240,100 +2116,63 @@ window.openBroadcastModal = () => document.getElementById('broadcast-modal').cla
 window.openLeaveTeamModal = () => document.getElementById('leave-team-modal').classList.remove('hidden');
 window.openAddMemberModal = () => showToast("Invite system coming soon", "info");
 // ==========================================
-// فتح نافذة المغادرة (مع التعامل الذكي لحالة العضو الأخير)
+// OPEN LEAVE MODAL & POPULATE SELECT
 // ==========================================
 window.openLeaveTeamModal = async () => {
     const modal = document.getElementById('leave-team-modal');
     const select = document.getElementById('new-leader-select');
-    let warningContainer = document.getElementById('solo-leave-warning');
-    const confirmBtn = modal.querySelector('button.bg-red-600') || modal.querySelector('button[onclick*="confirmLeaveTeam"]'); // محاولة العثور على الزر
-
+    
     // 1. إظهار المودال
     if (modal) modal.classList.remove('hidden');
     
-    // 2. التحقق من وجود حاوية التحذير، وإنشاؤها إذا لم تكن موجودة (حقن HTML ديناميكي)
-    if (!warningContainer && select) {
-        warningContainer = document.createElement('div');
-        warningContainer.id = 'solo-leave-warning';
-        warningContainer.className = 'hidden mt-4 p-4 bg-red-900/20 border border-red-500/50 rounded-xl space-y-3';
-        warningContainer.innerHTML = `
-            <div class="flex items-start gap-3">
-                <i class="fas fa-exclamation-triangle text-red-500 text-xl mt-1"></i>
-                <div>
-                    <h4 class="font-bold text-red-400 text-sm">تنبيه هام جداً!</h4>
-                    <p class="text-xs text-gray-300 mt-1 leading-relaxed">
-                        أنت العضو الأخير في هذا الفريق. المغادرة الآن تعني <span class="text-red-400 font-bold underline">حذف الفريق نهائياً</span> وجميع بياناته.
-                    </p>
-                </div>
-            </div>
-            <div>
-                <label class="block text-xs text-gray-400 mb-1">أدخل كلمة المرور للتأكيد:</label>
-                <input type="password" id="leave-confirm-password" class="w-full bg-black/50 border border-red-500/30 rounded-lg px-3 py-2 text-white focus:border-red-500 outline-none placeholder-gray-600" placeholder="Password">
-            </div>
-        `;
-        select.parentNode.insertBefore(warningContainer, select.nextSibling);
-    }
+    if (!select) return;
 
-    // إعادة تعيين الحقول
-    if (document.getElementById('leave-confirm-password')) {
-        document.getElementById('leave-confirm-password').value = '';
-    }
+    // 2. إعادة تعيين القائمة (Reset)
+    select.innerHTML = '<option value="" disabled selected>جاري تحميل المرشحين...</option>';
+    select.disabled = true;
 
     // التحقق من وجود الفريق
-    if (!currentTeam || !currentTeam.members) return;
+    if (!currentTeam || !currentTeam.members) {
+        select.innerHTML = '<option value="" disabled>لا توجد بيانات للفريق</option>';
+        return;
+    }
 
-    // 3. تحديد الحالة (هل أنت وحيد؟)
-    const isSolo = (currentTeam.members.length <= 1);
+    try {
+        // 3. جلب بيانات الأعضاء (باستثناء القائد الحالي/أنت)
+        const otherMembersIds = currentTeam.members.filter(uid => uid !== currentUser.uid);
 
-    if (isSolo) {
-        // --- حالة الحذف (أنت وحدك) ---
-        if (select) {
-            select.classList.add('hidden'); // إخفاء القائمة
-            select.disabled = true;
+        if (otherMembersIds.length === 0) {
+            select.innerHTML = '<option value="" disabled selected>أنت العضو الوحيد (لا يلزم اختيار بديل)</option>';
+            // لا نعيد تفعيل القائمة لأنها فارغة، ولكن الكود في confirmLeaveTeam سيتعامل مع حالة isSolo
+            return;
         }
-        if (warningContainer) warningContainer.classList.remove('hidden'); // إظهار التحذير والباسورد
+
+        // جلب التفاصيل من قاعدة البيانات
+        const promises = otherMembersIds.map(uid => getDoc(doc(db, "users", uid)));
+        const snapshots = await Promise.all(promises);
+
+        // 4. ملء القائمة
+        select.innerHTML = '<option value="" disabled selected>-- اختر القائد الجديد --</option>';
         
-        // تغيير نص الزر
-        if (confirmBtn) {
-            confirmBtn.innerHTML = '<i class="fas fa-trash-alt"></i> حذف الفريق والمغادرة';
-            confirmBtn.className = "w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg transition-all border border-red-500/50";
-        }
+        snapshots.forEach(snap => {
+            if (snap.exists()) {
+                const data = snap.data();
+                const name = data.personal_info?.full_name || data.full_name || "عضو مجهول";
+                const points = data.gamification?.total_points || 0;
+                
+                const option = document.createElement('option');
+                option.value = snap.id;
+                option.text = `${name} (${points} XP)`;
+                select.appendChild(option);
+            }
+        });
 
-    } else {
-        // --- حالة التسليم (يوجد أعضاء) ---
-        if (warningContainer) warningContainer.classList.add('hidden');
-        if (select) {
-            select.classList.remove('hidden');
-            select.disabled = false;
-            select.innerHTML = '<option value="" disabled selected>جاري تحميل المرشحين...</option>';
-        }
+        // تفعيل القائمة للاختيار
+        select.disabled = false;
 
-        if (confirmBtn) {
-            confirmBtn.innerHTML = 'تأكيد المغادرة';
-            confirmBtn.className = "w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg transition-all";
-        }
-
-        // جلب المرشحين (نفس الكود السابق)
-        try {
-            const otherMembersIds = currentTeam.members.filter(uid => uid !== currentUser.uid);
-            const promises = otherMembersIds.map(uid => getDoc(doc(db, "users", uid)));
-            const snapshots = await Promise.all(promises);
-
-            select.innerHTML = '<option value="" disabled selected>-- اختر القائد الجديد --</option>';
-            snapshots.forEach(snap => {
-                if (snap.exists()) {
-                    const data = snap.data();
-                    const name = data.personal_info?.full_name || "عضو";
-                    const option = document.createElement('option');
-                    option.value = snap.id;
-                    option.text = name;
-                    select.appendChild(option);
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            select.innerHTML = '<option>خطأ في التحميل</option>';
-        }
+    } catch (error) {
+        console.error("Error loading candidates:", error);
+        select.innerHTML = '<option value="" disabled>حدث خطأ في التحميل</option>';
     }
 };
 function formatDuration(rawTime) {
@@ -2574,291 +2413,3 @@ window.closeConfirmModal = () => {
     document.getElementById('confirm-modal').classList.add('hidden');
     confirmCallback = null;
 };
-// نسخة محدثة لكشف الأخطاء وعرض المشاريع
-async function loadPendingSubmissions() {
-    console.log("🚀 جاري طلب المشاريع...");
-
-    // 1. محاولة العثور على العنصر بأي من الاسمين المحتملين
-    let container = document.getElementById('submissions-list') || document.getElementById('submissions-grid');
-    
-    if (!container) {
-        alert("❌ خطأ تصميم: لم يتم العثور على مكان عرض المشاريع (submissions-list) في ملف HTML.");
-        return;
-    }
-
-    // 2. التأكد من أن الليدر مرتبط بفريق
-    if (!currentTeamId) {
-        container.innerHTML = `
-            <div class="col-span-full text-center py-8 bg-red-900/20 border border-red-500/30 rounded-xl">
-                <i class="fas fa-exclamation-triangle text-red-500 text-3xl mb-2"></i>
-                <p class="text-white font-bold">حساب الليدر غير مرتبط بأي فريق!</p>
-                <p class="text-xs text-gray-400 mt-1">تأكد من أن حسابك يحتوي على (team_id) في قاعدة البيانات.</p>
-            </div>`;
-        return;
-    }
-
-    container.innerHTML = '<div class="col-span-full text-center py-10"><i class="fas fa-spinner fa-spin text-2xl text-b-primary"></i><p class="text-xs text-gray-500 mt-2">جاري البحث...</p></div>';
-
-    try {
-        // 3. الاستعلام من قاعدة البيانات
-        const q = query(
-            collection(db, "submissions"), 
-            where("team_id", "==", String(currentTeamId).trim()), // تنظيف النص
-            where("status", "==", "pending")
-        );
-        
-        const snapshot = await getDocs(q);
-        
-        // 4. فحص النتائج
-        if (snapshot.empty) {
-            container.innerHTML = `
-                <div class="col-span-full text-center py-12 bg-black/20 rounded-2xl border border-white/5">
-                    <i class="fas fa-inbox text-4xl text-gray-600 mb-4"></i>
-                    <p class="text-gray-400">لا توجد مشاريع جديدة للتصحيح</p>
-                    <p class="text-[10px] text-gray-600 mt-2 font-mono">Team ID: ${currentTeamId}</p>
-                </div>`;
-            return;
-        }
-
-        // 5. عرض المشاريع
-        container.innerHTML = '';
-        snapshot.forEach(doc => {
-            const sub = doc.data();
-            const date = sub.submitted_at ? new Date(sub.submitted_at.seconds * 1000).toLocaleDateString('ar-EG') : 'غير معروف';
-            
-            container.innerHTML += `
-            <div class="bg-b-surface border border-white/10 rounded-xl p-5 hover:border-b-primary/50 transition-colors group animate-fade-in">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 font-bold border border-purple-500/20">
-                            ${sub.student_name ? sub.student_name[0] : 'S'}
-                        </div>
-                        <div>
-                            <h4 class="text-white font-bold text-sm line-clamp-1">${sub.project_title}</h4>
-                            <p class="text-xs text-gray-400">${sub.student_name}</p>
-                        </div>
-                    </div>
-                    <span class="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-1 rounded border border-yellow-500/20 flex items-center gap-1">
-                        <i class="fas fa-clock"></i> انتظار
-                    </span>
-                </div>
-                
-                <div class="flex justify-between items-center mt-4 pt-4 border-t border-white/5">
-                    <span class="text-xs text-gray-500 font-mono">${date}</span>
-                    <button onclick="openGradingModal('${doc.id}')" class="px-4 py-2 bg-b-primary hover:bg-teal-600 text-white text-xs font-bold rounded-lg transition shadow-lg shadow-teal-900/20">
-                        بدء التصحيح
-                    </button>
-                </div>
-            </div>`;
-        });
-
-    } catch (e) {
-        console.error("Error loading submissions:", e);
-        
-        // كشف مشكلة الـ Index المشهورة
-        if (e.message.includes("index")) {
-            container.innerHTML = `
-            <div class="col-span-full text-center p-6 bg-red-900/20 border border-red-500 rounded-xl">
-                <h3 class="text-red-400 font-bold text-lg">⚠️ مطلوب إنشاء Index في الفايربيس</h3>
-                <p class="text-gray-300 text-sm mt-2">لا يمكن تصفية البيانات بـ team_id و status معاً إلا بعد إنشاء فهرس.</p>
-                <p class="text-gray-400 text-xs mt-4">افتح الـ Console (F12) واضغط على الرابط الأزرق الطويل لإنشائه تلقائياً.</p>
-            </div>`;
-        } else {
-            container.innerHTML = `<p class="text-red-400 text-center col-span-full">حدث خطأ غير متوقع: ${e.message}</p>`;
-        }
-    }
-}
-
-// ✅ ضمان أن الدالة متاحة لزر HTML
-window.loadPendingSubmissions = loadPendingSubmissions;
-// متغير لتخزين التسليم الحالي
-let currentSubmission = null;
-
-// فتح نافذة التصحيح
-window.openGradingModal = async (submissionId) => {
-    const subDoc = await getDoc(doc(db, "submissions", submissionId));
-    if (!subDoc.exists()) return;
-    
-    currentSubmission = { id: subDoc.id, ...subDoc.data() };
-    
-    // البحث عن بيانات المشروع الأصلي (Rubric)
-    const projectsList = allCurriculumData?.projects || allCurriculumData?.Projects || [];
-    const projectMeta = projectsList.find(p => String(p.project_id) === String(currentSubmission.project_id));
-
-    if (!projectMeta) {
-        alert("تفاصيل الروبيكس غير متوفرة لهذا المشروع");
-        return;
-    }
-
-    // تعبئة البيانات
-    document.getElementById('grading-project-title').innerText = currentSubmission.project_title;
-    document.getElementById('grading-student-name').innerText = currentSubmission.student_name;
-    document.getElementById('grading-submission-link').href = currentSubmission.link;
-    document.getElementById('grading-submission-link').innerText = currentSubmission.link;
-    document.getElementById('grading-btn-link').href = currentSubmission.link;
-    document.getElementById('grading-max-score').innerText = projectMeta.max_points;
-
-    renderRubricInputs(projectMeta.rubric_json);
-    document.getElementById('grading-modal').classList.remove('hidden');
-};
-
-// رسم عناصر الروبيكس (Sliders)
-function renderRubricInputs(rubricJson) {
-    const container = document.getElementById('grading-rubric-container');
-    container.innerHTML = '';
-    
-    let criteria = [];
-    try {
-        if (typeof rubricJson === 'string') criteria = JSON.parse(rubricJson).criteria;
-        else criteria = rubricJson.criteria;
-    } catch (e) {
-        container.innerHTML = '<p class="text-gray-500">لا يوجد معايير تقييم.</p>';
-        return;
-    }
-
-    criteria.forEach((item, index) => {
-        container.innerHTML += `
-        <div class="bg-black/30 border border-white/5 rounded-lg p-4 rubric-item" data-aspect="${item.aspect}">
-            <div class="flex justify-between items-start mb-2">
-                <div>
-                    <h5 class="text-white font-bold text-sm">${item.aspect}</h5>
-                    <p class="text-xs text-gray-400">${item.description}</p>
-                </div>
-                <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">Max: ${item.points}</span>
-            </div>
-            <div class="flex gap-4 items-center">
-                <div class="flex-1">
-                    <input type="range" min="0" max="${item.points}" value="${item.points}" 
-                           class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-b-primary"
-                           oninput="updateRubricScore(this, 'score-${index}')">
-                </div>
-                <input type="number" id="score-${index}" max="${item.points}" value="${item.points}" 
-                       class="w-16 bg-black border border-white/10 rounded p-1 text-center text-white font-mono text-sm rubric-score-input"
-                       onchange="calculateTotalScore()">
-            </div>
-        </div>`;
-    });
-    
-    calculateTotalScore();
-}
-
-// تحديث القيم والحساب
-window.updateRubricScore = (range, inputId) => {
-    document.getElementById(inputId).value = range.value;
-    calculateTotalScore();
-};
-
-window.calculateTotalScore = () => {
-    let total = 0;
-    document.querySelectorAll('.rubric-score-input').forEach(input => {
-        total += parseInt(input.value) || 0;
-    });
-    document.getElementById('grading-total-score').innerText = total;
-};
-
-// إغلاق النافذة
-window.closeGradingModal = () => {
-    document.getElementById('grading-modal').classList.add('hidden');
-    currentSubmission = null;
-};
-window.submitGradingDecision = async () => {
-    console.log("🚀 بدء عملية اعتماد الدرجة...");
-
-    // 1. فحص المتطلبات
-    if (!currentSubmission) {
-        showToast("خطأ: لا يوجد مشروع محدد للتصحيح.", "error"); // استبدلنا alert
-        return;
-    }
-
-    if (!auth.currentUser) {
-        showToast("خطأ: الجلسة انتهت، يرجى إعادة تسجيل الدخول.", "error"); // استبدلنا alert
-        return;
-    }
-
-    const btn = document.querySelector('button[onclick="submitGradingDecision()"]');
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
-    }
-
-    try {
-        // 2. تجميع الدرجات
-        const scores = {};
-        let totalScore = 0;
-        
-        const rubricItems = document.querySelectorAll('.rubric-item');
-        rubricItems.forEach(item => {
-            const aspect = item.getAttribute('data-aspect');
-            const input = item.querySelector('.rubric-score-input');
-            const score = input ? (parseInt(input.value) || 0) : 0;
-            if (aspect) scores[aspect] = score;
-            totalScore += score;
-        });
-
-        // قراءة الملاحظات
-        const feedbackInput = document.getElementById('grading-feedback');
-        const feedback = feedbackInput ? feedbackInput.value.trim() : "";
-        const leaderName = document.getElementById('leader-name') ? document.getElementById('leader-name').innerText : "Leader";
-
-        // 3. تحديث وثيقة التسليم
-        const subRef = doc(db, "submissions", currentSubmission.id);
-        await updateDoc(subRef, {
-            status: "graded",
-            grade: totalScore,
-            rubric_scores: scores,
-            feedback: feedback,
-            graded_at: serverTimestamp(),
-            graded_by: auth.currentUser.uid,
-            graded_by_name: leaderName
-        });
-
-        // 4. إضافة نقاط للطالب (الآن ستعمل لأن increment تم استيرادها)
-        if (currentSubmission.student_id) {
-            const userRef = doc(db, "users", currentSubmission.student_id);
-            await updateDoc(userRef, {
-                "gamification.total_points": increment(totalScore)
-            });
-        }
-
-        // 5. إضافة نقاط للفريق
-        const targetTeamId = currentTeamId || currentSubmission.team_id;
-        if (targetTeamId) {
-            const teamRef = doc(db, "teams", targetTeamId);
-            await updateDoc(teamRef, {
-                total_score: increment(totalScore)
-            });
-
-            // تسجيل في Log الفريق
-            await addDoc(collection(db, "teams", targetTeamId, "point_logs"), {
-                member_uid: currentSubmission.student_id || "unknown",
-                member_name: currentSubmission.student_name || "Unknown Student",
-                action_type: "project_graded",
-                content_title: currentSubmission.project_title || "Project",
-                content_id: currentSubmission.project_id || "unknown",
-                points_earned: totalScore,
-                timestamp: serverTimestamp()
-            });
-        }
-
-        // 6. الختام بنجاح
-        showToast("تم اعتماد الدرجة وتوزيع النقاط بنجاح! 🎉", "success"); // استبدلنا alert
-        closeGradingModal();
-        
-        // تحديث القائمة الخلفية
-        if (typeof window.loadPendingSubmissions === 'function') {
-            window.loadPendingSubmissions();
-        }
-
-    } catch (e) {
-        console.error("❌ Grading Error Details:", e);
-        showToast(`حدث خطأ أثناء الحفظ: ${e.message}`, "error"); // استبدلنا alert
-    } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-check-circle"></i> اعتماد الدرجة';
-        }
-    }
-};
-window.loadPendingSubmissions = loadPendingSubmissions;
-window.openGradingModal = openGradingModal;
-window.submitGradingDecision = submitGradingDecision;
