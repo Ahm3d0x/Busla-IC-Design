@@ -32,9 +32,6 @@ function getDirectImageLink(url) {
     return url;
 }
 
-/**
- * إظهار رسالة توست (Toast Notification)
- */
 function showToast(msg, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) return console.error("Toast container missing!");
@@ -142,7 +139,6 @@ function setupConfirmYesButton() {
     const yesBtn = document.getElementById('btn-general-yes');
     if (!yesBtn) return;
 
-    // استبدال الزر لتنظيف الأحداث القديمة
     const newBtn = yesBtn.cloneNode(true);
     yesBtn.parentNode.replaceChild(newBtn, yesBtn);
 
@@ -172,13 +168,6 @@ function setupConfirmYesButton() {
     });
 }
 
-// =========================================================
-// 3. المنطق الأساسي (Loading & Saving)
-// =========================================================
-
-/**
- * فتح الإعدادات وجلب البيانات بذكاء
- */
 export async function openSettings() {
     const user = auth.currentUser;
     if (!user) return; // لو مش مسجل خروج
@@ -186,15 +175,11 @@ export async function openSettings() {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 
-    // 1. تعبئة مبدئية من الـ Auth (سريعة جداً)
-    // لو الاسم في Auth فاضي، نعرض الإيميل مؤقتاً لحد ما الداتا تيجي
     nameInput.value = user.displayName || ""; 
     photoInput.value = user.photoURL || ""; 
     emailInput.value = user.email || "";
     
-    updatePreviewUI(); // تحديث فوري للصورة
-
-    // 2. جلب البيانات من Firestore (للحصول على أدق التفاصيل)
+    updatePreviewUI(); 
     try {
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
@@ -225,14 +210,10 @@ export async function openSettings() {
     }
 }
 
-/**
- * تحديث واجهة المعاينة (صورة واسم)
- */
 function updatePreviewUI() {
     const rawUrl = photoInput.value.trim();
     const name = nameInput.value.trim() || 'مستخدم جديد';
     
-    // تحويل الرابط لرابط مباشر
     const directUrl = getDirectImageLink(rawUrl);
     
     // تحديث الصورة
