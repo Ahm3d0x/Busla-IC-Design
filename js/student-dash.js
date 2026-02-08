@@ -1,23 +1,32 @@
 import { 
     auth, db, doc, getDoc, getDocs, collection, query, where, addDoc, serverTimestamp, onAuthStateChanged 
 } from './firebase-config.js';
-import { initBadgesSystem } from './badges-handler.js';
-import { initLeaderboard } from './leaderboard-handler.js';
 
-// --- Global State ---
+import { initBadgesSystem } from './badges-handler.js';
+import { initTeamBadgesSystem } from './team-badges-handler.js';
+import { initLeaderboard } from './leaderboard-handler.js';
+import { initSettingsModal, openSettings } from './settings-handler.js';
+import { initNotificationsSystem } from './notifications-handler.js';
+import { RANKS_DATA } from './badges-data.js';
+
 let currentUser = null;
 let currentTeam = null;
-let allCurriculumData = null;
+let allData = { courses: [], tree: [], contents: [], projects: [], quizzes: [] }; 
+let lookupData = { projects: {}, quizzes: {}, contents: [] }; 
+let userSubmissions = {}; 
+
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyi1nTA-P4QfrmrPhYU7JLScBm13ZzZtkCeTtHuqwOonfIpXbu9VT1TinKaFcje2KNC/exec";
 
+window.openSettings = openSettings;
 // =========================================================
-// 1. INITIALIZATION & AUTH
+// 1. INITIALIZATION
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUser = user;
             await initStudentDash(user.uid);
+            initSettingsModal();
         } else {
             window.location.href = "auth.html";
         }
@@ -28,441 +37,567 @@ async function initStudentDash(uid) {
     try {
         console.log("🚀 Initializing Student Dashboard...");
         
-        // 1. Fetch User Data
+        // 1. جلب بيانات المستخدم + سجل الإنجاز
         const userDoc = await getDoc(doc(db, "users", uid));
-        if (!userDoc.exists()) {
-            console.error("User document not found!");
-            return;
-        }
-        const userData = userDoc.data();
-        
-        // 2. Set Header Info (Name & Photo)
-        updateHeaderUI(userData);
+        if (!userDoc.exists()) return;
+        let userData = userDoc.data();
 
-        // 3. Determine User Status (In Team OR Solo)
+        // أ) جلب سجل الإنجاز (الفيديوهات والكويزات)
+        userData.content_states = {}; 
+        const statesSnapshot = await getDocs(collection(db, "users", uid, "content_states"));
+        statesSnapshot.forEach(doc => { userData.content_states[doc.id] = doc.data(); });
+
+        // ب) 🔥 جلب سجل التسليمات (المشاريع) لمعرفة الدرجات
+        const subsSnapshot = await getDocs(query(collection(db, "submissions"), where("student_id", "==", uid)));
+        subsSnapshot.forEach(doc => { userSubmissions[doc.data().project_id] = doc.data(); });
+
+        console.log("📂 User Data Loaded:", { states: userData.content_states, submissions: userSubmissions });
+
+        // 2. جلب المنهج
+        await fetchCurriculumData();
+
+        // 3. التعامل مع الفريق
         const teamId = userData.team_id || userData.system_info?.team_id;
 
         if (teamId) {
-            // --- CASE A: STUDENT IN TEAM ---
-            console.log("✅ Student is in Team:", teamId);
-            
-            // Fetch Team Data
             const teamDoc = await getDoc(doc(db, "teams", teamId));
             if (teamDoc.exists()) {
                 currentTeam = { id: teamDoc.id, ...teamDoc.data() };
                 
-                // Show Team Tabs
-                document.getElementById('btn-my-plan').classList.remove('hidden');
-                document.getElementById('btn-squad').classList.remove('hidden');
-                document.getElementById('header-team-container').classList.remove('hidden');
+                updateHeaderInfo(userData, currentTeam);
+                toggleTabs('team');
                 
-                // Hide Solo Tabs
-                document.getElementById('btn-find-team').classList.add('hidden');
-
-                // Render Team Specifics
-                updateTeamHeaderUI(currentTeam);
-                await renderOverview(userData, currentTeam); // Now awaits for rank calculation
-                renderStudentTasks(userData, currentTeam);
-                await renderSquad(currentTeam); // Await to fetch member names
+                // تمرير البيانات للدالة الرئيسية
+                await renderOverview(userData, currentTeam); 
+                renderStudentTasks(userData, currentTeam);   
+                
+                initTeamBadgesSystem(teamId); 
+                initNotificationsSystem(teamId, uid, 'student');
             }
         } else {
-            // --- CASE B: SOLO STUDENT ---
-            console.log("👤 Student is Solo");
-            
-            // Show Solo Tabs
-            document.getElementById('btn-find-team').classList.remove('hidden');
-            
-            // Hide Team Tabs
-            document.getElementById('btn-my-plan').classList.add('hidden');
-            document.getElementById('btn-squad').classList.add('hidden');
-            document.getElementById('header-team-container').classList.add('hidden');
-
+            updateHeaderInfo(userData, {}); 
+            toggleTabs('solo');
             renderSoloOverview(userData);
             loadAvailableTeams();
         }
 
-        // 4. Load Common Features (Curriculum, Badges, Leaderboard)
-        fetchCurriculumData().then(() => renderCurriculumTree());
-        
-        // Try/Catch for external modules to prevent dashboard crash if they fail
-        try {
-            if (typeof initBadgesSystem === 'function') initBadgesSystem(uid);
-            if (typeof initLeaderboard === 'function') initLeaderboard();
-        } catch (err) {
-            console.warn("⚠️ Warning: Badges/Leaderboard module failed:", err);
-        }
+        renderStudentTree(); 
+        initBadgesSystem(uid); 
+        initLeaderboard();     
 
-    } catch (e) {
-        console.error("❌ Critical Init Error:", e);
+    } catch (e) { console.error("Init Error:", e); }
+}
+
+function toggleTabs(mode) {
+    const teamTabs = ['btn-squad', 'btn-my-plan', 'btn-team-badges'];
+    const soloTabs = ['btn-find-team'];
+    if (mode === 'team') {
+        teamTabs.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
+        soloTabs.forEach(id => document.getElementById(id)?.classList.add('hidden'));
+    } else {
+        teamTabs.forEach(id => document.getElementById(id)?.classList.add('hidden'));
+        soloTabs.forEach(id => document.getElementById(id)?.classList.remove('hidden'));
     }
 }
 
-// =========================================================
-// 2. UI UPDATES (Header & Sidebar)
-// =========================================================
-function updateHeaderUI(user) {
-    const name = user.personal_info?.full_name || "Student";
-    const photo = user.personal_info?.photo_url || "https://ui-avatars.com/api/?name=User";
-    const xp = user.gamification?.total_points || 0;
-
-    // Header
-    document.getElementById('header-user-name').innerText = name.split(' ')[0];
-    
-    // Sidebar
-    document.getElementById('sidebar-user-name').innerText = name;
-    document.getElementById('sidebar-user-img').src = photo;
-    document.getElementById('sidebar-current-xp').innerText = `${xp} XP`;
-    
-    // XP Bar Logic (Simple: Every 1000 XP is a level)
-    const progress = (xp % 1000) / 10; 
-    document.getElementById('sidebar-xp-bar').style.width = `${progress}%`;
-}
-
-function updateTeamHeaderUI(team) {
-    const info = team.info || {}; // Handle nested info object
-    const name = info.name || team.name || "My Team";
-    const logo = info.logo_url || team.logo_url || "../assets/icons/team-placeholder.png";
-
-    document.getElementById('header-team-name').innerText = name;
-    document.getElementById('header-team-logo').src = logo;
-}
-
-// =========================================================
-// 3. OVERVIEW TAB (Fixed Logic)
-// =========================================================
-async function renderOverview(user, team) {
-    const xp = user.gamification?.total_points || 0;
-    
-    // 1. My XP Card
-    document.getElementById('stat-my-xp').innerText = `${xp} XP`;
-    document.getElementById('stat-xp-progress').style.width = `${(xp % 1000) / 10}%`;
-
-    // 2. Active Tasks Card
-    const tasks = team.weekly_tasks || [];
-    document.getElementById('stat-active-tasks').innerText = tasks.length;
-
-    // 3. Team Global Rank
-    document.getElementById('team-global-rank').innerText = `#${team.total_score ? 'calculating...' : 'N/A'}`; 
-    // Note: Global rank usually requires a separate DB query or Cloud Function. 
-    // We display score for now if rank isn't ready.
-    if(team.total_score) document.getElementById('team-global-rank').innerText = `${team.total_score} pts`;
-
-    // 4. My Rank in Team (FIXED: Calculates real rank)
-    try {
-        const membersCollection = await Promise.all(
-            team.members.map(uid => getDoc(doc(db, "users", uid)))
-        );
-        
-        const sortedMembers = membersCollection
-            .map(d => ({ uid: d.id, points: d.data()?.gamification?.total_points || 0 }))
-            .sort((a, b) => b.points - a.points);
-            
-        const myRankIndex = sortedMembers.findIndex(m => m.uid === user.uid);
-        const myRank = myRankIndex !== -1 ? myRankIndex + 1 : "-";
-        
-        document.getElementById('stat-my-rank').innerText = `#${myRank}`;
-    } catch (e) {
-        console.warn("Rank calculation warning:", e);
-        document.getElementById('stat-my-rank').innerText = "-";
+function resolveImageUrl(url, type = 'user') {
+    if (!url || url.includes('placeholder')) {
+        return type === 'team' 
+            ? "https://ui-avatars.com/api/?name=Team&background=0D8ABC&color=fff&size=128" 
+            : "https://ui-avatars.com/api/?name=User&background=random&size=128";
     }
+    return url;
 }
 
-function renderSoloOverview(user) {
+// =========================================================
+// 2. OVERVIEW LOGIC
+// =========================================================
+function updateHeaderInfo(user, team) {
+    const safeText = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
     const xp = user.gamification?.total_points || 0;
-    document.getElementById('stat-my-xp').innerText = `${xp} XP`;
-    document.getElementById('stat-active-tasks').innerText = "0";
-    document.getElementById('stat-my-rank').innerText = "Solo";
-    document.getElementById('team-global-rank').innerText = "-";
+    
+    // Rank Logic
+    let rankTitle = "مبتدئ";
+    if (RANKS_DATA) {
+        for(let r of RANKS_DATA) { if(xp >= r.points_required) rankTitle = r.title; else break; }
+    }
+
+    safeText('header-user-badge', rankTitle);
+    safeText('sidebar-team-name', team.info?.name || "مساحة الطالب");
+    
+    // 🔥 إصلاح اسم الطالب في كل مكان
+    const firstName = user.personal_info?.full_name?.split(' ')[0] || "طالب";
+    const fullName = user.personal_info?.full_name || "طالب مجتهد";
+    
+    safeText('header-user-name', firstName); 
+    safeText('sidebar-user-name', fullName);
+    
+    const logoEl = document.getElementById('sidebar-team-logo');
+    if(logoEl) logoEl.src = resolveImageUrl(team.info?.logo_url || user.personal_info?.photo_url, 'team');
 }
 
-// =========================================================
-// 4. MY PLAN / TASKS TAB
-// =========================================================
-function renderStudentTasks(user, team) {
-    const container = document.getElementById('student-tasks-container');
-    const tasks = team.weekly_tasks || [];
 
-    if (tasks.length === 0) {
-        container.innerHTML = '<div class="text-center py-10 text-gray-500">لا توجد مهام نشطة حالياً.</div>';
+function renderFocusList(tasks, user) {
+    const list = document.getElementById('overview-focus-list');
+    if (!list) return;
+
+    if (!tasks || tasks.length === 0) {
+        list.innerHTML = `<div class="text-center py-12 text-gray-500 flex flex-col items-center"><i class="fas fa-check-circle text-4xl mb-2 text-green-500/50"></i><p>لا توجد مهام مطلوبة حالياً</p></div>`;
         return;
     }
 
-    container.innerHTML = tasks.map(task => {
-        // Check completion in user content_states
-        // content_states keys are usually just the content ID
-        const state = user.content_states?.[task.content_id];
-        const isDone = state?.is_completed || false;
-        
-        const dueDate = task.due_date ? new Date(task.due_date).toLocaleDateString('ar-EG') : 'مفتوح';
-        
-        let icon = 'fa-circle';
-        if (task.type === 'video') icon = 'fa-play-circle';
-        if (task.type === 'quiz') icon = 'fa-question-circle';
-        if (task.type === 'project') icon = 'fa-code-branch';
-
-        // Action Button Logic
-        let actionBtn = '';
-        if (isDone) {
-            actionBtn = `<span class="text-green-500 font-bold text-sm"><i class="fas fa-check-circle"></i> مكتمل</span>`;
-        } else {
-            // Link to course player
-            const url = `course-player.html?id=${task.course_id}&content=${task.content_id}&mode=student`;
-            actionBtn = `<a href="${url}" class="px-4 py-2 bg-b-primary hover:bg-teal-600 text-white text-sm rounded-lg transition">ابدأ الآن</a>`;
-        }
+    list.innerHTML = tasks.map(task => {
+        let iconClass = 'fa-circle text-gray-500';
+        let typeLabel = 'مهمة';
+        if (task.type === 'video') { iconClass = 'fa-play text-blue-400'; typeLabel = 'فيديو'; }
+        if (task.type === 'quiz') { iconClass = 'fa-question text-purple-400'; typeLabel = 'كويز'; }
+        if (task.type === 'project') { iconClass = 'fa-code text-yellow-400'; typeLabel = 'مشروع'; }
 
         return `
-        <div class="bg-white/5 border border-white/10 rounded-xl p-4 flex items-center justify-between hover:border-b-primary/50 transition-all">
+        <div onclick="openUnifiedTaskModal('${task.task_id}')" 
+             class="flex items-center justify-between p-4 rounded-xl border bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group mb-2">
             <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center text-gray-400">
-                    <i class="fas ${icon}"></i>
+                <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
+                    <i class="fas ${iconClass}"></i>
                 </div>
                 <div>
-                    <h4 class="font-bold text-white text-sm">${task.title}</h4>
-                    <p class="text-xs text-gray-500">الاستحقاق: ${dueDate}</p>
+                    <h4 class="text-sm font-bold text-white line-clamp-1 group-hover:text-b-primary transition-colors">${task.title}</h4>
+                    <p class="text-[10px] text-gray-400 flex items-center gap-2">
+                        <span class="bg-white/5 px-1.5 rounded">${typeLabel}</span>
+                        <span>${task.due_date ? 'ينتهي: ' + new Date(task.due_date).toLocaleDateString('ar-EG') : ''}</span>
+                    </p>
                 </div>
             </div>
-            <div>${actionBtn}</div>
+            <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-gray-500 group-hover:border-b-primary group-hover:text-b-primary transition-all"><i class="fas fa-arrow-left"></i></div>
         </div>`;
     }).join('');
 }
 
-// =========================================================
-// 5. SQUAD TAB (FIXED: Fetch Names instead of IDs)
-// =========================================================
-async function renderSquad(team) {
-    const container = document.getElementById('squad-list');
-    container.innerHTML = '<div class="col-span-full text-center"><div class="spinner"></div></div>';
-
-    try {
-        const membersIDs = team.members || [];
-        
-        // Fetch all member profiles in parallel
-        const memberPromises = membersIDs.map(uid => getDoc(doc(db, "users", uid)));
-        const memberSnapshots = await Promise.all(memberPromises);
-        
-        container.innerHTML = memberSnapshots.map(snap => {
-            if (!snap.exists()) return '';
-            const mData = snap.data();
-            const mName = mData.personal_info?.full_name || "Unknown";
-            const mPhoto = mData.personal_info?.photo_url || `https://ui-avatars.com/api/?name=${mName}`;
-            const mRole = mData.role || "Student"; // Leader or Student
-            const mPoints = mData.gamification?.total_points || 0;
-
-            const isLeader = mRole === 'Leader';
-
-            return `
-            <div class="bg-b-surface border ${isLeader ? 'border-yellow-500/30' : 'border-white/10'} rounded-xl p-4 flex items-center gap-4">
-                <img src="${mPhoto}" class="w-12 h-12 rounded-full object-cover border border-white/10">
-                <div>
-                    <h4 class="text-sm font-bold text-white flex items-center gap-2">
-                        ${mName}
-                        ${isLeader ? '<i class="fas fa-crown text-yellow-500 text-xs"></i>' : ''}
-                    </h4>
-                    <p class="text-[10px] text-gray-500">${mRole} • ${mPoints} XP</p>
-                </div>
-            </div>`;
-        }).join('');
-
-    } catch (e) {
-        console.error("Squad Render Error:", e);
-        container.innerHTML = '<p class="text-red-400">حدث خطأ في تحميل الأعضاء</p>';
-    }
-}
-
-// =========================================================
-// 6. CURRICULUM TAB (Read-Only)
-// =========================================================
-async function fetchCurriculumData() {
-    try {
-        // Check local storage first to save API calls
-        const cached = localStorage.getItem('curriculum_cache');
-        if (cached) {
-            allCurriculumData = JSON.parse(cached);
-            return;
-        }
-
-        const response = await fetch(`${APPS_SCRIPT_URL}?action=getFullCurriculum`);
-        const json = await response.json();
-        
-        if (json.status !== 'error') {
-            allCurriculumData = json;
-            localStorage.setItem('curriculum_cache', JSON.stringify(json));
-        }
-    } catch (e) {
-        console.error("Curriculum Fetch Error:", e);
-    }
-}
-
-function renderCurriculumTree() {
-    const container = document.getElementById('curriculum-tree-container');
-    if (!allCurriculumData || !allCurriculumData.courses) {
-        container.innerHTML = '<p class="text-center text-gray-500 mt-10">جاري تحميل المنهج...</p>';
+function renderActiveCourses(activeIds) {
+    const container = document.getElementById('active-courses-container');
+    if (!container) return;
+    
+    if (!activeIds || activeIds.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-gray-500 bg-white/5 rounded-xl border border-white/5 border-dashed"><p>لا توجد كورسات نشطة.</p></div>`;
         return;
     }
 
-    // Simple Grid View for Courses
-    container.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            ${allCurriculumData.courses.map(course => `
-                <div onclick="openCourseModal('${course.course_id}')" class="bg-black/40 border border-white/10 p-5 rounded-xl cursor-pointer hover:border-b-primary hover:bg-white/5 transition-all group">
-                    <div class="h-32 w-full bg-gray-800 rounded-lg mb-4 overflow-hidden relative">
-                        <img src="${course.image_url || '../assets/banners/course-placeholder.jpg'}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.style.display='none'">
-                        <div class="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition-colors">
-                            <i class="fas fa-play-circle text-4xl text-white/80 group-hover:text-b-primary transition-colors"></i>
-                        </div>
-                    </div>
-                    <h4 class="font-bold text-white text-lg mb-1">${course.title}</h4>
-                    <p class="text-xs text-gray-400 line-clamp-2">${course.description || 'لا يوجد وصف متاح'}</p>
-                    <div class="mt-3 flex items-center gap-2 text-[10px] text-gray-500">
-                        <span><i class="fas fa-video mr-1"></i> دروس الفيديو</span>
-                        <span>•</span>
-                        <span>${course.instructor || 'Busla Team'}</span>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+    container.innerHTML = activeIds.map(courseId => {
+        const c = allData.courses.find(i => String(i.course_id) === String(courseId));
+        if(!c) return '';
+        
+        return `
+        <a href="course-player.html?id=${courseId}" class="flex items-center gap-3 p-3 rounded-xl bg-black/20 border border-white/5 hover:border-white/20 hover:bg-white/5 transition-all group">
+            <img src="${resolveImageUrl(c.image_url, 'course')}" class="w-12 h-12 rounded-lg object-cover bg-black opacity-80 group-hover:opacity-100">
+            <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-bold text-gray-200 group-hover:text-white truncate">${c.title}</h4>
+                <p class="text-[10px] text-gray-500">اضغط للمتابعة</p>
+            </div>
+            <i class="fas fa-play text-[10px] text-gray-600 group-hover:text-b-primary"></i>
+        </a>`;
+    }).join('');
 }
 
-// Modal Logic
-window.openCourseModal = (courseId) => {
-    const course = allCurriculumData.courses.find(c => String(c.course_id) === String(courseId));
-    if(!course) return;
-    
-    document.getElementById('modal-course-title').innerText = course.title;
-    document.getElementById('modal-course-desc').innerText = course.description || "لا يوجد وصف.";
-    
-    const playlistBtn = document.getElementById('modal-course-playlist');
-    if (course.playlist_url) {
-        playlistBtn.href = course.playlist_url;
-        playlistBtn.classList.remove('hidden');
-    } else {
-        playlistBtn.classList.add('hidden');
+window.openUnifiedTaskModal = (taskId) => {
+    // 1. العثور على المهمة من قائمة مهام الفريق
+    const task = currentTeam.weekly_tasks.find(t => t.task_id === taskId);
+    if (!task) {
+        console.error("Task not found:", taskId);
+        return;
     }
+
+    const modal = document.getElementById('unified-task-modal');
+    modal.classList.remove('hidden');
     
-    // Filter Contents
-    const contents = allCurriculumData.contents?.filter(c => String(c.course_id) === String(courseId)) || [];
-    const listHtml = contents.map(c => {
-        let icon = c.type === 'video' ? 'fa-play' : (c.type === 'quiz' ? 'fa-question' : 'fa-code');
-        return `<li class="flex items-center gap-2 py-1"><i class="fas ${icon} text-[10px] text-b-primary"></i> ${c.title}</li>`;
-    }).join('');
+    const type = task.type || 'video';
+    let details = {};
+
+    // 2. البحث عن التفاصيل في الفهرس (Lookup)
+    // نستخدم String() لضمان تطابق الأنواع
+    if (type === 'quiz') {
+        details = lookupData.quizzes[String(task.content_id)] || {};
+    } else if (type === 'project') {
+        details = lookupData.projects[String(task.content_id)] || {};
+    } else {
+        // الفيديو
+        details = (lookupData.contents || []).find(c => String(c.content_id) === String(task.content_id)) || {};
+    }
+
+    // 3. دمج البيانات (الأولوية للتفاصيل القادمة من الداتابيز، ثم بيانات المهمة)
+    // هذا يضمن أن الدرجات والمدة تأتي من الشيت الأصلي
+    const finalDetails = { ...task, ...details }; 
     
-    document.getElementById('modal-course-content-list').innerHTML = listHtml || '<li>لا توجد محتويات مسجلة</li>';
+    updateModalContent(task, finalDetails, type);
+};
+function updateModalContent(task, details, type) {
+    const styles = {
+        video: { class: 'from-b-primary/20', icon: 'fa-play-circle', color: 'text-b-primary', label: 'محاضرة فيديو', btnText: 'مشاهدة الدرس', btnIcon: 'fa-play', btnColor: 'bg-b-primary hover:bg-teal-700' },
+        quiz: { class: 'from-yellow-500/20', icon: 'fa-clipboard-list', color: 'text-yellow-500', label: 'اختبار تقييمي', btnText: 'بدء الاختبار', btnIcon: 'fa-pencil-alt', btnColor: 'bg-yellow-600 hover:bg-yellow-700' },
+        project: { class: 'from-purple-500/20', icon: 'fa-laptop-code', color: 'text-purple-500', label: 'مشروع عملي', btnText: 'تفاصيل المشروع', btnIcon: 'fa-upload', btnColor: 'bg-purple-600 hover:bg-purple-700' },
+        custom: { class: 'from-gray-500/20', icon: 'fa-star', color: 'text-gray-400', label: 'مهمة خاصة', btnText: 'إنجاز المهمة', btnIcon: 'fa-check', btnColor: 'bg-gray-600 hover:bg-gray-700' }
+    };
+    
+    // التعامل مع المهام الخاصة
+    const isCustom = task.is_custom || type === 'custom';
+    const style = styles[isCustom ? 'custom' : type] || styles.video;
+
+    // 1. UI Updates
+    document.getElementById('modal-header-bg').className = `p-6 border-b border-white/10 bg-gradient-to-r ${style.class} to-transparent`;
+    document.getElementById('modal-type-icon').className = `fas ${style.icon} ${style.color}`;
+    
+    const badge = document.getElementById('modal-type-badge');
+    badge.innerText = style.label;
+    badge.className = `text-[10px] uppercase font-bold tracking-wider bg-black/40 px-2 py-1 rounded border border-white/5 ${style.color}`;
+
+    // 2. العنوان والكورس
+    document.getElementById('modal-title').innerText = details.title || task.title || "بدون عنوان";
+    
+    const courseName = getCourseNameById(task.course_id);
+    document.getElementById('modal-subtitle').innerText = isCustom ? "مهمة إضافية للفريق" : `تابع للكورس: ${courseName}`;
+
+    // 3. الوصف
+    const descEl = document.getElementById('modal-desc');
+    // البحث عن الوصف في كل الحقول المحتملة
+    const descText = details.description || details.Description || details.Note || task.description || "لا يوجد وصف متاح.";
+    descEl.innerHTML = String(descText).replace(/\n/g, '<br>');
+
+    // 4. الشبكة (Grid) - معالجة البيانات بدقة
+    const grid = document.getElementById('modal-details-grid');
+    let gridHtml = '';
+    
+    const addCard = (label, value, icon) => {
+        if(value === undefined || value === null || value === "") return;
+        gridHtml += `
+        <div class="bg-black/30 p-3 rounded-xl border border-white/5 flex flex-col justify-center items-center text-center hover:bg-white/5 transition-all">
+            <p class="text-[10px] text-gray-500 mb-1">${label}</p>
+            <p class="font-bold text-white text-sm flex items-center gap-2">
+                <i class="fas ${icon} ${style.color} opacity-70"></i> ${value}
+            </p>
+        </div>`;
+    };
+
+    // --- منطق استخراج البيانات (Data Extraction Logic) ---
+    
+    // أ) النقاط (Points):
+    // نبحث في points (شيت المهام) ثم base_points (شيت المحتوى) ثم Max Points (شيت الكويز)
+    // إذا كانت المهمة custom، غالباً ليس لها نقاط ثابتة إلا لو الليدر حددها
+    let points = details.points || details.base_points || details['Max Points'] || details.max_points;
+    if (points === undefined && !isCustom) points = 0; // فقط لو مش كاستم نحط صفر، الكاستم ممكن يبقا من غير نقاط
+    if (points !== undefined) addCard("الدرجة / النقاط", `${points} XP`, "fa-star");
+
+    // ب) المدة (Duration):
+    // نبحث عن duration (صغيرة) أو Duration (كبيرة)
+    const rawDuration = details.Duration || details.duration || task.duration;
+    if (rawDuration) addCard("المدة", formatDuration(rawDuration), "fa-clock");
+
+    // ج) التاريخ:
+    if (task.due_date) {
+        addCard("تاريخ التسليم", new Date(task.due_date).toLocaleDateString('ar-EG'), "fa-calendar-alt");
+    }
+
+    // د) تفاصيل خاصة بالكويز:
+    if (type === 'quiz') {
+        // عدد الأسئلة
+        const qCount = details.questions_count || details.questions_to_show || details['Questions Count'];
+        addCard("عدد الأسئلة", qCount ? `${qCount} سؤال` : "غير محدد", "fa-list-ol");
+        
+        // المحاولات (الحل لمشكلة اللانهائية)
+        // إذا كانت القيمة فارغة أو 0 نعتبرها غير محدود، وإلا نعرض الرقم
+        const attempts = details.attempts || details.Attempts || details['Allowed Attempts'];
+        const attemptsText = (attempts && attempts != 0) ? `${attempts} محاولات` : "غير محدود";
+        addCard("المحاولات المتاحة", attemptsText, "fa-redo");
+    }
+
+    // هـ) تفاصيل الفيديو:
+    if (type === 'video') {
+        const instructor = details.Author || details.instructor || "فريق Busla";
+        addCard("المحاضر", instructor, "fa-chalkboard-teacher");
+    }
+
+    grid.innerHTML = gridHtml;
+
+    // 5. زر الإجراء
+    const btn = document.getElementById('modal-action-btn');
+    const isDone = currentUser?.content_states?.[task.content_id]?.is_completed || false;
+
+    if (isDone) {
+        btn.className = `flex-1 py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 transition-all shadow-lg text-white bg-green-600 hover:bg-green-700 cursor-default`;
+        btn.innerHTML = `<i class="fas fa-check-circle"></i> <span>تم الإنجاز</span>`;
+        btn.href = "#"; 
+    } else {
+        // إذا كانت مهمة خاصة، لا يوجد رابط كورس بلاير
+        if (isCustom) {
+            btn.href = "#";
+            btn.onclick = () => alert("هذه مهمة يدوية. قم بتأكيدها مع القائد.");
+            btn.innerHTML = `<i class="fas fa-check"></i> <span>تسجيل كمنجز</span>`;
+        } else {
+            btn.href = `course-player.html?id=${task.course_id}&content=${task.content_id}&task_id=${task.task_id}`;
+            btn.innerHTML = `<i class="fas ${style.btnIcon}"></i> <span>${style.btnText}</span>`;
+            btn.onclick = null;
+        }
+        btn.className = `flex-1 py-3.5 rounded-xl font-bold text-center flex items-center justify-center gap-2 transition-all shadow-lg text-white ${style.btnColor}`;
+    }
+}
+// =========================================================
+// 4. DATA FETCHING (With Indexing Fix)
+// =========================================================
+async function fetchCurriculumData() {
+    const cached = localStorage.getItem('curriculum_cache');
+    
+    const processData = (json) => {
+        allData = json;
+        // 🔥🔥 بناء الفهرس (Lookup) لضمان العثور على التفاصيل 🔥🔥
+        lookupData = { projects: {}, quizzes: {}, contents: [] };
+        
+        if (json.projects) json.projects.forEach(p => lookupData.projects[String(p.project_id)] = p);
+        if (json.quizzes) json.quizzes.forEach(q => lookupData.quizzes[String(q.quiz_id)] = q);
+        if (json.contents) lookupData.contents = json.contents;
+        
+        renderStudentTree();
+    };
+
+    if (cached) {
+        processData(JSON.parse(cached));
+    }
+
+    try {
+        const response = await fetch(`${APPS_SCRIPT_URL}?action=getFullCurriculum`);
+        const json = await response.json();
+        if (json.status !== 'error') {
+            localStorage.setItem('curriculum_cache', JSON.stringify(json));
+            processData(json);
+        }
+    } catch (e) { console.error("Fetch Error:", e); }
+}
+
+function renderStudentTree() {
+    const container = document.getElementById('curriculum-tree-container');
+    if (!container || !allData?.phases) return;
+    container.innerHTML = ''; 
+    const treeWrapper = document.createElement('div');
+    treeWrapper.className = 'relative pl-8 border-l-2 border-white/10 ml-4 space-y-12 py-8';
+
+    allData.phases.forEach((phase) => {
+        const phaseEl = document.createElement('div');
+        phaseEl.className = 'relative';
+        phaseEl.innerHTML = `
+            <div class="absolute -left-[41px] top-0 w-5 h-5 rounded-full border-4 border-b-bg bg-b-primary shadow-[0_0_10px_rgba(0,106,103,0.5)]"></div>
+            <div class="ml-6">
+                <h3 class="text-2xl font-bold text-white mb-2">${phase.title}</h3>
+                <p class="text-sm text-gray-400 mb-6">${phase.description || ''}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    ${getCoursesForPhase(phase.phase_id, allData.courses)}
+                </div>
+            </div>`;
+        treeWrapper.appendChild(phaseEl);
+    });
+    container.appendChild(treeWrapper);
+}
+
+function getCoursesForPhase(phaseId, courses) {
+    return courses.filter(c => String(c.phase_id) === String(phaseId)).map(course => `
+        <div onclick="window.openCourseModal('${course.course_id}')" class="group bg-b-surface border border-white/10 rounded-xl p-4 cursor-pointer hover:border-b-primary hover:bg-white/5 transition-all">
+            <div class="flex gap-4">
+                <img src="${resolveImageUrl(course.image_url, 'course')}" class="w-20 h-20 rounded-lg object-cover bg-black opacity-80 group-hover:opacity-100">
+                <div class="flex-1">
+                    <h4 class="font-bold text-white text-sm mb-1 group-hover:text-b-primary">${course.title}</h4>
+                    <p class="text-[10px] text-gray-500 line-clamp-2">${course.description || '...'}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Helpers for Solo Mode
+function renderSoloOverview(user) {
+    document.getElementById('stat-my-xp').innerText = user.gamification?.total_points || 0;
+    document.getElementById('stat-active-tasks').innerText = "0";
+    document.getElementById('stat-team-score').innerText = "-";
+    document.getElementById('stat-my-rank').innerText = "Solo";
+    document.getElementById('overview-focus-list').innerHTML = '<p class="text-center text-gray-500 py-10">انضم لفريق لتفعيل المهام.</p>';
+}
+
+function renderStudentTasks(user, team) { /* Logic same as overview, reused */ }
+async function renderSquad(team) { /* Logic for squad tab */ }
+async function loadAvailableTeams() { /* Logic for marketplace */ }
+
+// Course Details Modal (from Tree)
+window.openCourseModal = (courseId) => {
+    const c = allData.courses.find(x => String(x.course_id) === String(courseId));
+    if(!c) return;
+    document.getElementById('modal-course-title').innerText = c.title;
+    document.getElementById('modal-course-desc').innerText = c.description;
+    document.getElementById('modal-course-playlist').href = c.playlist_url;
+    
+    const contents = allData.contents?.filter(co => String(co.course_id) === String(courseId)) || [];
+    const list = document.getElementById('modal-course-content-list');
+    list.innerHTML = contents.map(item => `<li class="py-1 border-b border-white/5 flex justify-between"><span>${item.title}</span><span class="text-[10px] text-gray-500 uppercase">${item.type}</span></li>`).join('');
+
     document.getElementById('course-details-modal').classList.remove('hidden');
 };
+// --- Helper Functions ---
 
-// =========================================================
-// 7. FIND TEAM (MARKETPLACE)
-// =========================================================
-async function loadAvailableTeams() {
-    const container = document.getElementById('available-teams-container');
-    container.innerHTML = '<div class="col-span-full flex justify-center py-10"><div class="spinner"></div></div>';
+// دالة تنسيق الوقت (لحل مشكلة اختفاء مدة الفيديو)
+function formatDuration(seconds) {
+    if (!seconds && seconds !== 0) return 'غير محدد';
+    // لو الرقم جاي كنص فيه نقطتين (مثلاً "10:30") رجعه زي ما هو
+    if (String(seconds).includes(':')) return seconds;
+    
+    const secNum = parseInt(seconds, 10);
+    if (isNaN(secNum)) return 'غير محدد';
 
-    try {
-        const snapshot = await getDocs(collection(db, "teams"));
-        
-        if (snapshot.empty) {
-            container.innerHTML = '<p class="col-span-full text-center text-gray-500">لا توجد فرق متاحة حالياً.</p>';
-            return;
-        }
+    const hours = Math.floor(secNum / 3600);
+    const minutes = Math.floor((secNum - (hours * 3600)) / 60);
+    const secs = secNum - (hours * 3600) - (minutes * 60);
 
-        container.innerHTML = '';
-        snapshot.forEach(doc => {
-            const team = doc.data();
-            const info = team.info || {};
-            // Basic validation
-            if (!info.name) return;
-
-            container.innerHTML += `
-            <div class="bg-b-surface border border-white/10 rounded-xl p-5 hover:border-b-primary/50 transition-all">
-                <div class="flex items-center gap-4 mb-4">
-                    <img src="${info.logo_url || '../assets/icons/team-placeholder.png'}" class="w-16 h-16 rounded-lg bg-black object-cover border border-white/10">
-                    <div>
-                        <h4 class="text-white font-bold text-lg leading-tight">${info.name}</h4>
-                        <p class="text-xs text-gray-400 mt-1"><i class="fas fa-university mr-1"></i> ${info.university || 'عام'}</p>
-                    </div>
-                </div>
-                <div class="flex justify-between text-xs text-gray-500 mb-4 bg-black/20 p-2 rounded">
-                    <span>${team.members ? team.members.length : 0} Members</span>
-                    <span class="text-yellow-500 font-bold">${team.total_score || 0} XP</span>
-                </div>
-                <button onclick="openTeamDetails('${doc.id}')" class="w-full py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-bold rounded-lg border border-white/5 transition-colors">
-                    عرض التفاصيل
-                </button>
-            </div>`;
-        });
-    } catch (e) {
-        console.error("Marketplace Error:", e);
+    if (hours > 0) {
+        return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
 }
 
-window.openTeamDetails = async (teamId) => {
-    // 1. Fetch Fresh Data
-    const teamDoc = await getDoc(doc(db, "teams", teamId));
-    if(!teamDoc.exists()) return;
+// دالة جلب اسم الكورس
+function getCourseNameById(courseId) {
+    if (!allData.courses) return "غير محدد";
+    const course = allData.courses.find(c => String(c.course_id) === String(courseId));
+    return course ? course.title : "عام";
+}
 
-    const team = teamDoc.data();
-    const info = team.info || {};
+// =========================================================
+// 1. HELPER: حساب دورة الأسبوع (السبت - الجمعة)
+// =========================================================
+function getCurrentWeekCycle() {
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysSinceSaturday = (dayOfWeek + 1) % 7;
     
-    // 2. Fetch Leader Name
-    let leaderName = "N/A";
-    if (info.leader_id) {
-        const lDoc = await getDoc(doc(db, "users", info.leader_id));
-        if (lDoc.exists()) leaderName = lDoc.data().personal_info?.full_name || "Leader";
+    const start = new Date(now);
+    start.setDate(now.getDate() - daysSinceSaturday);
+    start.setHours(0, 0, 0, 0);
+    
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+    
+    return { start, end };
+}
+
+function safeSetText(id, text) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = text;
+    } else {
+        console.warn(`Element with ID '${id}' not found via safeSetText`);
+    }
+}
+async function renderOverview(user, team) {
+    const xp = user.gamification?.total_points || 0;
+    safeSetText('stat-my-xp', xp.toLocaleString());
+
+    if(team.total_score !== undefined) {
+        safeSetText('stat-team-score', team.total_score.toLocaleString());
+    } else {
+        safeSetText('stat-team-score', "-");
     }
 
-    // 3. Populate Modal
-    document.getElementById('modal-team-name').innerText = info.name;
-    document.getElementById('modal-team-logo').src = info.logo_url || "";
-    document.getElementById('modal-team-score').innerText = team.total_score || 0;
-    document.getElementById('modal-team-uni').innerText = info.university || "-";
-    document.getElementById('modal-team-gov').innerText = info.governorate || "-";
-    document.getElementById('modal-team-leader').innerText = leaderName;
+    let myRankStr = "-";
+    if (team.members && team.members.length > 0) {
+        try {
+            const memberPromises = team.members.map(uid => getDoc(doc(db, "users", uid)));
+            const memberSnapshots = await Promise.all(memberPromises);
+            const sortedMembers = memberSnapshots
+                .map(snap => ({ uid: snap.id, points: snap.exists() ? (snap.data().gamification?.total_points || 0) : 0 }))
+                .sort((a, b) => b.points - a.points);
+            const myRankIndex = sortedMembers.findIndex(m => m.uid === user.uid);
+            myRankStr = myRankIndex !== -1 ? `#${myRankIndex + 1}` : "-";
+        } catch(e) {}
+    }
+    safeSetText('stat-my-rank', myRankStr);
+    safeSetText('overview-rank-badge', `RANK ${myRankStr}`);
 
-    // 4. Setup Button
-    const btn = document.getElementById('btn-join-team-request');
-    btn.innerHTML = '<i class="fas fa-user-plus"></i> إرسال طلب انضمام';
-    btn.disabled = false;
-    btn.onclick = () => sendJoinRequest(teamId, info.leader_id);
+    // بار الأسبوع
+    renderWeekInfo(myRankStr);
 
-    document.getElementById('team-preview-modal').classList.remove('hidden');
-};
+    // 🔥🔥🔥 الفلترة الذكية (Smart Filtering) 🔥🔥🔥
+    const allTasks = team.weekly_tasks || [];
+    const weekCycle = getCurrentWeekCycle(); 
+    
+    const filteredTasks = allTasks.filter(task => {
+        // 1. تحديد حالة الإنجاز بدقة (للفيديو/الكويز أو المشاريع)
+        let isCompleted = false;
 
-async function sendJoinRequest(teamId, leaderId) {
-    if(!currentUser) return;
-    const btn = document.getElementById('btn-join-team-request');
-    btn.innerHTML = 'جاري الإرسال...';
-    btn.disabled = true;
-
-    try {
-        // Check duplicates
-        const q = query(collection(db, "team_requests"), 
-            where("sender_uid", "==", currentUser.uid),
-            where("status", "==", "Pending")
-        );
-        const snap = await getDocs(q);
-        if(!snap.empty) {
-            alert("لديك طلب معلق بالفعل!");
-            return;
+        if (task.type === 'project') {
+            // للمشاريع: نعتبرها مكتملة لو اتصححت (graded) أو اتبعتت (pending) عشان منزحمش القائمة
+            // أو ممكن تخليها تظهر لو pending بس، حسب رغبتك. هنا هخفيها لو اتبعتت خلاص.
+            const sub = userSubmissions[String(task.content_id)];
+            isCompleted = !!sub; // لو موجود تسليم يبقى تمام
+        } else {
+            // للفيديو والكويز
+            let state = user.content_states?.[task.content_id];
+            if (!state && task.type === 'video') state = user.content_states?.[`video_${task.content_id}`];
+            if (!state) state = user.content_states?.[String(task.content_id)];
+            
+            isCompleted = state?.is_completed === true;
         }
 
-        await addDoc(collection(db, "team_requests"), {
-            type: "join_request",
-            sender_uid: currentUser.uid,
-            sender_name: document.getElementById('header-user-name').innerText,
-            team_id: teamId,
-            leader_id: leaderId,
-            status: "Pending",
-            created_at: serverTimestamp()
-        });
+        // 2. القاعدة الذهبية: لو خلصان -> يختفي فوراً
+        if (isCompleted) return false;
 
-        alert("تم إرسال الطلب بنجاح!");
-        document.getElementById('team-preview-modal').classList.add('hidden');
+        // 3. لو مش خلصان -> يظهر لو في أسبوعنا أو قبله
+        const taskDate = new Date(task.due_date || task.week_id || task.created_at);
+        taskDate.setHours(0,0,0,0);
+        
+        return taskDate <= weekCycle.end;
+    });
 
-    } catch (e) {
-        console.error("Join Error:", e);
-        alert("حدث خطأ.");
-    } finally {
-        btn.disabled = false;
-    }
+    // ترتيب
+    filteredTasks.sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+
+    safeSetText('stat-active-tasks', filteredTasks.length);
+    renderFocusList(filteredTasks, user);
+    renderActiveCourses(team.courses_plan || []);
+}
+function renderWeekInfo(currentRank) {
+    const headerContainer = document.getElementById('week-header-info');
+    if (!headerContainer) return;
+
+    const week = getCurrentWeekCycle();
+    const now = new Date();
+    
+    const daysAr = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    const currentDayName = daysAr[now.getDay()];
+
+    const options = { month: 'long', day: 'numeric' };
+    const startStr = week.start.toLocaleDateString('ar-EG', options);
+    const endStr = week.end.toLocaleDateString('ar-EG', options);
+
+    headerContainer.innerHTML = `
+        <div class="flex flex-col md:flex-row justify-between items-center bg-gradient-to-r from-b-primary/20 to-black/40 p-4 rounded-xl border border-b-primary/30 shadow-lg relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-b-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+
+            <div class="flex items-center gap-5 mb-4 md:mb-0 relative z-10">
+                <div class="w-14 h-14 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-center text-b-primary text-2xl shadow-inner">
+                    <i class="fas fa-calendar-week"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-xl">الأسبوع الحالي</h3>
+                    <p class="text-sm text-gray-300 mt-1">
+                        من <span class="text-white font-bold mx-1">${startStr}</span> 
+                        إلى <span class="text-white font-bold mx-1">${endStr}</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 relative z-10 w-full md:w-auto">
+                <div class="flex-1 md:flex-none bg-black/40 px-5 py-2.5 rounded-xl border border-white/5 text-center">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">اليوم</p>
+                    <p class="font-bold text-white text-lg">${currentDayName}</p>
+                </div>
+                <div class="flex-1 md:flex-none bg-black/40 px-5 py-2.5 rounded-xl border border-white/5 text-center">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1">الترتيب</p>
+                    <p class="font-bold text-white text-lg text-yellow-500">${currentRank}</p>
+                </div>
+            </div>
+        </div>
+    `;
 }

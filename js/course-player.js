@@ -86,7 +86,6 @@ function getUniqueId(type, id) {
     return `${type}_${id}`;
 }
 
-
 function initSpeedOptions() {
     const select = document.getElementById('playback-speed');
     if (!select) return;
@@ -100,6 +99,7 @@ function initSpeedOptions() {
         select.appendChild(opt);
     }
 }
+
 function setupEventListeners() {
     document.getElementById('btn-restart').onclick = () => {
         if(player && player.seekTo) {

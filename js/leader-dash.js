@@ -94,19 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initTeamSettingsModal();
 
-    // 2. ربط الزر
     const teamSettingsBtn = document.getElementById('open-team-settings-btn');
     if (teamSettingsBtn) {
         teamSettingsBtn.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // 🔒 التحقق من أن المستخدم هو الليدر
             const isLeader = currentUserData?.uid === currentTeam?.leader_id;
             
             if (currentTeam && currentTeam.team_id) {
                 openTeamSettings(currentTeam.team_id, isLeader);
             } else {
-                // Fallback لو الداتا لسه بتحمل
                 showToast("انتظر تحميل البيانات...", "info");
             }
         });
@@ -207,7 +204,6 @@ async function fetchCurriculumData() {
             return;
         }
 
-        // ✅ الحل هنا: تخزين البيانات في المتغير الذي ينتظره كود التصحيح
         allCurriculumData = json; 
         
         console.log("✅ تم تحميل بيانات المشاريع والروبيكس بنجاح");
@@ -217,14 +213,12 @@ async function fetchCurriculumData() {
         alert("فشل تحميل تفاصيل المشاريع. تأكد من الاتصال بالإنترنت.");
     }
 }
-// Mobile Menu Toggle (تم التحديث ليتوافق مع الاتجاه الصحيح)
     const menuBtn = document.getElementById('mobile-menu-btn');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobile-overlay');
 
     if (menuBtn) {
         menuBtn.addEventListener('click', () => {
-            // لإظهار القائمة: نزيل كلاس الإزاحة (فتعود لمكانها الطبيعي 0)
             sidebar.classList.remove('translate-x-full'); 
             overlay.classList.remove('hidden'); 
         });
@@ -232,7 +226,6 @@ async function fetchCurriculumData() {
 
     if (overlay) {
         overlay.addEventListener('click', () => {
-            // لإخفاء القائمة: نضيف كلاس الإزاحة لليمين
             sidebar.classList.add('translate-x-full'); 
             overlay.classList.add('hidden'); 
         });
@@ -260,10 +253,8 @@ async function initDashboard(uid) {
         
         currentUserData = userDoc.data();
         
-        // استخراج معرف الفريق
         const teamId = currentUserData.team_id || currentUserData.system_info?.team_id;
 
-        // ✅ تصحيح الخطأ: تخزين المعرف في المتغير العام
         currentTeamId = teamId; 
 await fetchCurriculumData();
         if (!teamId) {
@@ -272,7 +263,6 @@ await fetchCurriculumData();
             return;
         }
 
-        // 1. جلب بيانات الفريق
         currentTeam = await getTeamData(teamId);
         
         if (!currentTeam) {
@@ -280,16 +270,12 @@ await fetchCurriculumData();
             return;
         }
 
-        // تعيين الـ ID بشكل صريح لضمان وجوده
         currentTeam.team_id = teamId;
         
-        // 2. رسم السكواد
         renderSquadTab(currentTeam);   
         
-        // 3. تحديث الهيدر
         updateHeaderInfo(currentUserData, currentTeam);
 
-        // 4. منطق الكاش والسيرفر
         const hasCache = loadFromCache();
         if (hasCache) {
             console.log("⚡ Rendering from Cache immediately...");
@@ -308,15 +294,13 @@ await fetchCurriculumData();
     }
 }
 function getSafeDate(dateVal) {
-    if (!dateVal) return new Date(); // لو فارغ هات تاريخ دلوقتي
+    if (!dateVal) return new Date(); 
     if (typeof dateVal.toDate === 'function') {
-        return dateVal.toDate(); // لو جاي من Firebase Timestamp
+        return dateVal.toDate(); 
     }
-    return new Date(dateVal); // لو جاي String أو Date عادي
+    return new Date(dateVal); 
 }
-// إضافة دالة مساعدة لفتح المودال الجديد
 window.openTaskDetailsModal = (taskId) => {
-    // البحث عن المهمة في البيانات المحلية
     const task = currentTeam.weekly_tasks.find(t => t.task_id === taskId);
     if (!task) return;
 
@@ -558,8 +542,6 @@ async function renderTeamMembers(teamData) {
             const isMe = auth.currentUser.uid === member.uid;
             const canKick = (auth.currentUser.uid === teamData.leader_id) && !isMe;
             
-            // ✅✅✅ التصحيح هنا: قراءة البيانات الأكاديمية بشكل صحيح ✅✅✅
-            // نتحقق من academic_info أولاً، ثم personal_info كبديل، ثم الجذور
             const academic = member.academic_info || {};
             const personal = member.personal_info || {};
             
@@ -1081,7 +1063,7 @@ function updateModalContent(task, details, type) {
         }
 
         const duration = formatDuration(details.Duration || details.duration || task.duration);
-        const points = details.base_points || 10;
+        const points = details.base_points || 0;
 
         addGridItem("المحاضر", authorName, "fa-chalkboard-teacher");
         addGridItem("المدة", duration, "fa-clock");
