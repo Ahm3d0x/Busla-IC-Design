@@ -463,12 +463,12 @@ function getCourseNameById(courseId) {
     return course ? course.title : "عام";
 }
 
-// =========================================================
-// 1. HELPER: حساب دورة الأسبوع (السبت - الجمعة)
-// =========================================================
 function getCurrentWeekCycle() {
     const now = new Date();
-    const dayOfWeek = now.getDay();
+    const dayOfWeek = now.getDay(); // Sunday=0, ..., Saturday=6
+    
+    // معادلة العودة ليوم السبت الماضي (أو الحالي)
+    // لو اليوم السبت (6) -> نرجع 0 يوم. لو الأحد (0) -> نرجع 1 يوم.
     const daysSinceSaturday = (dayOfWeek + 1) % 7;
     
     const start = new Date(now);
@@ -476,7 +476,7 @@ function getCurrentWeekCycle() {
     start.setHours(0, 0, 0, 0);
     
     const end = new Date(start);
-    end.setDate(start.getDate() + 6);
+    end.setDate(start.getDate() + 6); // نهاية الأسبوع يوم الجمعة
     end.setHours(23, 59, 59, 999);
     
     return { start, end };
@@ -490,7 +490,9 @@ function safeSetText(id, text) {
         console.warn(`Element with ID '${id}' not found via safeSetText`);
     }
 }
+
 async function renderOverview(user, team) {
+    // 1. تحديث الكروت الإحصائية
     const xp = user.gamification?.total_points || 0;
     safeSetText('stat-my-xp', xp.toLocaleString());
 
@@ -500,6 +502,7 @@ async function renderOverview(user, team) {
         safeSetText('stat-team-score', "-");
     }
 
+    // 2. حساب وعرض الترتيب
     let myRankStr = "-";
     if (team.members && team.members.length > 0) {
         try {
@@ -512,47 +515,68 @@ async function renderOverview(user, team) {
             myRankStr = myRankIndex !== -1 ? `#${myRankIndex + 1}` : "-";
         } catch(e) {}
     }
-    safeSetText('stat-my-rank', myRankStr);
-    safeSetText('overview-rank-badge', `RANK ${myRankStr}`);
+    
+    // التأكد من وجود العناصر قبل الكتابة
+    const rankEl = document.getElementById('stat-my-rank');
+    if(rankEl) rankEl.innerText = myRankStr;
+    const badgeEl = document.getElementById('overview-rank-badge');
+    if(badgeEl) badgeEl.innerText = `RANK ${myRankStr}`;
 
-    // بار الأسبوع
+    // 3. عرض بار الأسبوع
     renderWeekInfo(myRankStr);
 
-    // 🔥🔥🔥 الفلترة الذكية (Smart Filtering) 🔥🔥🔥
+    // 🔥🔥🔥 4. الفلترة الذكية (Smart Filter) 🔥🔥🔥
     const allTasks = team.weekly_tasks || [];
     const weekCycle = getCurrentWeekCycle(); 
     
     const filteredTasks = allTasks.filter(task => {
-        // 1. تحديد حالة الإنجاز بدقة (للفيديو/الكويز أو المشاريع)
         let isCompleted = false;
 
+        // --- أ) التحقق من المشاريع ---
         if (task.type === 'project') {
-            // للمشاريع: نعتبرها مكتملة لو اتصححت (graded) أو اتبعتت (pending) عشان منزحمش القائمة
-            // أو ممكن تخليها تظهر لو pending بس، حسب رغبتك. هنا هخفيها لو اتبعتت خلاص.
+            // نبحث في قائمة التسليمات التي جلبناها في initStudentDash
+            // نستخدم String() لضمان تطابق النوع
             const sub = userSubmissions[String(task.content_id)];
-            isCompleted = !!sub; // لو موجود تسليم يبقى تمام
-        } else {
-            // للفيديو والكويز
+            // إذا وجدنا تسليم (سواء مصحح أو قيد الانتظار)، نعتبره منجزاً ونخفيه
+            isCompleted = !!sub; 
+        } 
+        // --- ب) التحقق من الفيديوهات والكويزات ---
+        else {
+            // محاولة 1: البحث بالـ ID المباشر (مثال: "16")
             let state = user.content_states?.[task.content_id];
-            if (!state && task.type === 'video') state = user.content_states?.[`video_${task.content_id}`];
-            if (!state) state = user.content_states?.[String(task.content_id)];
+            
+            // محاولة 2: البحث بالبادئة (مثال: "video_16" أو "quiz_1")
+            if (!state) {
+                const prefix = task.type === 'video' ? 'video_' : (task.type === 'quiz' ? 'quiz_' : '');
+                const prefixedId = `${prefix}${task.content_id}`;
+                state = user.content_states?.[prefixedId];
+            }
+
+            // محاولة 3: البحث مع التأكد من تحويل الرقم لنص
+            if (!state) {
+                state = user.content_states?.[String(task.content_id)];
+            }
             
             isCompleted = state?.is_completed === true;
         }
 
-        // 2. القاعدة الذهبية: لو خلصان -> يختفي فوراً
+        // 🛑 القاعدة الصارمة: إذا المهمة مكتملة -> إخفاء فوراً
         if (isCompleted) return false;
 
-        // 3. لو مش خلصان -> يظهر لو في أسبوعنا أو قبله
+        // --- ج) التحقق من التاريخ ---
+        // إذا لم تكن مكتملة، هل يجب عرضها؟
+        // نعرضها إذا كانت في الأسبوع الحالي أو قبله (متأخرة)
         const taskDate = new Date(task.due_date || task.week_id || task.created_at);
-        taskDate.setHours(0,0,0,0);
+        taskDate.setHours(0,0,0,0); // تصفير الساعة للمقارنة باليوم
         
+        // هل تاريخ المهمة أصغر من أو يساوي نهاية الأسبوع الحالي؟
         return taskDate <= weekCycle.end;
     });
 
-    // ترتيب
+    // 5. الترتيب: المتأخر أولاً (الأقدم)، ثم الأحدث
     filteredTasks.sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
 
+    // 6. التحديث في الواجهة
     safeSetText('stat-active-tasks', filteredTasks.length);
     renderFocusList(filteredTasks, user);
     renderActiveCourses(team.courses_plan || []);

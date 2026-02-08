@@ -1294,30 +1294,98 @@ function renderAllTabs() {
     renderGrading();
 }
 
-function renderOverview() {
-    if (!currentTeam) return;
+
+async function renderOverview(user, team) {
+    // 1. تحديث الكروت الإحصائية
+    const xp = user.gamification?.total_points || 0;
+    safeSetText('stat-my-xp', xp.toLocaleString());
+
+    if(team.total_score !== undefined) {
+        safeSetText('stat-team-score', team.total_score.toLocaleString());
+    } else {
+        safeSetText('stat-team-score', "-");
+    }
+
+    // 2. حساب وعرض الترتيب
+    let myRankStr = "-";
+    if (team.members && team.members.length > 0) {
+        try {
+            const memberPromises = team.members.map(uid => getDoc(doc(db, "users", uid)));
+            const memberSnapshots = await Promise.all(memberPromises);
+            const sortedMembers = memberSnapshots
+                .map(snap => ({ uid: snap.id, points: snap.exists() ? (snap.data().gamification?.total_points || 0) : 0 }))
+                .sort((a, b) => b.points - a.points);
+            const myRankIndex = sortedMembers.findIndex(m => m.uid === user.uid);
+            myRankStr = myRankIndex !== -1 ? `#${myRankIndex + 1}` : "-";
+        } catch(e) {}
+    }
     
-    renderWeekInfo(); 
+    // التأكد من وجود العناصر قبل الكتابة
+    const rankEl = document.getElementById('stat-my-rank');
+    if(rankEl) rankEl.innerText = myRankStr;
+    const badgeEl = document.getElementById('overview-rank-badge');
+    if(badgeEl) badgeEl.innerText = `RANK ${myRankStr}`;
 
-    const activeIds = currentTeam.courses_plan || [];
-    const tasks = currentTeam.weekly_tasks || [];
+    // 3. عرض بار الأسبوع
+    renderWeekInfo(myRankStr);
 
-    // تحديث العدادات العلوية
-    const statMembers = document.getElementById('stat-members-count');
-    const statCourses = document.getElementById('stat-active-courses');
-    const statTasks = document.getElementById('stat-active-tasks');
-
-    // نحاول جلب عدد الأعضاء الحقيقي إذا توفرت الدالة، وإلا 0
-    if (statMembers) statMembers.innerText = `${(currentTeam.members || []).length} / 5`;
-    if (statCourses) statCourses.innerText = activeIds.length;
-    if (statTasks) statTasks.innerText = tasks.length;
-
-    // 1. رسم المهام
-    renderTeamOverview(tasks);
+    // 🔥🔥🔥 4. الفلترة الذكية (Smart Filter) 🔥🔥🔥
+    const allTasks = team.weekly_tasks || [];
+    const weekCycle = getCurrentWeekCycle(); 
     
-    // 2. رسم الكورسات النشطة (الجديد)
-    renderActiveCourses(activeIds);
+    const filteredTasks = allTasks.filter(task => {
+        let isCompleted = false;
+
+        // --- أ) التحقق من المشاريع ---
+        if (task.type === 'project') {
+            // نبحث في قائمة التسليمات التي جلبناها في initStudentDash
+            // نستخدم String() لضمان تطابق النوع
+            const sub = userSubmissions[String(task.content_id)];
+            // إذا وجدنا تسليم (سواء مصحح أو قيد الانتظار)، نعتبره منجزاً ونخفيه
+            isCompleted = !!sub; 
+        } 
+        // --- ب) التحقق من الفيديوهات والكويزات ---
+        else {
+            // محاولة 1: البحث بالـ ID المباشر (مثال: "16")
+            let state = user.content_states?.[task.content_id];
+            
+            // محاولة 2: البحث بالبادئة (مثال: "video_16" أو "quiz_1")
+            if (!state) {
+                const prefix = task.type === 'video' ? 'video_' : (task.type === 'quiz' ? 'quiz_' : '');
+                const prefixedId = `${prefix}${task.content_id}`;
+                state = user.content_states?.[prefixedId];
+            }
+
+            // محاولة 3: البحث مع التأكد من تحويل الرقم لنص
+            if (!state) {
+                state = user.content_states?.[String(task.content_id)];
+            }
+            
+            isCompleted = state?.is_completed === true;
+        }
+
+        // 🛑 القاعدة الصارمة: إذا المهمة مكتملة -> إخفاء فوراً
+        if (isCompleted) return false;
+
+        // --- ج) التحقق من التاريخ ---
+        // إذا لم تكن مكتملة، هل يجب عرضها؟
+        // نعرضها إذا كانت في الأسبوع الحالي أو قبله (متأخرة)
+        const taskDate = new Date(task.due_date || task.week_id || task.created_at);
+        taskDate.setHours(0,0,0,0); // تصفير الساعة للمقارنة باليوم
+        
+        // هل تاريخ المهمة أصغر من أو يساوي نهاية الأسبوع الحالي؟
+        return taskDate <= weekCycle.end;
+    });
+
+    // 5. الترتيب: المتأخر أولاً (الأقدم)، ثم الأحدث
+    filteredTasks.sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+
+    // 6. التحديث في الواجهة
+    safeSetText('stat-active-tasks', filteredTasks.length);
+    renderFocusList(filteredTasks, user);
+    renderActiveCourses(team.courses_plan || []);
 }
+
 function renderActiveCourses(activeIds) {
     const container = document.getElementById('active-courses-container');
     if (!container) return;
