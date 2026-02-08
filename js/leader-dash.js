@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 // --- Configuration ---
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyndLl7n0L4DVCIaaVwD5wIhx5JotZMiNUEm9b8IaUQCUgFxKtNX_oC9FsvA1uyJ9JJ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyfXoESIoTAIbIofv3PGdZdD65ktxXSuX0Rb-WOtoeRccJFbB5PzJTSDu4DDVSPNSW3/exec';
 const CACHE_KEY = 'busla_lms_v6';
 let lookupData = { projects: {}, quizzes: {}, videos: {} };
 // --- State Management ---

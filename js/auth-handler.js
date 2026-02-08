@@ -9,7 +9,7 @@ import {
 // في ملف auth-handler.js
 
 // 1. تأكد من استيراد APPS_SCRIPT_URL (أو عرفه هنا مؤقتاً)
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyndLl7n0L4DVCIaaVwD5wIhx5JotZMiNUEm9b8IaUQCUgFxKtNX_oC9FsvA1uyJ9JJ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyfXoESIoTAIbIofv3PGdZdD65ktxXSuX0Rb-WOtoeRccJFbB5PzJTSDu4DDVSPNSW3/exec';
 
 // في ملف auth-handler.js
 

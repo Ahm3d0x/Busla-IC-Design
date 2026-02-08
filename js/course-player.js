@@ -5,7 +5,7 @@ import {
 } from './firebase-config.js';
 
 // --- Configuration ---
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyi1nTA-P4QfrmrPhYU7JLScBm13ZzZtkCeTtHuqwOonfIpXbu9VT1TinKaFcje2KNC/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfXoESIoTAIbIofv3PGdZdD65ktxXSuX0Rb-WOtoeRccJFbB5PzJTSDu4DDVSPNSW3/exec";
 
 // --- Global State ---
 let courseId = null;
@@ -947,11 +947,7 @@ async function markContentComplete(type, contentId, points) {
     } catch (e) { console.error("Error saving progress:", e); }
 }
 
-// ... (Functions: renderSidebar, isItemCompleted, updateVideoHeader, loadProjectFromData, submitProject, formatTime, updateProgressBar)
-// يرجى نسخ الدوال المساعدة من الردود السابقة لضمان عمل الملف (هي نفسها لم تتغير)
-// ...
 
-// --- Copied Helpers ---
 function renderSidebar(contents, completedIds) {
     const container = document.getElementById('playlist-container');
     if (!container) return;

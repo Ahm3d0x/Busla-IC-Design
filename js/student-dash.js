@@ -15,7 +15,7 @@ let allData = { courses: [], tree: [], contents: [], projects: [], quizzes: [] }
 let lookupData = { projects: {}, quizzes: {}, contents: [] }; 
 let userSubmissions = {}; 
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyi1nTA-P4QfrmrPhYU7JLScBm13ZzZtkCeTtHuqwOonfIpXbu9VT1TinKaFcje2KNC/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyfXoESIoTAIbIofv3PGdZdD65ktxXSuX0Rb-WOtoeRccJFbB5PzJTSDu4DDVSPNSW3/exec";
 
 window.openSettings = openSettings;
 // =========================================================
@@ -109,9 +109,7 @@ function resolveImageUrl(url, type = 'user') {
     return url;
 }
 
-// =========================================================
-// 2. OVERVIEW LOGIC
-// =========================================================
+
 function updateHeaderInfo(user, team) {
     const safeText = (id, txt) => { const el = document.getElementById(id); if (el) el.innerText = txt; };
     const xp = user.gamification?.total_points || 0;
@@ -137,6 +135,92 @@ function updateHeaderInfo(user, team) {
 }
 
 
+// =========================================================
+// 2. RENDER OVERVIEW (منطق الفلترة الجديد)
+// =========================================================
+async function renderOverview(user, team) {
+    // 1. تحديث الكروت الإحصائية (كما هي)
+    const xp = user.gamification?.total_points || 0;
+    safeSetText('stat-my-xp', xp.toLocaleString());
+
+    if(team.total_score !== undefined) {
+        safeSetText('stat-team-score', team.total_score.toLocaleString());
+    } else {
+        safeSetText('stat-team-score', "-");
+    }
+
+    let myRankStr = "-";
+    if (team.members && team.members.length > 0) {
+        try {
+            const memberPromises = team.members.map(uid => getDoc(doc(db, "users", uid)));
+            const memberSnapshots = await Promise.all(memberPromises);
+            const sortedMembers = memberSnapshots
+                .map(snap => ({ uid: snap.id, points: snap.exists() ? (snap.data().gamification?.total_points || 0) : 0 }))
+                .sort((a, b) => b.points - a.points);
+            const myRankIndex = sortedMembers.findIndex(m => m.uid === user.uid);
+            myRankStr = myRankIndex !== -1 ? `#${myRankIndex + 1}` : "-";
+        } catch(e) {}
+    }
+    
+    const rankEl = document.getElementById('stat-my-rank');
+    if(rankEl) rankEl.innerText = myRankStr;
+    const badgeEl = document.getElementById('overview-rank-badge');
+    if(badgeEl) badgeEl.innerText = `RANK ${myRankStr}`;
+
+    renderWeekInfo(myRankStr);
+
+    // 🔥🔥🔥 الفلترة الجديدة حسب طلبك 🔥🔥🔥
+    const allTasks = team.weekly_tasks || [];
+    const weekCycle = getCurrentWeekCycle(); 
+    
+    const filteredTasks = allTasks.filter(task => {
+        // أ) تحديد حالة الإنجاز (بكل الطرق الممكنة)
+        let isCompleted = false;
+
+        if (task.type === 'project') {
+            const sub = userSubmissions[String(task.content_id)];
+            isCompleted = !!sub; 
+        } else {
+            let state = user.content_states?.[task.content_id];
+            if (!state && task.type === 'video') state = user.content_states?.[`video_${task.content_id}`];
+            if (!state) state = user.content_states?.[String(task.content_id)];
+            
+            isCompleted = state?.is_completed === true;
+        }
+
+        // ب) تحديد تاريخ المهمة
+        const taskDate = new Date(task.due_date || task.week_id || task.created_at);
+        taskDate.setHours(0,0,0,0);
+        
+        // ج) تطبيق القواعد
+        const isCurrentWeek = taskDate >= weekCycle.start && taskDate <= weekCycle.end;
+        const isPast = taskDate < weekCycle.start;
+
+        // القاعدة 1: لو المهمة في الأسبوع الحالي -> اظهرها دائماً (مكتملة أو لأ)
+        if (isCurrentWeek) return true;
+
+        // القاعدة 2: لو المهمة قديمة -> اظهرها فقط لو مش مكتملة (عليك متأخرات)
+        if (isPast) return !isCompleted;
+
+        return false; // المهام المستقبلية
+    });
+
+    // الترتيب: المتأخر أولاً، ثم الحالي
+    filteredTasks.sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+
+    // تحديث العداد
+    // ملاحظة: العداد الآن يعرض المهام المطلوبة منك (الحالية + المتأخرة)
+    // لو عايز العداد يستبعد المكتمل، ممكن نففلتر تاني للعداد بس، لكن كده منطقي عشان يبين حجم شغل الأسبوع
+    safeSetText('stat-active-tasks', filteredTasks.length);
+    
+    // رسم القائمة
+    renderFocusList(filteredTasks, user);
+    renderActiveCourses(team.courses_plan || []);
+}
+
+// =========================================================
+// RENDER FOCUS LIST (تحديث الشكل لإظهار المكتمل)
+// =========================================================
 function renderFocusList(tasks, user) {
     const list = document.getElementById('overview-focus-list');
     if (!list) return;
@@ -147,28 +231,52 @@ function renderFocusList(tasks, user) {
     }
 
     list.innerHTML = tasks.map(task => {
+        // 1. إعادة حساب حالة الإنجاز لتحديد الشكل (Checkmark vs Arrow)
+        let isCompleted = false;
+        if (task.type === 'project') {
+            const sub = userSubmissions[String(task.content_id)];
+            isCompleted = !!sub; 
+        } else {
+            let state = user.content_states?.[task.content_id];
+            if (!state && task.type === 'video') state = user.content_states?.[`video_${task.content_id}`];
+            if (!state) state = user.content_states?.[String(task.content_id)];
+            isCompleted = state?.is_completed === true;
+        }
+
+        // 2. تحديد الألوان والأيقونات
         let iconClass = 'fa-circle text-gray-500';
         let typeLabel = 'مهمة';
         if (task.type === 'video') { iconClass = 'fa-play text-blue-400'; typeLabel = 'فيديو'; }
         if (task.type === 'quiz') { iconClass = 'fa-question text-purple-400'; typeLabel = 'كويز'; }
         if (task.type === 'project') { iconClass = 'fa-code text-yellow-400'; typeLabel = 'مشروع'; }
 
+        // تصميم المكتمل vs غير المكتمل
+        const cardStyle = isCompleted 
+            ? "border-green-500/30 bg-green-900/10 hover:bg-green-900/20" // الأخضر للمكتمل
+            : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"; // العادي
+
+        const statusBadge = isCompleted
+            ? `<div class="flex items-center gap-1 text-green-400 text-xs font-bold bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20 shadow-sm"><i class="fas fa-check"></i> <span>مكتمل</span></div>`
+            : `<div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-gray-500 group-hover:border-b-primary group-hover:text-b-primary transition-all"><i class="fas fa-arrow-left"></i></div>`;
+
         return `
         <div onclick="openUnifiedTaskModal('${task.task_id}')" 
-             class="flex items-center justify-between p-4 rounded-xl border bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group mb-2">
+             class="flex items-center justify-between p-4 rounded-xl border transition-all cursor-pointer group mb-2 ${cardStyle}">
+            
             <div class="flex items-center gap-4">
                 <div class="w-10 h-10 rounded-lg bg-black/40 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
                     <i class="fas ${iconClass}"></i>
                 </div>
                 <div>
-                    <h4 class="text-sm font-bold text-white line-clamp-1 group-hover:text-b-primary transition-colors">${task.title}</h4>
+                    <h4 class="text-sm font-bold ${isCompleted ? 'text-gray-300 line-through decoration-green-500/50' : 'text-white'} line-clamp-1 group-hover:text-b-primary transition-colors">${task.title}</h4>
                     <p class="text-[10px] text-gray-400 flex items-center gap-2">
                         <span class="bg-white/5 px-1.5 rounded">${typeLabel}</span>
                         <span>${task.due_date ? 'ينتهي: ' + new Date(task.due_date).toLocaleDateString('ar-EG') : ''}</span>
                     </p>
                 </div>
             </div>
-            <div class="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-gray-500 group-hover:border-b-primary group-hover:text-b-primary transition-all"><i class="fas fa-arrow-left"></i></div>
+            
+            ${statusBadge}
         </div>`;
     }).join('');
 }
@@ -491,96 +599,7 @@ function safeSetText(id, text) {
     }
 }
 
-async function renderOverview(user, team) {
-    // 1. تحديث الكروت الإحصائية
-    const xp = user.gamification?.total_points || 0;
-    safeSetText('stat-my-xp', xp.toLocaleString());
 
-    if(team.total_score !== undefined) {
-        safeSetText('stat-team-score', team.total_score.toLocaleString());
-    } else {
-        safeSetText('stat-team-score', "-");
-    }
-
-    // 2. حساب وعرض الترتيب
-    let myRankStr = "-";
-    if (team.members && team.members.length > 0) {
-        try {
-            const memberPromises = team.members.map(uid => getDoc(doc(db, "users", uid)));
-            const memberSnapshots = await Promise.all(memberPromises);
-            const sortedMembers = memberSnapshots
-                .map(snap => ({ uid: snap.id, points: snap.exists() ? (snap.data().gamification?.total_points || 0) : 0 }))
-                .sort((a, b) => b.points - a.points);
-            const myRankIndex = sortedMembers.findIndex(m => m.uid === user.uid);
-            myRankStr = myRankIndex !== -1 ? `#${myRankIndex + 1}` : "-";
-        } catch(e) {}
-    }
-    
-    // التأكد من وجود العناصر قبل الكتابة
-    const rankEl = document.getElementById('stat-my-rank');
-    if(rankEl) rankEl.innerText = myRankStr;
-    const badgeEl = document.getElementById('overview-rank-badge');
-    if(badgeEl) badgeEl.innerText = `RANK ${myRankStr}`;
-
-    // 3. عرض بار الأسبوع
-    renderWeekInfo(myRankStr);
-
-    // 🔥🔥🔥 4. الفلترة الذكية (Smart Filter) 🔥🔥🔥
-    const allTasks = team.weekly_tasks || [];
-    const weekCycle = getCurrentWeekCycle(); 
-    
-    const filteredTasks = allTasks.filter(task => {
-        let isCompleted = false;
-
-        // --- أ) التحقق من المشاريع ---
-        if (task.type === 'project') {
-            // نبحث في قائمة التسليمات التي جلبناها في initStudentDash
-            // نستخدم String() لضمان تطابق النوع
-            const sub = userSubmissions[String(task.content_id)];
-            // إذا وجدنا تسليم (سواء مصحح أو قيد الانتظار)، نعتبره منجزاً ونخفيه
-            isCompleted = !!sub; 
-        } 
-        // --- ب) التحقق من الفيديوهات والكويزات ---
-        else {
-            // محاولة 1: البحث بالـ ID المباشر (مثال: "16")
-            let state = user.content_states?.[task.content_id];
-            
-            // محاولة 2: البحث بالبادئة (مثال: "video_16" أو "quiz_1")
-            if (!state) {
-                const prefix = task.type === 'video' ? 'video_' : (task.type === 'quiz' ? 'quiz_' : '');
-                const prefixedId = `${prefix}${task.content_id}`;
-                state = user.content_states?.[prefixedId];
-            }
-
-            // محاولة 3: البحث مع التأكد من تحويل الرقم لنص
-            if (!state) {
-                state = user.content_states?.[String(task.content_id)];
-            }
-            
-            isCompleted = state?.is_completed === true;
-        }
-
-        // 🛑 القاعدة الصارمة: إذا المهمة مكتملة -> إخفاء فوراً
-        if (isCompleted) return false;
-
-        // --- ج) التحقق من التاريخ ---
-        // إذا لم تكن مكتملة، هل يجب عرضها؟
-        // نعرضها إذا كانت في الأسبوع الحالي أو قبله (متأخرة)
-        const taskDate = new Date(task.due_date || task.week_id || task.created_at);
-        taskDate.setHours(0,0,0,0); // تصفير الساعة للمقارنة باليوم
-        
-        // هل تاريخ المهمة أصغر من أو يساوي نهاية الأسبوع الحالي؟
-        return taskDate <= weekCycle.end;
-    });
-
-    // 5. الترتيب: المتأخر أولاً (الأقدم)، ثم الأحدث
-    filteredTasks.sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
-
-    // 6. التحديث في الواجهة
-    safeSetText('stat-active-tasks', filteredTasks.length);
-    renderFocusList(filteredTasks, user);
-    renderActiveCourses(team.courses_plan || []);
-}
 function renderWeekInfo(currentRank) {
     const headerContainer = document.getElementById('week-header-info');
     if (!headerContainer) return;

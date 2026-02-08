@@ -1,7 +1,7 @@
 import { auth, db, doc, getDoc, updateDoc, updateProfile } from './firebase-config.js';
 
 // رابط Apps Script (تأكد إنه هو الرابط الصحيح اللي شغال)
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxssTxaER-xlpM4nqD2bkE_cdg6rw0w5xifCOLAataTyMiTT_F5eOtW7n4DdrnwgeIP/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyfXoESIoTAIbIofv3PGdZdD65ktxXSuX0Rb-WOtoeRccJFbB5PzJTSDu4DDVSPNSW3/exec';
 
 // متغيرات العناصر
 let modal, form, nameInput, photoInput, uniInput, yearInput, govInput, facultyInput, deptInput, emailInput;
